@@ -30,13 +30,32 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
                 }
                 else
                 {
-                Write-host "Creating desktop"
+                Write-host "Creating Desktop"
                 $desktop|New-BrokerEntitlementPolicyRule -DesktopGroupUid $dgmatch.Uid
                 }
 
             }
         }
+    $apps = $XDEXPORT|where{$_.ResourceType -eq "PublishedApp" -and $_.DGNAME -eq $dg.DGNAME}
+        
+        if($apps)
+        {
+            foreach ($app in $apps)
+            {
+            write-host "Proccessing App $($desktop.name)"
+            $appmatch = Get-BrokerApplication -AdminAddress $xdhost -AllAssociatedDesktopGroupUid $dgmatch.Uid -ErrorAction SilentlyContinue
+                if($appmatch)
+                {
+                write-host "App found"
+                }
+                else
+                {
+                write-host "Creating App"
+                }
+            }
+        }
 
+    
     }
 }
 
