@@ -31,7 +31,7 @@ $paths = $folder -split "\\"|where{$_ -ne ""}
             write-host HERE $paths[$d] $d               
             if($d -eq 0)
                 {                  
-                    if((check-BrokerAdminFolder($paths[$d])) -eq $false)
+                    if((check-BrokerAdminFolder ($paths[$d])) -eq $false)
                     {
                      New-BrokerAdminFolder -FolderName $paths[$d]|Out-Null
                     }
@@ -39,7 +39,7 @@ $paths = $folder -split "\\"|where{$_ -ne ""}
                 }
                 else
                 {                    
-                    if((check-BrokerAdminFolder($lastfolder + "\" + $paths[$d])) -eq $false)
+                    if((check-BrokerAdminFolder ($lastfolder + "\" + $paths[$d])) -eq $false)
                     {
                     New-BrokerAdminFolder -FolderName $paths[$d] -ParentFolder $lastfolder|Out-Null
                     }
@@ -52,11 +52,20 @@ function clean-object ($cleanme)
 {
 $tempvar = @{}
     foreach($t in $cleanme.PSObject.Properties){
-        if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
+        if(-not ([string]::IsNullOrWhiteSpace($t.Value) -and -not ($t.name -eq "Name") ))
         {
+            if ($t.name -eq "Name")
+            {
+            write-host FTHIS -ForegroundColor yellow
+            }
+            else
+            {
+            $t.name
             $tempvar|Add-Member -MemberType NoteProperty  -Name $t.Name -Value $t.Value
+            }
         }
     }
+
 return $tempvar
 }
 
@@ -71,7 +80,7 @@ write-host $dg.DGNAME
 
 $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorAction SilentlyContinue
 
-    if($dgmatch)
+    if (-not ([string]::IsNullOrWhiteSpace($dgmatch)))
     {
     write-host "Proccessing $($dgmatch.name)"
     $desktops = $XDEXPORT|where{$_.ResourceType -eq "Desktop" -and $_.DGNAME -eq $dg.DGNAME}
@@ -109,19 +118,18 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
                 }
                 else
                 {
-                write-host "Creating App"
+                write-host "Creating App" $app.Name
                 $folder = $app.AdminFolderName
                 if(-not ([string]::IsNullOrWhiteSpace($folder)))
                 {
-
-                    if (-Not (check-BrokerAdminFolder($folder)))
+                    if (-Not (check-BrokerAdminFolder $folder))
                     {
                     write-host "Creating folder"
-                    create-adminfolders ($folder)
+                    create-adminfolders $folder
                     }
                 }
-                $app = clean-object($app)
-                $app|New-BrokerApplication -DesktopGroup $dgmatch.name
+                $app = clean-object $app
+                $app|New-BrokerApplication -ApplicationType HostedOnDesktop -DesktopGroup $dgmatch.name
                 }
             }
         }
