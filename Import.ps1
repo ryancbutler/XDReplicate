@@ -90,15 +90,55 @@ return $tempvar
 
 function set-UserPerms ($app)
 {
-    if ($app.UserFilterEnabled)
+    if($app.ResourceType -eq "Desktop")
     {
-    write-host "Setting App Permissions" -ForegroundColor Green
-     foreach($user in $app.AssociatedUserNames)
-     {
-        Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
-     }
-    }
+        if ($app.IncludedUserFilterEnabled)
+        {
+        Set-BrokerEntitlementPolicyRule -AddIncludedUsers $app.includedusers -Name $app.Name
+        }
 
+        if ($app.ExcludedUserFilterEnabled)
+        {
+        Set-BrokerEntitlementPolicyRule -AddExcludedUserss $app.excludedusers -Name $app.Name
+        }
+    }
+    else
+    {
+        if ($app.UserFilterEnabled)
+        {
+        write-host "Setting App Permissions" -ForegroundColor Green
+             foreach($user in $app.AssociatedUserNames)
+             {
+                Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
+             }
+        }
+    }
+ 
+
+
+}
+
+function clear-DesktopUserPerms ($desktop)
+{
+
+        if ($desktop.IncludedUserFilterEnabled)
+        {
+            foreach($user in $desktop.IncludedUsers)
+            {
+            write-host $user
+            Set-BrokerEntitlementPolicyRule -RemoveIncludedUsers $user -Name $desktop.Name
+            }
+        }
+
+        if ($desktop.ExcludedUserFilterEnabled)
+        {
+            foreach($user in $desktop.ExcludedUsers)
+            {
+            write-host $user
+            Set-BrokerEntitlementPolicyRule -RemoveExcludedUsers $user -Name $desktop.Name
+            }
+        }
+ 
 }
 
 function clean-FTAobject ($FTA)
@@ -141,16 +181,19 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
             foreach ($desktop in $desktops)
             {
             write-host "Proccessing Desktop $($desktop.name)"
-            $desktopmatch = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid -ErrorAction SilentlyContinue
+            $desktopmatch = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid -Name $desktop.Name -ErrorAction SilentlyContinue
                 if($desktopmatch)
                 {
                 write-host "Desktop Found"
-                #Set-BrokerEntitlementPolicyRule -Name $desktopmatch -
+                #$desktop|Set-BrokerEntitlementPolicyRule -Name $desktopmatch
+                clear-DesktopUserPerms $desktopmatch
+                set-userperms $desktop
                 }
                 else
                 {
                 Write-host "Creating Desktop" -ForegroundColor Green
-                $desktop|New-BrokerEntitlementPolicyRule -DesktopGroupUid $dgmatch.Uid
+                $newdesktop = $desktop|New-BrokerEntitlementPolicyRule -DesktopGroupUid $dgmatch.Uid
+                set-userperms $desktop
                 }
 
             }
