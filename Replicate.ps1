@@ -1,17 +1,17 @@
-﻿
-CLS
+﻿CLS
 $ExportFolder = "C:\Temp"
 $tag = "replicate"
+$xdhost = "localhost"
 
 
-$DesktopGroups = Get-BrokerDesktopGroup -AdminAddress localhost -tag $tag
+$DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag
 $foundapps = @()
 
 foreach ($DG in $DesktopGroups)
 {
     write-host $DG.Name
   
-    $apps = Get-BrokerApplication -AdminAddress localhost -AssociatedDesktopGroupUUID $dg.UUID
+    $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID
     
     if($apps)
     {
@@ -21,20 +21,28 @@ foreach ($DG in $DesktopGroups)
 
             $app|add-member -NotePropertyName 'ResourceType' -NotePropertyValue "PublishedApp"
 
-            $BrokerEnCodedIconData = (Get-BrokerIcon -AdminAddress localhost -Uid ($app.IconUid)).EncodedIconData
+            $BrokerEnCodedIconData = (Get-BrokerIcon -AdminAddress $xdhost -Uid ($app.IconUid)).EncodedIconData
             $app|add-member -NotePropertyName 'EncodedIconData' -NotePropertyValue $BrokerEnCodedIconData
         
             $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $dg.Name
     
-            Get-BrokerConfiguredFTA -AdminAddress localhost -ApplicationUid $app.Uid | ForEach-Object -Process {
-                $FTAUid = "FTA-" + "$($_.Uid)"
-                $app|add-member -NotePropertyName $FTAUid -NotePropertyValue $_
+            $ftatemp = @()
+            Get-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $app.Uid | ForEach-Object -Process {
+                
+
+              $ftatemp += $_
             }
+            
+            if($ftatemp.count -gt 0)
+            {
+            $app|add-member -NotePropertyName "FTA" -NotePropertyValue $ftatemp
+            }
+            
         $foundapps += $app
         }
     }
 
-    $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress localhost -DesktopGroupUid $dg.Uid 
+    $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid 
 
     if($desktops)
     {
