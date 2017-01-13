@@ -3,6 +3,65 @@ CLS
 $XDEXPORT = Import-Clixml "C:\Temp\XDEXPORT.xml"
 $xdhost = "localhost"
 
+
+function check-BrokerAdminFolder ($folder)
+{
+    write-host "Processing $folder"
+    $foldermatch = Get-BrokerAdminFolder -name $folder -ErrorAction SilentlyContinue
+    if ($foldermatch)
+    {
+    write-host "FOLDER FOUND" -ForegroundColor GREEN
+    $found = $true
+    }
+    else
+    {
+    write-host "FOLDER NOT FOUND" -ForegroundColor YELLOW
+    $found = $false
+    }
+return $found
+}
+
+function create-adminfolders ($folder)
+{
+$paths = $folder -split "\\"|where{$_ -ne ""}
+
+            $lastfolder = $null
+            for($d=0; $d -le ($paths.Count -1); $d++)
+            {
+            write-host HERE $paths[$d] $d               
+            if($d -eq 0)
+                {                  
+                    if((check-BrokerAdminFolder($paths[$d])) -eq $false)
+                    {
+                     New-BrokerAdminFolder -FolderName $paths[$d]|Out-Null
+                    }
+                $lastfolder = $paths[$d]
+                }
+                else
+                {                    
+                    if((check-BrokerAdminFolder($lastfolder + "\" + $paths[$d])) -eq $false)
+                    {
+                    New-BrokerAdminFolder -FolderName $paths[$d] -ParentFolder $lastfolder|Out-Null
+                    }
+                $lastfolder = $lastfolder + "\" + $paths[$d]
+                }            
+            }
+}
+
+function clean-object ($cleanme)
+{
+$tempvar = @{}
+    foreach($t in $cleanme.PSObject.Properties){
+        if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
+        {
+            $tempvar|Add-Member -MemberType NoteProperty  -Name $t.Name -Value $t.Value
+        }
+    }
+return $tempvar
+}
+
+
+
 if ($XDEXPORT)
 {
 
@@ -42,7 +101,7 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
         {
             foreach ($app in $apps)
             {
-            write-host "Proccessing App $($desktop.name)"
+            write-host "Proccessing App $($app.name)"
             $appmatch = Get-BrokerApplication -AdminAddress $xdhost -AllAssociatedDesktopGroupUid $dgmatch.Uid -ErrorAction SilentlyContinue
                 if($appmatch)
                 {
@@ -51,6 +110,18 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
                 else
                 {
                 write-host "Creating App"
+                $folder = $app.AdminFolderName
+                if(-not ([string]::IsNullOrWhiteSpace($folder)))
+                {
+
+                    if (-Not (check-BrokerAdminFolder($folder)))
+                    {
+                    write-host "Creating folder"
+                    create-adminfolders ($folder)
+                    }
+                }
+                $app = clean-object($app)
+                $app|New-BrokerApplication -DesktopGroup $dgmatch.name
                 }
             }
         }
