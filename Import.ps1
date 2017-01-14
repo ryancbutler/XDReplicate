@@ -89,28 +89,29 @@ return $tempvar
 
 function clean-Desktopobject ($desktop, $newdesktop)
 {
-$tempvardesktop = New-Object PSCustomObject
+$tempvardesktop = "Set-BrokerEntitlementPolicyRule"
 foreach($t in $desktop.PSObject.Properties)
     {
            
         if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
         {
+        $tempstring = ""
             switch ($t.name)
             {
-                "Name" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "Name" -Value $newdesktop.Name}
-                #"ColorDepth" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "ColorDepth" -Value $t.Value}
-                #"Description" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "Description" -Value $t.Value}
-                #"Enabled" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "Enabled" -Value $t.Value}
-                #"LeasingBehavior" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "LeasingBehavior" -Value $t.Value}
-                #"PublishedName" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "PublishedName" -Value $t.Value}
-                #"RestrictToTag" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "RestrictToTag" -Value $t.Value}
-                #"SecureIcaRequired" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "SecureIcaRequired" -Value $t.Value}
-                #"SessionReconnection" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "SessionReconnection" -Value $t.Value}
+                "Name" {$tempstring = " -name `"$($newdesktop.Name)`""}
+                "ColorDepth" {$tempstring = " -Description `"$($t.value)`""}
+                "Description" {$tempstring = " -Description `"$($t.value)`""}
+                "Enabled" {$tempstring = " -Enabled `$$($t.value)"}
+                "LeasingBehavior" {$tempstring = " -LeasingBehavior `"$($t.value)`""}
+                "PublishedName" {$tempstring = " -PublishedName `"$($t.value)`""}
+                "RestrictToTag" {$tempstring = " -RestrictToTag `"$($t.value)`""}
+                "SecureIcaRequired" {$tempstring = " -SecureIcaRequired `"$($t.value)`""}
+                "SessionReconnection" {$tempstring = " -SessionReconnection `"$($t.value)`""}
                
             }
+         $tempvardesktop = $tempvardesktop +  $tempstring
          }
     }
-
 return $tempvardesktop
 }
 
@@ -205,12 +206,12 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
             foreach ($desktop in $desktops)
             {
             write-host "Proccessing Desktop $($desktop.name)"
-            $desktopmatch = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid -PublishedName $desktop.PublishedName -ErrorAction SilentlyContinue
+            $desktopmatch = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid -Name $desktop.Name -ErrorAction SilentlyContinue
                 if($desktopmatch)
                 {
                 write-host "Setting desktop" -ForegroundColor Gray
                 $t = clean-Desktopobject $desktop $desktopmatch
-                $t|Set-BrokerEntitlementPolicyRule
+                $t|invoke-expression
 
                 clear-DesktopUserPerms $desktopmatch
                 set-userperms $desktop
