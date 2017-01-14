@@ -276,6 +276,13 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
     if ($dgmatch -is [object])
     {
     write-host "Proccessing $($dgmatch.name)"
+    }
+    else
+    {
+    throw "Missing DG Group"
+    }
+    ######{}
+    
     $desktops = $XDEXPORT|where{$_.ResourceType -eq "Desktop" -and $_.DGNAME -eq $dg.DGNAME}
 
         if($desktops)
@@ -370,7 +377,7 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
         }
 
     
-    }
+    
 }
 
 }
