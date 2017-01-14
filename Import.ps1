@@ -8,7 +8,7 @@ function check-BrokerAdminFolder ($folder)
 {
     write-host "Processing $folder"
     $foldermatch = Get-BrokerAdminFolder -AdminAddress $xdhost -name $folder -ErrorAction SilentlyContinue
-    if ($foldermatch)
+    if ($foldermatch -is [Object])
     {
     write-host "FOLDER FOUND" -ForegroundColor GREEN
     $found = $true
@@ -27,11 +27,10 @@ $paths = $folder -split "\\"|where{$_ -ne ""}
 
             $lastfolder = $null
             for($d=0; $d -le ($paths.Count -1); $d++)
-            {
-            write-host HERE $paths[$d] $d               
+            {          
             if($d -eq 0)
                 {                  
-                    if((check-BrokerAdminFolder ($paths[$d])) -eq $false)
+                    if((check-BrokerAdminFolder ($paths[$d] + "\")) -eq $false)
                     {
                      New-BrokerAdminFolder -AdminAddress $xdhost -FolderName $paths[$d]|Out-Null
                     }
@@ -88,6 +87,33 @@ foreach($t in $app.PSObject.Properties)
 return $tempvar
 }
 
+function clean-Desktopobject ($desktop, $newdesktop)
+{
+$tempvardesktop = New-Object PSCustomObject
+foreach($t in $desktop.PSObject.Properties)
+    {
+           
+        if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
+        {
+            switch ($t.name)
+            {
+                "Name" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "Name" -Value $newdesktop.Name}
+                #"ColorDepth" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "ColorDepth" -Value $t.Value}
+                #"Description" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "Description" -Value $t.Value}
+                #"Enabled" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "Enabled" -Value $t.Value}
+                #"LeasingBehavior" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "LeasingBehavior" -Value $t.Value}
+                #"PublishedName" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "PublishedName" -Value $t.Value}
+                #"RestrictToTag" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "RestrictToTag" -Value $t.Value}
+                #"SecureIcaRequired" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "SecureIcaRequired" -Value $t.Value}
+                #"SessionReconnection" {$tempvardesktop|Add-Member -MemberType NoteProperty -Name "SessionReconnection" -Value $t.Value}
+               
+            }
+         }
+    }
+
+return $tempvardesktop
+}
+
 function set-UserPerms ($app)
 {
     if($app.ResourceType -eq "Desktop")
@@ -125,7 +151,6 @@ function clear-DesktopUserPerms ($desktop)
         {
             foreach($user in $desktop.IncludedUsers)
             {
-            write-host $user
             Set-BrokerEntitlementPolicyRule -RemoveIncludedUsers $user -Name $desktop.Name
             }
         }
@@ -134,7 +159,6 @@ function clear-DesktopUserPerms ($desktop)
         {
             foreach($user in $desktop.ExcludedUsers)
             {
-            write-host $user
             Set-BrokerEntitlementPolicyRule -RemoveExcludedUsers $user -Name $desktop.Name
             }
         }
@@ -171,7 +195,7 @@ write-host $dg.DGNAME
 
 $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorAction SilentlyContinue
 
-    if (-not ([string]::IsNullOrWhiteSpace($dgmatch)))
+    if ($dgmatch -is [object])
     {
     write-host "Proccessing $($dgmatch.name)"
     $desktops = $XDEXPORT|where{$_.ResourceType -eq "Desktop" -and $_.DGNAME -eq $dg.DGNAME}
@@ -181,11 +205,13 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
             foreach ($desktop in $desktops)
             {
             write-host "Proccessing Desktop $($desktop.name)"
-            $desktopmatch = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid -Name $desktop.Name -ErrorAction SilentlyContinue
+            $desktopmatch = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid -PublishedName $desktop.PublishedName -ErrorAction SilentlyContinue
                 if($desktopmatch)
                 {
-                write-host "Desktop Found"
-                #$desktop|Set-BrokerEntitlementPolicyRule -Name $desktopmatch
+                write-host "Setting desktop" -ForegroundColor Gray
+                $t = clean-Desktopobject $desktop $desktopmatch
+                $t|Set-BrokerEntitlementPolicyRule
+
                 clear-DesktopUserPerms $desktopmatch
                 set-userperms $desktop
                 }
@@ -206,7 +232,7 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
             {
             write-host "Proccessing App $($app.browsername)"
             $appmatch = Get-BrokerApplication -AdminAddress $xdhost -ApplicationName $app.browsername -ErrorAction SilentlyContinue
-                if(-not ([string]::IsNullOrWhiteSpace($appmatch)))
+                if($appmatch -is [Object])
                 {
                 write-host "App found"
                 }
@@ -214,7 +240,7 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
                 {
                 write-host "Creating App $($app.Name)" -ForegroundColor Green
                 $folder = $app.AdminFolderName
-                if(-not ([string]::IsNullOrWhiteSpace($folder)))
+                if($folder -is [object])
                 {
                     if (-Not (check-BrokerAdminFolder $folder))
                     {
