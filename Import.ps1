@@ -47,7 +47,7 @@ $paths = $folder -split "\\"|where{$_ -ne ""}
             }
 }
 
-function clean-appobject ($app)
+function clean-newappobject ($app)
 {
 $tempvar = New-Object PSCustomObject
 foreach($t in $app.PSObject.Properties)
@@ -87,7 +87,43 @@ foreach($t in $app.PSObject.Properties)
 return $tempvar
 }
 
-function clean-Desktopobject ($desktop, $newdesktop)
+function clean-existingappobject ($app, $appmatch)
+{
+$tempvarapp = "Set-BrokerApplication"
+foreach($t in $app.PSObject.Properties)
+    {       
+        if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
+        {
+        $tempstring = ""
+            switch ($t.name)
+            {
+                "ClientFolder" {$tempstring = " -ClientFolder `"$($t.value)`""}
+                "CommandLineArguments" {$tempstring = " -CommandLineArguments $($t.value)"}
+                "CommandLineExecutable" {$tempstring = " -CommandLineExecutable `"$($t.value)`""}
+                "CpuPriorityLevel" {$tempstring = " -CpuPriorityLevel `"$($t.value)`""}
+                "Description" {$tempstring = " -Description `"$($t.value)`""}
+                "Enabled" {$tempstring = " -Enabled `$$($t.value)"}
+                "MaxPerUserInstances" {$tempstring = " -MaxPerUserInstances `"$($t.value)`""}
+                "MaxTotalInstances" {$tempstring = " -MaxTotalInstances `"$($t.value)`""}
+                "Name" {$tempstring = " -name `"$($appmatch.Name)`""}
+                "Priority" {$tempstring = " -Priority `"$($t.value)`""}
+                "PublishedName" {$tempstring = " -PublishedName `"$($t.value)`""}
+                "SecureCmdLineArgumentsEnabled" {$tempstring = " -SecureCmdLineArgumentsEnabled `$$($t.value)"}
+                "ShortcutAddedToDesktop" {$tempstring = " -ShortcutAddedToDesktop `$$($t.value)"}
+                "ShortcutAddedToStartMenu" {$tempstring = " -ShortcutAddedToStartMenu `$$($t.value)"}
+                "StartMenuFolder" {$tempstring = " -StartMenuFolder `"$($t.value)`""}
+                "UserFilterEnabled" {$tempstring = " -UserFilterEnabled `$$($t.value)"}
+                "Visible" {$tempstring = " -Visible `$$($t.value)"}
+                "WaitForPrinterCreation" {$tempstring = " -WaitForPrinterCreation `$$($t.value)"}
+                "WorkingDirectory" {$tempstring = " -WorkingDirectory `"$($t.value)`""}
+            }
+         $tempvarapp = $tempvarapp +  $tempstring
+         }
+    }
+return $tempvarapp
+}
+
+function clean-Desktopobject ($desktop)
 {
 $tempvardesktop = "Set-BrokerEntitlementPolicyRule"
 foreach($t in $desktop.PSObject.Properties)
@@ -98,7 +134,7 @@ foreach($t in $desktop.PSObject.Properties)
         $tempstring = ""
             switch ($t.name)
             {
-                "Name" {$tempstring = " -name `"$($newdesktop.Name)`""}
+                "Name" {$tempstring = " -name `"$($t.value)`""}
                 "ColorDepth" {$tempstring = " -Description `"$($t.value)`""}
                 "Description" {$tempstring = " -Description `"$($t.value)`""}
                 "Enabled" {$tempstring = " -Enabled `$$($t.value)"}
@@ -136,13 +172,38 @@ function set-UserPerms ($app)
         write-host "Setting App Permissions" -ForegroundColor Green
              foreach($user in $app.AssociatedUserNames)
              {
+                write-host $user
                 Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
              }
         }
     }
- 
+}
 
+function set-NewAppUserPerms ($app, $appmatch)
+{
 
+if ($app.UserFilterEnabled)
+        {
+        write-host "Setting App Permissions" -ForegroundColor Green
+             foreach($user in $app.AssociatedUserNames)
+             {
+                write-host $user
+                Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $appmatch.Name
+             }
+        }
+    
+
+}
+
+function clear-AppUserPerms ($app)
+{
+    if ($app.UserFilterEnabled)
+        {
+             foreach($user in $app.AssociatedUserFullNames)
+             {
+                Remove-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
+             }
+        }
 }
 
 function clear-DesktopUserPerms ($desktop)
@@ -187,6 +248,22 @@ foreach($t in $fta.PSObject.Properties)
 return $tempvarfta
 }
 
+function compare-icon ($app, $appmatch)
+{
+    $newicon = (Get-BrokerIcon -AdminAddress $xdhost -Uid ($appmatch.IconUid)).EncodedIconData
+    if($newicon -like $app.EncodedIconData)
+    {
+    write-host Icons Match
+    $match = $true
+    }
+    else
+    {
+    write-host Icons do not match -ForegroundColor Yellow
+    $match = $false
+    }
+return $match
+}
+
 if ($XDEXPORT)
 {
 
@@ -210,9 +287,7 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
                 if($desktopmatch)
                 {
                 write-host "Setting desktop" -ForegroundColor Gray
-                $t = clean-Desktopobject $desktop $desktopmatch
-                $t|invoke-expression
-
+                clean-Desktopobject $desktop|invoke-expression
                 clear-DesktopUserPerms $desktopmatch
                 set-userperms $desktop
                 }
@@ -235,11 +310,39 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
             $appmatch = Get-BrokerApplication -AdminAddress $xdhost -ApplicationName $app.browsername -ErrorAction SilentlyContinue
                 if($appmatch -is [Object])
                 {
-                write-host "App found"
+                write-host "Setting App" -ForegroundColor Gray
+                $folder = $app.AdminFolderName
+                if($folder -is [object])
+                {
+                    if ($folder -like $appmatch.AdminFolderName)
+                    {
+                    write-host In correct folder
+                    }
+                    else
+                    {
+                        if (-Not (check-BrokerAdminFolder $folder))
+                        {
+                        write-host "Creating folder" -ForegroundColor Green
+                        create-adminfolders $folder
+                        }
+                    Write-host Moving App to correct folder -ForegroundColor Yellow
+                    Move-BrokerApplication $appmatch -Destination $app.AdminFolderName
+                    $appmatch = Get-BrokerApplication -AdminAddress $xdhost -ApplicationName $app.browsername -ErrorAction SilentlyContinue
+                    }
+                }
+                clean-existingappobject $app $appmatch|Invoke-Expression
+
+                    if((compare-icon $app $appmatch) -eq $false)
+                    {
+                    $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
+                    $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
+                    }
+                clear-AppUserPerms $appmatch
+                set-NewAppUserPerms $app $appmatch
                 }
                 else
                 {
-                write-host "Creating App $($app.Name)" -ForegroundColor Green
+                write-host "Creating App" -ForegroundColor Green
                 $folder = $app.AdminFolderName
                 if($folder -is [object])
                 {
@@ -249,8 +352,8 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
                     create-adminfolders $folder
                     }
                 }
-                $makeapp = clean-appobject $app
-                $newapp = $makeapp|New-BrokerApplication -AdminAddress $xdhost -DesktopGroup $dgmatch.name
+                $makeapp = clean-newappobject $app
+                $newapp = $makeapp|New-BrokerApplication -AdminAddress $xdhost
                 $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                 $newapp|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
                 set-UserPerms $makeapp
