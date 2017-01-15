@@ -153,7 +153,6 @@ return $tempvardesktop
 
 function clean-ExistingDeliveryGroupObject ($dg)
 {
-write-host HERE OM FIM
 $tempvardg = "Set-BrokerDesktopGroup"
 foreach($t in $dg.PSObject.Properties)
     {       
@@ -191,7 +190,6 @@ foreach($t in $dg.PSObject.Properties)
             "TurnOnAddedMachine" {$tempstring = " -TurnOnAddedMachine `$$($t.value)"}
             }
             $tempvardg = $tempvardg +  $tempstring
-            write-host $tempstring
              
          }
     }
@@ -324,7 +322,8 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.NAME -ErrorAct
     {
     write-host "Setting $($dgmatch.name)"
     clean-ExistingDeliveryGroupObject $dg|Invoke-Expression
-    #$dg.AccessPolicyRule|Invoke-Expression
+    Get-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid|remove-BrokerAccessPolicyRule
+    $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid|Out-Null
     }
     else
     {
@@ -334,7 +333,14 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.NAME -ErrorAct
     
     #throw "Missing DG Group"
     }
-    ######{}
+
+    if($dg.prelaunch -is [object])
+    {
+    write-host "Setting pre-launch" -ForegroundColor Gray
+    Remove-BrokerSessionPreLaunch -AdminAddress $xdhost -DesktopGroupName $dg.Name -ErrorAction SilentlyContinue
+    $dg.PreLaunch|New-BrokerSessionPreLaunch -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
+
+    }
     
     $desktops = $XDEXPORT.desktops|where{$_.DGNAME -eq $dg.name}
 
@@ -432,5 +438,29 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.NAME -ErrorAct
     
     
 }
+
+
+$currentadmins = Get-AdminAdministrator -AdminAddress $xdhost
+$adds = @()
+$found = 0
+write-host "Checking admins"
+foreach ($admin in $XDEXPORT.admins)
+{
+
+    $adminmatch = Get-AdminAdministrator -Sid $admin.Sid -AdminAddress $xdhost -ErrorAction SilentlyContinue
+    if ($adminmatch -is [object])
+    {
+    write-host $admin.Name
+    }
+    else
+    {
+    write-host "Adding $($admin.Name)"
+    New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid
+    #Set-AdminRole -
+    }
+
+}
+
+
 
 }
