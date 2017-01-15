@@ -151,6 +151,53 @@ foreach($t in $desktop.PSObject.Properties)
 return $tempvardesktop
 }
 
+function clean-ExistingDeliveryGroupObject ($dg)
+{
+write-host HERE OM FIM
+$tempvardg = "Set-BrokerDesktopGroup"
+foreach($t in $dg.PSObject.Properties)
+    {       
+        if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
+        {
+        $tempstring = ""
+            switch ($t.name)
+            {
+            "Name" {$tempstring = " -Name `"$($t.value)`""}
+            "AutomaticPowerOnForAssigned" {$tempstring = " -AutomaticPowerOnForAssigned `$$($t.value)"}
+            "AutomaticPowerOnForAssignedDuringPeak" {$tempstring = " -AutomaticPowerOnForAssignedDuringPeak `$$($t.value)"}
+            "ColorDepth" {$tempstring = " -ColorDepth `"$($t.value)`""}
+            "DeliveryType" {$tempstring = " -DeliveryType `"$($t.value)`""}
+            "Description" {$tempstring = " -Description `"$($t.value)`""}
+            "Enabled" {$tempstring = " -Enabled `$$($t.value)"}
+            "InMaintenanceMode" {$tempstring = " -InMaintenanceMode `$$($t.value)"}
+            "IsRemotePC" {$tempstring = " -IsRemotePC `$$($t.value)"}
+            "MinimumFunctionalLevel" {$tempstring = " -MinimumFunctionalLevel `"$($t.value)`""}
+            "OffPeakBufferSizePercent" {$tempstring = " -OffPeakBufferSizePercent `"$($t.value)`""}
+            "OffPeakDisconnectTimeout" {$tempstring = " -OffPeakDisconnectTimeout `"$($t.value)`""}
+            "OffPeakExtendedDisconnectAction" {$tempstring = " -OffPeakExtendedDisconnectAction `"$($t.value)`""}
+            "OffPeakLogOffAction" {$tempstring = " -OffPeakLogOffAction `"$($t.value)`""}
+            "OffPeakLogOffTimeout" {$tempstring = " -OffPeakLogOffTimeout `"$($t.value)`""}
+            "PeakBufferSizePercent" {$tempstring = " -PeakBufferSizePercent `"$($t.value)`""}
+            "PeakDisconnectAction" {$tempstring = " -PeakDisconnectAction `"$($t.value)`""}
+            "PeakDisconnectTimeout" {$tempstring = " -PeakDisconnectTimeout `"$($t.value)`""}
+            "PeakExtendedDisconnectAction" {$tempstring = " -PeakExtendedDisconnectAction `"$($t.value)`""}
+            "PeakExtendedDisconnectTimeout" {$tempstring = " -PeakExtendedDisconnectTimeout `"$($t.value)`""}
+            "PeakLogOffAction" {$tempstring = " -PeakLogOffAction `"$($t.value)`""}
+            "ProtocolPriority" {$tempstring = " -ProtocolPriority `"$($t.value)`""}
+            "PublishedName" {$tempstring = " -PublishedName `"$($t.value)`""}
+            "SecureIcaRequired" {$tempstring = " -SecureIcaRequired `$$($t.value)"}
+            "ShutdownDesktopsAfterUse" {$tempstring = " -ProtocolPriority `$$($t.value)"}
+            "TimeZone" {$tempstring = " -TimeZone `"$($t.value)`""}
+            "TurnOnAddedMachine" {$tempstring = " -TurnOnAddedMachine `$$($t.value)"}
+            }
+            $tempvardg = $tempvardg +  $tempstring
+            write-host $tempstring
+             
+         }
+    }
+return $tempvardg
+}
+
 function set-UserPerms ($app)
 {
     if($app.ResourceType -eq "Desktop")
@@ -267,23 +314,29 @@ return $match
 if ($XDEXPORT)
 {
 
-foreach($dg in ($XDEXPORT|select dgname -Unique))
+foreach($dg in $XDEXPORT.dgs)
 {
-write-host $dg.DGNAME
+write-host "Proccessing $($dg.name)"
 
-$dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorAction SilentlyContinue
+$dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.NAME -ErrorAction SilentlyContinue
 
     if ($dgmatch -is [object])
     {
-    write-host "Proccessing $($dgmatch.name)"
+    write-host "Setting $($dgmatch.name)"
+    clean-ExistingDeliveryGroupObject $dg|Invoke-Expression
+    #$dg.AccessPolicyRule|Invoke-Expression
     }
     else
     {
-    throw "Missing DG Group"
+    Write-host "Creating Delivery Group" -ForegroundColor Green
+    $dgmatch = $dg|New-BrokerDesktopGroup|Out-Null
+    $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid|Out-Null
+    
+    #throw "Missing DG Group"
     }
     ######{}
     
-    $desktops = $XDEXPORT|where{$_.ResourceType -eq "Desktop" -and $_.DGNAME -eq $dg.DGNAME}
+    $desktops = $XDEXPORT.desktops|where{$_.DGNAME -eq $dg.name}
 
         if($desktops)
         {
@@ -307,7 +360,7 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.DGNAME -ErrorA
 
             }
         }
-    $apps = $XDEXPORT|where{$_.ResourceType -eq "PublishedApp" -and $_.DGNAME -eq $dg.DGNAME}
+    $apps = $XDEXPORT.apps|where{$_.DGNAME -eq $dg.name}
         
         if($apps)
         {
