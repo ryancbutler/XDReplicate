@@ -456,7 +456,9 @@ foreach ($admin in $XDEXPORT.admins)
     {
     write-host "Adding $($admin.Name)"
     New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid
-    #Set-AdminRole -
+    $rights = $admin.Rights -split ":"
+    Add-AdminRight -Administrator $admin.name -scope $rights[1] -Role $rights[0]
+
     }
 
 }
