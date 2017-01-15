@@ -7,6 +7,7 @@ $xdhost = "localhost"
 
 if($tag)
 {
+write-host HERE
 $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag
 }
 else
@@ -20,12 +21,10 @@ $desktopobject = @()
 foreach ($DG in $DesktopGroups)
 {
     write-host $DG.Name
-
-
-  
+    $dg|add-member -NotePropertyName 'AccessPolicyRule' -NotePropertyValue (Get-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid)
     $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID
     
-    if($apps)
+    if($apps -is [object])
     {
     
         foreach ($app in $apps)
@@ -56,7 +55,7 @@ foreach ($DG in $DesktopGroups)
 
     $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid 
 
-    if($desktops)
+    if($desktops -is [object])
     {
     
         foreach ($desktop in $desktops)
