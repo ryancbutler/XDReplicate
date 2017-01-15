@@ -4,22 +4,33 @@ $tag = "replicate"
 $xdhost = "localhost"
 
 
+
+if($tag)
+{
 $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag
-$foundapps = @()
+}
+else
+{
+$DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag
+}
+
+$appobject = @()
+$desktopobject = @()
 
 foreach ($DG in $DesktopGroups)
 {
     write-host $DG.Name
+
+
   
     $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID
     
     if($apps)
     {
+    
         foreach ($app in $apps)
         {
             Write-Host "Processing $($app.ApplicationName)"
-
-            $app|add-member -NotePropertyName 'ResourceType' -NotePropertyValue "PublishedApp"
 
             $BrokerEnCodedIconData = (Get-BrokerIcon -AdminAddress $xdhost -Uid ($app.IconUid)).EncodedIconData
             $app|add-member -NotePropertyName 'EncodedIconData' -NotePropertyValue $BrokerEnCodedIconData
@@ -37,15 +48,17 @@ foreach ($DG in $DesktopGroups)
             {
             $app|add-member -NotePropertyName "FTA" -NotePropertyValue $ftatemp
             }
-            
-        $foundapps += $app
+          
+        $appobject += $app
         }
+     
     }
 
     $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid 
 
     if($desktops)
     {
+    
         foreach ($desktop in $desktops)
         {
            Write-Host "Processing $($desktop.PublishedName)"
@@ -53,10 +66,16 @@ foreach ($DG in $DesktopGroups)
            $desktop|add-member -NotePropertyName 'ResourceType' -NotePropertyValue "Desktop"
 
            $desktop|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $dg.Name
-       $foundapps += $desktop
+        $desktopobject += $desktop
         }
+    
     }
 
 }
 
-$foundapps|Export-Clixml -Path ($ExportFolder + "\XDEXPORT.xml")
+$xdout = New-Object PSCustomObject
+$xdout|Add-Member -NotePropertyName "admins" -NotePropertyValue (Get-AdminAdministrator -AdminAddress $xdhost)
+$xdout|Add-Member -NotePropertyName "dgs" -NotePropertyValue $DesktopGroups
+$xdout|Add-Member -NotePropertyName "apps" -NotePropertyValue $appobject
+$xdout|Add-Member -NotePropertyName "desktops" -NotePropertyValue $desktopobject
+$xdout|Export-Clixml -Path ($ExportFolder + "\XDEXPORT.xml")
