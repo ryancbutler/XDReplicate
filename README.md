@@ -3,7 +3,19 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 
 **PLEASE USE WITH CAUTION.  THIS WILL OVERWRITE SETTINGS ON IMPORT**
 
-## What is synced?
+## Requirments
+* PC\Server with Citrix Snapins installed
+* Admin access to XenDesktop site
+* PowerShell v3 or greater
+
+## Changelog
+* 01-16-2017: Initial release
+
+## XenDesktop Versions Tested
+* 7.11
+* 7.12
+
+## What is synced for XenDesktop?
 * Administrators
   * Accounts
   * Roles
