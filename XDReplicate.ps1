@@ -735,7 +735,7 @@ function import-xd ($xdhost, $xdexport)
 
                     if([string]::IsNullOrWhiteSpace($destination))
                     {
-                    $destination = $localhost
+                    $destination = "localhost"
                     }
                 
                 import-xd $destination (Import-Clixml $xmlpath)
