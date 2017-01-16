@@ -22,6 +22,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 * Delivery Groups
   * Settings
   * Users
+  * Tags
 * Desktops
   * Settings
   * User Restrictions
@@ -31,6 +32,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
   * Icon
   * File Type Associaton
   * Admin folders
+  * Tags
   
 ## What this doesn't sync?
 * Citrix Policy (use GPO)
@@ -39,7 +41,6 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 * App Disks
 * Zones
 * Scopes (Trying to think through this)
-* TAGS (coming soon)
 
 ## Usage
 
