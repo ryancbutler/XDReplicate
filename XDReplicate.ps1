@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
@@ -137,6 +137,8 @@ function export-xd ($xdhost)
     $xdout|Add-Member -NotePropertyName "dgs" -NotePropertyValue $DesktopGroups
     $xdout|Add-Member -NotePropertyName "apps" -NotePropertyValue $appobject
     $xdout|Add-Member -NotePropertyName "desktops" -NotePropertyValue $desktopobject
+    Write-Host "Processing Tags"
+    $xdout|Add-Member -NotePropertyName "tags" -NotePropertyValue (Get-BrokerTag -AdminAddress $xdhost -MaxRecordCount 2000)
 
     #Export to either variable or XML
     if($mode -like "export")
@@ -516,6 +518,23 @@ function import-xd ($xdhost, $xdexport)
     throw "Nothing to import"
     }
 
+    write-host "Proccessing Tags"
+    foreach($tag in $XDEXPORT.tags)
+    {  
+
+    $tagmatch = Get-BrokerTag -AdminAddress $xdhost -name $tag.name -ErrorAction SilentlyContinue
+        if($tagmatch -is [object])
+        {
+        write-host "Found TAG $($tag.name)"
+        }
+        else
+        {
+        write-host "Creating TAG $($tag.name)" -ForegroundColor Gray
+        New-BrokerTag -AdminAddress $xdhost -Name $tag.name -Description $tag.description|Out-Null
+        }
+    }
+    
+
     foreach($dg in $XDEXPORT.dgs)
     {
     write-host "Proccessing $($dg.name)"
@@ -541,15 +560,25 @@ function import-xd ($xdhost, $xdexport)
             throw "Delivery group failed. $($_.Exception.Message)"
             }
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
-    
-        }
-
+        
         if($dg.prelaunch -is [object])
         {
         write-host "Setting pre-launch" -ForegroundColor Gray
         Remove-BrokerSessionPreLaunch -AdminAddress $xdhost -DesktopGroupName $dg.Name -ErrorAction SilentlyContinue
         $dg.PreLaunch|New-BrokerSessionPreLaunch -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
 
+        }
+
+        }
+        
+
+        if(-not([string]::IsNullOrWhiteSpace($dg.tags)))
+        {
+            foreach ($tag in $dg.tags)
+            {
+            write-host "Adding TAG $tag" -ForegroundColor gray
+            add-brokertag -Name $tag -AdminAddress $xdhost -DesktopGroup $dgmatch.name
+            }
         }
     
         $desktops = $XDEXPORT.desktops|where{$_.DGNAME -eq $dg.name}
@@ -570,7 +599,7 @@ function import-xd ($xdhost, $xdexport)
                     else
                     {
                     Write-host "Creating Desktop" -ForegroundColor Green
-                    $newdesktop = $desktop|New-BrokerEntitlementPolicyRule -DesktopGroupUid $dgmatch.Uid
+                    $desktopmatch = $desktop|New-BrokerEntitlementPolicyRule -DesktopGroupUid $dgmatch.Uid
                     set-userperms $desktop $xdhost
                     }
 
@@ -630,11 +659,12 @@ function import-xd ($xdhost, $xdexport)
                     }
                     $makeapp = clean-newappobject $app
                     
-                    $newapp = $makeapp|New-BrokerApplication -AdminAddress $xdhost -DesktopGroup $dgmatch.Name
-                   
+                    $appmatch = $makeapp|New-BrokerApplication -AdminAddress $xdhost -DesktopGroup $dgmatch.Name
+                  
                     $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                     $newapp|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
                     set-UserPerms $makeapp $xdhost
+                    
                     if($app.FTA)
                     {
                         foreach ($fta in $app.FTA)
@@ -643,11 +673,21 @@ function import-xd ($xdhost, $xdexport)
                         }
                     }
                     }
-                }
-            }
 
-    
-    
+                  
+                    if(-not([string]::IsNullOrWhiteSpace($app.tags)))
+                    {
+                     foreach ($tag in $app.tags)
+                     {
+                       write-host "Adding TAG $tag" -ForegroundColor gray
+                       add-brokertag -Name $tag -AdminAddress $xdhost -Application $appmatch.name
+                     }
+                    }
+
+                }
+ 
+            }  
+  
     }
 
     $currentscopes = Get-AdminScope -AdminAddress $xdhost
@@ -708,7 +748,9 @@ function import-xd ($xdhost, $xdexport)
 
     }
 
+
 }
+
 
 
 #Start process
