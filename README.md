@@ -33,7 +33,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
   * Admin folders
   
 ## What this doesn't sync?
-* Citrix Policy
+* Citrix Policy (use GPO)
 * Machine Catalogs
 * Hypervisor connections
 * App Disks
