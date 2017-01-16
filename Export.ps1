@@ -7,7 +7,6 @@ $xdhost = "localhost"
 
 if($tag)
 {
-write-host HERE
 $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag
 }
 else
@@ -22,6 +21,7 @@ foreach ($DG in $DesktopGroups)
 {
     write-host $DG.Name
     $dg|add-member -NotePropertyName 'AccessPolicyRule' -NotePropertyValue (Get-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid)
+    $dg|add-member -NotePropertyName 'PreLaunch' -NotePropertyValue (Get-BrokerSessionPreLaunch -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue )
     $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID
     
     if($apps -is [object])
@@ -74,6 +74,8 @@ foreach ($DG in $DesktopGroups)
 
 $xdout = New-Object PSCustomObject
 $xdout|Add-Member -NotePropertyName "admins" -NotePropertyValue (Get-AdminAdministrator -AdminAddress $xdhost)
+$xdout|Add-Member -NotePropertyName "adminscopes" -NotePropertyValue (Get-AdminScope -AdminAddress $xdhost|where{$_.BuiltIn -eq $false})
+$xdout|Add-Member -NotePropertyName "adminroles" -NotePropertyValue (Get-AdminRole -AdminAddress $xdhost|where{$_.BuiltIn -eq $false})
 $xdout|Add-Member -NotePropertyName "dgs" -NotePropertyValue $DesktopGroups
 $xdout|Add-Member -NotePropertyName "apps" -NotePropertyValue $appobject
 $xdout|Add-Member -NotePropertyName "desktops" -NotePropertyValue $desktopobject

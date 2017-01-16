@@ -57,11 +57,11 @@ function export-xd ($xdhost)
 
     if(-not ([string]::IsNullOrWhiteSpace($tag)))
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag -MaxRecordCount 2000
     }
     else
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -MaxRecordCount 2000
     }
 
     if(!($DesktopGroups -is [object]))
@@ -77,11 +77,11 @@ function export-xd ($xdhost)
     foreach ($DG in $DesktopGroups)
     {
         write-host $DG.Name
-        $dg|add-member -NotePropertyName 'AccessPolicyRule' -NotePropertyValue (Get-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid)
-        $dg|add-member -NotePropertyName 'PreLaunch' -NotePropertyValue (Get-BrokerSessionPreLaunch -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue )
+        $dg|add-member -NotePropertyName 'AccessPolicyRule' -NotePropertyValue (Get-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount 2000)
+        $dg|add-member -NotePropertyName 'PreLaunch' -NotePropertyValue (Get-BrokerSessionPreLaunch -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue)
         
-        #Grabs APP info
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID    
+        #Grabs APP inf
+        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000
         if($apps -is [object])
         {   
             foreach ($app in $apps)
@@ -110,7 +110,7 @@ function export-xd ($xdhost)
         }
     
     #Grabs Desktop info
-    $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid 
+    $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount 2000
     if($desktops -is [object])
     {
     
@@ -719,11 +719,11 @@ function import-xd ($xdhost, $xdexport)
 #Start process
         switch ($mode)
             {
-                "both"{
+               "both"{
                     if([string]::IsNullOrWhiteSpace($destination))
                     {
                     throw "Must have destination DDC set"
-                }
+                    }
                 $xdexport = export-xd $source $tag
                 import-xd $destination $xdexport
                 }
@@ -732,13 +732,19 @@ function import-xd ($xdhost, $xdexport)
                     {
                     throw "Must XMLPATH set"
                     }
+
+                    if([string]::IsNullOrWhiteSpace($destination))
+                    {
+                    $destination = $localhost
+                    }
+                
                 import-xd $destination (Import-Clixml $xmlpath)
                 }
                 "export"{
                     if([string]::IsNullOrWhiteSpace($XMLPATH))
                     {
                     throw "Must have XMLPATH set"
-                }
+                    }
                 export-xd $source $tag
                 }
             }
