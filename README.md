@@ -47,6 +47,10 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 Exports data from localhost and exports to C:\temp\my.xml
 
 ```.\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml"```
+
+Exports data and delivery groups that are tagged with "replicate" from localhost and exports to C:\temp\my.xml
+
+```.\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml" -tag "replicate"```
    
 Imports data from C:\temp\my.xml and imports to localhost
 
