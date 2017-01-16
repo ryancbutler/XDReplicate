@@ -23,7 +23,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
   * Settings
   * Users
   * Tags
-* Desktops
+* Published Desktops
   * Settings
   * User Restrictions
 * Published Applications
