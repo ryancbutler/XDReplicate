@@ -439,10 +439,44 @@ $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.NAME -ErrorAct
     
 }
 
+$currentscopes = Get-AdminScope -AdminAddress $xdhost
+write-host "Checking Admin scopes"
+foreach ($scope in $XDEXPORT.adminscopes)
+{
+    $scopematch = get-adminscope -AdminAddress $xdhost -Name $scope.Name -ErrorAction SilentlyContinue
+    if ($scopematch -is [object])
+    {
+    write-hsot "Found $($scope.Name)"
+    }
+    else
+    {
+    write-host "Adding $($scope.name)" -foreground green
+    ## TO DO
+    #New-AdminScope -AdminAddress $xdhost -Name $scope.Name
+
+    }
+
+}
+
+$currentroles = Get-AdminPermission -AdminAddress $xdhost
+write-host "Checking Admin Roles"
+foreach ($role in $XDEXPORT.adminroles)
+{
+    $rolematch = Get-AdminRole -AdminAddress $xdhost -Name $role.name -ErrorAction SilentlyContinue
+    if ($rolematch -is [object])
+    {
+    write-host "Found $($role.Name)"
+    }
+    else
+    {
+    write-host "Adding $($role.name)" -foreground green
+    New-AdminRole -AdminAddress $xdhost -Description $role.Description -Name $role.Name|out-null
+    Add-AdminPermission -AdminAddress $xdhost -Permission $role.Permissions -Role $role.name|out-null
+    }
+}
+
 
 $currentadmins = Get-AdminAdministrator -AdminAddress $xdhost
-$adds = @()
-$found = 0
 write-host "Checking admins"
 foreach ($admin in $XDEXPORT.admins)
 {
@@ -450,14 +484,14 @@ foreach ($admin in $XDEXPORT.admins)
     $adminmatch = Get-AdminAdministrator -Sid $admin.Sid -AdminAddress $xdhost -ErrorAction SilentlyContinue
     if ($adminmatch -is [object])
     {
-    write-host $admin.Name
+    write-host "Found $($admin.Name)"
     }
     else
     {
-    write-host "Adding $($admin.Name)"
-    New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid
+    write-host "Adding $($admin.Name)" -ForegroundColor Green
+    New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid|out-null
     $rights = $admin.Rights -split ":"
-    Add-AdminRight -Administrator $admin.name -scope $rights[1] -Role $rights[0]
+    Add-AdminRight -Administrator $admin.name -scope $rights[1] -Role $rights[0]|out-null
 
     }
 
