@@ -1,29 +1,72 @@
-﻿CLS
+﻿<#
+.SYNOPSIS
+   Exports XenDesktop 7.x site information and imports to another Site
+.DESCRIPTION
+   Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
+   Version: 1.0
+   By: Ryan Butler 01-16-17
+.NOTES 
+   Twitter: ryan_c_butler
+   Website: Techdrabble.com
+   Requires: Powershell v3 or greater and Citrix snapins
+.LINK
+   https://github.com/ryancbutler/XDReplicate
+.PARAMETER SOURCE
+   XenDesktop DDC source hostname to import (Default: localhost)
+.PARAMETER DESTINATION
+   XenDesktop DDC destination hostname to export
+.PARAMETER MODE
+   Export: Exports to XML file (must have XMLPATH set)
+   Import: Import from XML file (must have XMLPATH set)
+   BOTH: Exports and imports in the same run (must have DESTINATION set)
+.PARAMETER XMLPATH
+   Path used for XML file location on import and export operations
+.PARAMETER TAG
+   Only export delivery groups with specified tag
+.EXAMPLE
+   .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM
+   Exports data from localhost and imports on DDC02.DOMAIN.COM
+.EXAMPLE
+   .\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml"
+   Exports data from localhost and exports to C:\temp\my.xml
+.EXAMPLE
+   .\XDReplicate.ps1 -mode import -XMLPATH "C:\temp\my.xml"
+   Imports data from C:\temp\my.xml and imports to localhost
+#>
+Param
+(
+    [Parameter(Position=0,Mandatory=$true)]
+    [ValidateSet('import','export','both')]
+    [string]$mode,
+    [String]$source="localhost",
+    [String]$destination,
+    [String]$xmlpath,
+    [String]$tag = ""
+)
+CLS
 Add-PSSnapin citrix*
-$ExportPath = "C:\temp\XDEXPORT.xml"
-$tag = "replicate"
-$source = "ctxxdc01"
-$mode = "both"
-$destination = "CTX-DDC-TST"
 
 
 function export-xd ($xdhost)
 {
     #Need path for XML while in EXPORT
-    if($mode -like "export" -and ([string]::IsNullOrWhiteSpace($exportpath)))
+    if($mode -like "export" -and ([string]::IsNullOrWhiteSpace($XMLPath)))
     {
     throw "Must Set Export Path while mode is set to EXPORT"
     }
 
     if(-not ([string]::IsNullOrWhiteSpace($tag)))
     {
-    Write-Host HERE
     $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag
     }
     else
     {
-    write-host THERE
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost
+    }
+
+    if(!($DesktopGroups -is [object]))
+    {
+    throw "NO DELIVERY GROUPS FOUND"
     }
 
     #Create Empty arrays
@@ -98,7 +141,8 @@ function export-xd ($xdhost)
     #Export to either variable or XML
     if($mode -like "export")
     {
-    $xdout|Export-Clixml -Path ($exportpath)
+    write-host "Writing to $($XMLPath)" -ForegroundColor Green
+    $xdout|Export-Clixml -Path ($XMLPath)
     }
     else
     {
@@ -474,7 +518,7 @@ function import-xd ($xdhost, $xdexport)
 
     if($mode -like "import")
     {
-    $XDEXPORT = Import-Clixml $ExportPath
+    $XDEXPORT = Import-Clixml $XMLPath
     }
 
     foreach($dg in $XDEXPORT.dgs)
@@ -598,7 +642,6 @@ function import-xd ($xdhost, $xdexport)
                     set-UserPerms $makeapp $xdhost
                     if($app.FTA)
                     {
-                    write-host HERE -ForegroundColor Yellow
                         foreach ($fta in $app.FTA)
                         {
                         clean-FTAobject $fta|New-BrokerConfiguredFTA -ApplicationUid $newapp.Uid
@@ -673,5 +716,29 @@ function import-xd ($xdhost, $xdexport)
 }
 
 
-$xdexport = export-xd $source
-import-xd $destination $xdexport
+#Start process
+        switch ($mode)
+            {
+                "both"{
+                    if([string]::IsNullOrWhiteSpace($destination))
+                    {
+                    throw "Must have destination DDC set"
+                }
+                $xdexport = export-xd $source $tag
+                import-xd $destination $xdexport
+                }
+                "import"{
+                    if([string]::IsNullOrWhiteSpace($XMLPATH))
+                    {
+                    throw "Must XMLPATH set"
+                    }
+                import-xd $destination (Import-Clixml $xmlpath)
+                }
+                "export"{
+                    if([string]::IsNullOrWhiteSpace($XMLPATH))
+                    {
+                    throw "Must have XMLPATH set"
+                }
+                export-xd $source $tag
+                }
+            }
