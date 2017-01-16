@@ -516,11 +516,6 @@ function import-xd ($xdhost, $xdexport)
     throw "Nothing to import"
     }
 
-    if($mode -like "import")
-    {
-    $XDEXPORT = Import-Clixml $XMLPath
-    }
-
     foreach($dg in $XDEXPORT.dgs)
     {
     write-host "Proccessing $($dg.name)"
