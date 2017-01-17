@@ -1,4 +1,4 @@
-# XenDesktop 7 Export and Import Utility
+# XenDesktop 7 Site Export and Import Script
 Exports XenDesktop 7.x site information and imports to another 'Site' via remote command or XML file.
 
 **PLEASE USE WITH CAUTION.  THIS WILL OVERWRITE SETTINGS ON IMPORT**
