@@ -15,7 +15,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 * 7.11
 * 7.12
 
-## What is synced for XenDesktop?
+## What is copied for XenDesktop?
 * Administrators
   * Accounts
   * Roles
@@ -34,7 +34,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
   * Admin folders
   * Tags
   
-## What this doesn't sync?
+## What this doesn't copy?
 * Citrix Policy (use GPO)
 * Machine Catalogs
 * Hypervisor connections
