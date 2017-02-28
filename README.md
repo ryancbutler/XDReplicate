@@ -96,7 +96,7 @@ Keep PVS vDisk versioning consistent across multiple PVS sites and additional PV
 * Remove any unneeded vDisk versions
 
 ### What this doesn't perform?
-* imports missing vDisks
+* Imports missing vDisks
 
 ### Usage
 
