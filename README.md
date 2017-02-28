@@ -1,4 +1,5 @@
 # XenDesktop and PVS Export and Import Scripts
+Scripts to replicate XenDesktop or Provisioning Services information to additonal locations.  Can be used to quickly keep additonal sites or environments in sync.
 
 ## XenDesktop 7 Site Export and Import Script
 Exports XenDesktop 7.x site information and imports to another 'Site' via remote command or XML file.
