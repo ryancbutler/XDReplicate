@@ -77,7 +77,7 @@ Keep PVS vDisk versioning consistent across multiple PVS sites and additional PV
 **PLEASE USE WITH CAUTION.  THIS WILL OVERWRITE SETTINGS ON IMPORT**
 
 ### Requirements
-* PC\Server with Citrix PVS Console installed
+* PC\Server with Citrix PVS Console 7.7 or greater installed
 * Admin access to PVS farm
 * PowerShell v3 or greater
 * PassThru is used for all PVS server authentication
