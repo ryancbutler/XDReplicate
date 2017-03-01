@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-   Keep PVS vDisk versioning consistent across multiple PVS sites and additional PVS farms
+   Keep PVS vDisks and versioning consistent across multiple PVS sites and additional PVS farms
 .DESCRIPTION
-   Checks for vDisk versioning and will export XML if required.  Script will then robocopy all vDisk files out to all PVS servers.  Once copied script will import and set versioning to match local server.
-   Version: 1.0
+   Checks for vDisks and versioning and will export XML if required.  Script will then robocopy all vDisk files out to all PVS servers.  Once copied script will import and set versioning to match local server.
+   Version: 1.1
    By: Ryan Butler 02-28-17
 .NOTES
    Twitter: ryan_c_butler
@@ -16,36 +16,53 @@
    PVS Server hostnames that have access to additonal farms.
 .PARAMETER StorePath
    Local Disk Store Path (same path must exist on all servers)
+.PARAMETER NoCopy
+    Doesn't copy any files to other servers.
 .EXAMPLE
    .\PVSReplicate.ps1 -StorePath "E:\teststore"
-   Copies and imports disk versions to all PVS farm servers accessible via localhost and uses the vDisk store at "E:\teststore" for each server.
+   Copies and imports disks and versions to all PVS farm servers accessible via localhost and uses the vDisk store at "E:\teststore" for robocopy.
 .EXAMPLE
    .\PVSReplicate.ps1 -StorePath "E:\teststore" -PVSServers "PVSFARM01","PVSFARM02"
-   Copies and imports disk versions to all PVS farm servers accessible via localhost, PVSFARM01, PVSFARM02 and uses the vDisk store at "E:\teststore" for each server.
+   Copies and imports disks and versions to all PVS farm servers accessible via localhost, PVSFARM01, PVSFARM02 and uses the vDisk store at "E:\teststore" for robocopy.
+.EXAMPLE
+   .\PVSReplicate.ps1 -StorePath "E:\teststore","E:\teststore2" -PVSServers "PVSFARM01","PVSFARM02"
+   Copies and imports disk versions to all PVS farm servers accessible via localhost, PVSFARM01, PVSFARM02 and uses the vDisk store at "E:\teststore" and "E:\teststore2" for robocopy.
+.EXAMPLE
+   .\PVSReplicate.ps1 -nocopy
+   Imports disks and versions on all PVS farm servers accessible via localhost for each server.  Does not perform any robocopy
 #>
 Param
 (
     [array]$PVSServers,
-    [Parameter(mandatory=$true)][string]$storepath
+    [array]$storepaths,
+    [switch]$nocopy
 
 )
 
+
+if(!$nocopy -and ([string]::IsNullOrWhiteSpace($storepaths)))
+{
+    throw "Need Store Path! Otherwise run with -nocopy switch"
+    break
+}
+
+if($nocopy -and -not ([string]::IsNullOrWhiteSpace($storepaths)))
+{
+    throw "-nocopy switch does need storepath"
+    break
+}
+
+
 import-module "C:\Program Files\Citrix\Provisioning Services Console\Citrix.PVS.SnapIn.dll"
 CLS
-
 #Builds server array
 $adminservers = @($env:computername)
 if($PVSServers.Count -gt 0)
 {
     $adminservers += $PVSServers
 }
-
-
-$localstorepath = $storepath
-
-
 #Uses robocopy to mirror local disk store
-function copy-vhds {
+function copy-vhds ($localstorepath) {
     $pvsservers = Get-PvsServer|where{$_.name -ne $env:computername}
 
     foreach ($pvsserver in $pvsservers)
@@ -64,7 +81,6 @@ function copy-vhds {
 
     }
 }
-
 #Checks through disks and exports XML if a new version exists or override present
 function export-alldisks {
     Set-PvsConnection -Server $env:computername -PassThru|out-null
@@ -88,7 +104,6 @@ function export-alldisks {
                         $diskxml.Load($xmlpath)
                         $xmlversion = ($diskxml.versionManifest.version|Sort-Object versionnumber -Descending|select -First 1).versionnumber
                         $overridexml = ($diskxml.versionManifest.version|where{$_.access -eq 3}).versionnumber
-
                             if($diskinfo.DiskLocatorId)
                             {
                             $diskversion = ($diskinfo|Get-PvsDiskVersion|where{$_.CanPromote -eq $false}|Sort-Object version -Descending|select -First 1).version
@@ -104,9 +119,7 @@ function export-alldisks {
                                 {
                                 write-host "Versions match." -ForegroundColor Green
                                 }
-
                             }
-
                         }
                         else
                         {
@@ -114,12 +127,8 @@ function export-alldisks {
                         $diskinfo|Export-PvsDisk
                         }
                 }
-
         }
-
-
 }
-
 #Checks through imported disks and checks for new versions or overrides
 function import-versions {
     $pvssites = get-pvssite
@@ -143,10 +152,8 @@ function import-versions {
                         $diskxml.Load($xmlpath)
                         $xmlversion = ($diskxml.versionManifest.version|Sort-Object versionnumber -Descending|select -First 1).versionnumber
                         $overridexml = ($diskxml.versionManifest.version|where{$_.access -eq 3}).versionnumber
-
                             if($diskinfo.DiskLocatorId)
                             {
-
                             $diskversion = ($diskinfo|Get-PvsDiskVersion|where{$_.CanPromote -eq $false}|Sort-Object version -Descending|select -First 1).version
                             $overridedisk = ($diskinfo|Get-PvsDiskVersion|where{$_.Access -eq 3}).version
                             write-host "Disk Version: $($diskversion) XMLVersion: $($xmlversion)"
@@ -193,10 +200,78 @@ function import-versions {
                              }
                         }
                 }
-
         }
     }
+}
 
+function test-pvsdisk ($site,$store,$name) {
+    try {
+    $disk = Get-PvsDiskLocator -SiteName $site -StoreName $store -DiskLocatorName $name
+    }
+    catch
+    {
+        return $false
+        break
+    }
+return $disk
+}
+
+function test-pvsvhdx ($xmlfile) {
+
+$xmldisk = New-Object System.Xml.XmlDocument
+$xmldisk.Load($xmlfile.FullName)
+$found = $xmldisk.versionManifest.version|where{$_.diskfilename -like "*.vhdx"}
+    if($found)
+    {
+    return $true
+    }
+    else
+    {
+    return $false
+    }
+}
+
+function import-vdisks {
+    $pvssites = get-pvssite
+    foreach($pvssite in $pvssites)
+    {
+        write-host "Checking Site: $($pvssite.Name)" -ForegroundColor Yellow
+        $stores = Get-PvsStore|where{$_.SiteName -eq $pvssite.Name}
+        foreach ($store in $stores)
+        {
+        write-host "Checking Store: $($store.Name)" -ForegroundColor Yellow
+        $testpath = "\\" + $pvssite.DiskUpdateServerName + "\" + (($store.Path).Replace(":",'$')) + "\"
+            if (test-path $testpath)
+            {
+            $xmls = Get-childitem -Path $testpath -Filter *.xml
+                foreach($xml in $xmls)
+                {
+
+                    $disk = test-pvsdisk -site $pvssite.Name -store $store.Name -DiskLocatorName -name $xml.baseName
+                        if($disk)
+                        {
+                        write-host "$($disk.Name) already present"
+                        }
+                        else
+                        {
+                        write-host "Importing $($xml.baseName)" -ForegroundColor Gray
+                            if(test-pvsvhdx $xml)
+                            {
+                            write-host "VHDX found"
+                            Import-PvsDisk -Name $xml.BaseName -SiteName $pvssite.Name -StoreName $store.Name -VHDX|Out-Null
+                            }
+                            else
+                            {
+                            write-host "VHD Found"
+                            Import-PvsDisk -Name $xml.BaseName -SiteName $pvssite.Name -StoreName $store.Name|Out-Null
+                            }
+
+                        }
+                }
+
+            }
+        }
+    }
 }
 
 #call script functions here
@@ -209,7 +284,15 @@ foreach ($adminserver in $adminservers)
     if(Test-Connection $adminserver -Quiet -Count 2)
     {
     Set-PvsConnection -Server $adminserver -PassThru|out-null
-    copy-vhds
+        if(!$nocopy)
+        {
+            foreach($storepath in $storepaths)
+            {
+            write-host "Copying out $($storepath)" -ForegroundColor Yellow
+            copy-vhds $storepath
+            }
+        }
+    import-vdisks
     import-versions
     }
     else
