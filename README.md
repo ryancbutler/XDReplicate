@@ -115,6 +115,10 @@ Keep PVS vDisk versioning consistent across multiple PVS sites and additional PV
 - vDisk override versions set to all sites
 - Remove any unneeded vDisk versions
 
+### What this doesn't do?
+
+- Delete non-used vDisks
+
 ### Usage
 
 Copies and imports disks and versions to all PVS farm servers accessible via localhost and uses the vDisk store at "E:\teststore" for robocopy.

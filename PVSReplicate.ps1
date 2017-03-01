@@ -110,7 +110,8 @@ function export-alldisks {
                             $overridedisk = ($diskinfo|Get-PvsDiskVersion|where{$_.Access -eq 3}).version
                             write-host "Disk Version: $($diskversion) XMLVersion: $($xmlversion)"
                             Write-host "Selected Version: $($overridedisk) XMLOverride: $($overridexml)"
-                                if($diskversion -ne $xmlversion -or $overridedisk -ne $overridexml )
+                            write-host "$([string]::IsNullOrWhiteSpace($diskxml.versionManifest.startingVersion))" -ForegroundColor DarkMagenta
+                                if($diskversion -ne $xmlversion -or $overridedisk -ne $overridexml -or ([string]::IsNullOrWhiteSpace($diskxml.versionManifest.startingVersion)))
                                 {
                                 write-host "Exporting vdisk" -ForegroundColor gray
                                 $diskinfo|Export-PvsDisk -Version $diskversion
@@ -158,7 +159,7 @@ function import-versions {
                             $overridedisk = ($diskinfo|Get-PvsDiskVersion|where{$_.Access -eq 3}).version
                             write-host "Disk Version: $($diskversion) XMLVersion: $($xmlversion)"
                             Write-host "Disk Selected Version: $($overridedisk) XMLOverride: $($overridexml)"
-                                if($diskversion -lt $xmlversion)
+                                if($diskversion -lt $xmlversion -AND -not ([string]::IsNullOrWhiteSpace($diskxml.versionManifest.startingVersion)))
                                 {
                                 write-host "Importing new version(s)" -ForegroundColor DarkGray|Sort-Object version -Descending
                                 $diskinfo|Add-PvsDiskVersion
@@ -231,6 +232,21 @@ $found = $xmldisk.versionManifest.version|where{$_.diskfilename -like "*.vhdx"}
     }
 }
 
+function test-private ($xmlfile) {
+
+$xmldisk = New-Object System.Xml.XmlDocument
+$xmldisk.Load($xmlfile.FullName)
+$found = ([string]::IsNullOrWhiteSpace($xmldisk.versionManifest.startingVersion))
+    if($found)
+    {
+    return $true
+    }
+    else
+    {
+    return $false
+    }
+}
+
 function import-vdisks {
     $pvssites = get-pvssite
     foreach($pvssite in $pvssites)
@@ -248,9 +264,9 @@ function import-vdisks {
                 {
 
                     $disk = test-pvsdisk -site $pvssite.Name -store $store.Name -DiskLocatorName -name $xml.baseName
-                        if($disk)
+                        if($disk -ne $false -or (test-private $xml) -eq $true)
                         {
-                        write-host "$($disk.Name) already present"
+                        write-host "$($xml.baseName) already present or in private mode" -ForegroundColor Green
                         }
                         else
                         {
