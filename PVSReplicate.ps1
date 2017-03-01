@@ -110,7 +110,6 @@ function export-alldisks {
                             $overridedisk = ($diskinfo|Get-PvsDiskVersion|where{$_.Access -eq 3}).version
                             write-host "Disk Version: $($diskversion) XMLVersion: $($xmlversion)"
                             Write-host "Selected Version: $($overridedisk) XMLOverride: $($overridexml)"
-                            write-host "$([string]::IsNullOrWhiteSpace($diskxml.versionManifest.startingVersion))" -ForegroundColor DarkMagenta
                                 if($diskversion -ne $xmlversion -or $overridedisk -ne $overridexml -or ([string]::IsNullOrWhiteSpace($diskxml.versionManifest.startingVersion)))
                                 {
                                 write-host "Exporting vdisk" -ForegroundColor gray
