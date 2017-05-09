@@ -102,6 +102,7 @@ Keep PVS vDisk versioning consistent across multiple PVS sites and additional PV
 ### Changelog
 
 - 02-28-2017: Initial release
+- 05-09-2017: Added "Site" option to only replicate specific site.
 
 ### PVS Versions Tested
 
@@ -111,8 +112,8 @@ Keep PVS vDisk versioning consistent across multiple PVS sites and additional PV
 
 - vDisk information is copied to all farm servers utilizing robocopy
 - Imports missing vDisks
-- vDisk versions are imported to all sites
-- vDisk override versions set to all sites
+- vDisk versions are imported to all or specific sites
+- vDisk override versions set to all or specific sites
 - Remove any unneeded vDisk versions
 
 ### What this doesn't do?
@@ -133,6 +134,10 @@ Copies and imports disk versions to all PVS farm servers accessible via localhos
 
 `.\PVSReplicate.ps1 -StorePath "E:\teststore","E:\teststore2" -PVSServers "PVSFARM01","PVSFARM02"`
 
+Copies and imports disks and versions to all PVS farm servers in 'General' site accessible via localhost, PVSFARM01, PVSFARM02 and uses the vDisk store at "E:\teststore" for robocopy.
+
+`.\PVSReplicate.ps1 -StorePath "E:\teststore" -PVSServers "PVSFARM01","PVSFARM02" -Site "General"`
+   
 Imports disks and versions on all PVS farm servers accessible via localhost for each server. Does not perform any robocopy
 
 `.\PVSReplicate.ps1 -nocopy`
