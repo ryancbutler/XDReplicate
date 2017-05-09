@@ -3,8 +3,9 @@
    Keep PVS vDisks and versioning consistent across multiple PVS sites and additional PVS farms
 .DESCRIPTION
    Checks for vDisks and versioning and will export XML if required.  Script will then robocopy all vDisk files out to all PVS servers.  Once copied script will import and set versioning to match local server.
-   Version: 1.1
+   Version: 1.5
    By: Ryan Butler 02-28-17
+   Updated: 5-9-17
 .NOTES
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -25,6 +26,9 @@
    .\PVSReplicate.ps1 -StorePath "E:\teststore" -PVSServers "PVSFARM01","PVSFARM02"
    Copies and imports disks and versions to all PVS farm servers accessible via localhost, PVSFARM01, PVSFARM02 and uses the vDisk store at "E:\teststore" for robocopy.
 .EXAMPLE
+   .\PVSReplicate.ps1 -StorePath "E:\teststore" -PVSServers "PVSFARM01","PVSFARM02" -Site "General"
+   Copies and imports disks and versions to all PVS farm servers in 'General' site accessible via localhost, PVSFARM01, PVSFARM02 and uses the vDisk store at "E:\teststore" for robocopy.
+.EXAMPLE
    .\PVSReplicate.ps1 -StorePath "E:\teststore","E:\teststore2" -PVSServers "PVSFARM01","PVSFARM02"
    Copies and imports disk versions to all PVS farm servers accessible via localhost, PVSFARM01, PVSFARM02 and uses the vDisk store at "E:\teststore" and "E:\teststore2" for robocopy.
 .EXAMPLE
@@ -35,6 +39,7 @@ Param
 (
     [array]$PVSServers,
     [array]$storepaths,
+    [string]$site,
     [switch]$nocopy
 
 )
@@ -52,6 +57,10 @@ if($nocopy -and -not ([string]::IsNullOrWhiteSpace($storepaths)))
     break
 }
 
+if([string]::IsNullOrWhiteSpace($site))
+{
+    $site = $null
+}
 
 import-module "C:\Program Files\Citrix\Provisioning Services Console\Citrix.PVS.SnapIn.dll"
 CLS
@@ -63,7 +72,14 @@ if($PVSServers.Count -gt 0)
 }
 #Uses robocopy to mirror local disk store
 function copy-vhds ($localstorepath) {
+    if($site -ne $null)
+    {
+    $pvsservers = Get-PvsServer -sitename $site|where{$_.name -ne $env:computername}
+    }
+    else
+    {
     $pvsservers = Get-PvsServer|where{$_.name -ne $env:computername}
+    }
 
     foreach ($pvsserver in $pvsservers)
     {
@@ -131,7 +147,15 @@ function export-alldisks {
 }
 #Checks through imported disks and checks for new versions or overrides
 function import-versions {
+    if($site -ne $null)
+    {
+    $pvssites = Get-PvsSite -SiteName $site
+    }
+    else
+    {
     $pvssites = get-pvssite
+    }
+    
     foreach($pvssite in $pvssites)
     {
         write-host "Checking Site: $($pvssite.Name)" -ForegroundColor Yellow
@@ -247,7 +271,15 @@ $found = ([string]::IsNullOrWhiteSpace($xmldisk.versionManifest.startingVersion)
 }
 
 function import-vdisks {
+    if($site -ne $null)
+    {
+    $pvssites = Get-PvsSite -SiteName $site
+    }
+    else
+    {
     $pvssites = get-pvssite
+    }
+
     foreach($pvssite in $pvssites)
     {
         write-host "Checking Site: $($pvssite.Name)" -ForegroundColor Yellow
