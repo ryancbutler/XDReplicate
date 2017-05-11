@@ -3,8 +3,9 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.0
+   Version: 1.1
    By: Ryan Butler 01-16-17
+   Updated: 05-11-17 Added LTSR Check and fix ICON creation
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -38,7 +39,7 @@ Param
     [Parameter(Position=0,Mandatory=$true)]
     [ValidateSet('import','export','both')]
     [string]$mode,
-    [String]$source="localhost",
+    [String]$source,
     [String]$destination,
     [String]$xmlpath,
     [String]$tag = ""
@@ -46,6 +47,22 @@ Param
 CLS
 Add-PSSnapin citrix*
 
+#Gets XD controller version
+function get-xdversion 
+{
+   $version = Get-BrokerController
+
+   if ($version.ControllerVersion -like "7.6*")
+   {
+    $foundver = "LTSR"
+   }
+   ELSE
+   {
+
+    $foundver = "CC"
+   }
+return $foundver
+} 
 
 function export-xd ($xdhost)
 {
@@ -108,21 +125,28 @@ function export-xd ($xdhost)
             $appobject += $app
             }    
         }
-    
+    if((get-xdversion) -like "CC")
+    {
     #Grabs Desktop info
     $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount 2000
-    if($desktops -is [object])
-    {
-    
-        foreach ($desktop in $desktops)
+        if($desktops -is [object])
         {
-        Write-Host "Processing $($desktop.PublishedName)"
-        #Adds delivery group name to object
-        $desktop|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $dg.Name
-        $desktopobject += $desktop
-        }
     
+            foreach ($desktop in $desktops)
+            {
+            Write-Host "Processing $($desktop.PublishedName)"
+            #Adds delivery group name to object
+            $desktop|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $dg.Name
+            $desktopobject += $desktop
+            }
+    
+        }
     }
+    ELSE
+    {
+    write-host "LTSR FOUND SKIPPING DESKTOPS..." -ForegroundColor Yellow
+    }
+
 
 }
 
@@ -152,6 +176,7 @@ function export-xd ($xdhost)
     }
 
 }
+
 
 function check-BrokerAdminFolder ($folder)
 {
@@ -247,7 +272,7 @@ foreach($t in $app.PSObject.Properties)
             switch ($t.name)
             {
                 "ClientFolder" {$tempstring = " -ClientFolder `"$($t.value)`""}
-                "CommandLineArguments" {$tempstring = " -CommandLineArguments $($t.value)"}
+                "CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`""}
                 "CommandLineExecutable" {$tempstring = " -CommandLineExecutable `"$($t.value)`""}
                 "CpuPriorityLevel" {$tempstring = " -CpuPriorityLevel `"$($t.value)`""}
                 "Description" {$tempstring = " -Description `"$($t.value)`""}
@@ -583,8 +608,11 @@ function import-xd ($xdhost, $xdexport)
     
         $desktops = $XDEXPORT.desktops|where{$_.DGNAME -eq $dg.name}
 
-            if($desktops)
+            if((get-xdversion) -like "CC")
             {
+            write-host "HERE" -ForegroundColor DarkGreen
+                if($desktops)
+                {
                 foreach ($desktop in $desktops)
                 {
                 write-host "Proccessing Desktop $($desktop.name)"
@@ -604,6 +632,11 @@ function import-xd ($xdhost, $xdexport)
                     }
 
                 }
+            }
+            }
+            ELSE
+            {
+            write-host "LTSR FOUND SKIPPING DESKTOPS..." -ForegroundColor Yellow
             }
         $apps = $XDEXPORT.apps|where{$_.DGNAME -eq $dg.name}
         
@@ -662,7 +695,7 @@ function import-xd ($xdhost, $xdexport)
                     $appmatch = $makeapp|New-BrokerApplication -AdminAddress $xdhost -DesktopGroup $dgmatch.Name
                   
                     $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
-                    $newapp|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
+                    $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
                     set-UserPerms $makeapp $xdhost
                     
                     if($app.FTA)
