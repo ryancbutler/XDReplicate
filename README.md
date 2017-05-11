@@ -19,9 +19,11 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 ### Changelog
 
 - 01-16-2017: Initial release
+- 05-11-2017: Added check for LTSR and fixed ICON creation on new app creation
 
 ### XenDesktop Versions Tested
 
+- 7.6 (LTSR)
 - 7.11
 - 7.12
 
