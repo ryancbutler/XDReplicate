@@ -54,14 +54,15 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
   - Admin folders
   - Tags
 
-### What this doesn't copy?
+### What this doesn't process?
 
 - Citrix Policy (use GPO)
 - Machine Catalogs
 - Hypervisor connections
 - App Disks
 - Zones
-- Scopes (Trying to think through this)
+- Scopes
+- Removes Administrators
 
 ### Usage
 
