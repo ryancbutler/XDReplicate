@@ -3,9 +3,10 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.1
+   Version: 1.2
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
+            05-12-17 Bug fixes
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -125,8 +126,8 @@ function export-xd ($xdhost)
             $appobject += $app
             }    
         }
-    if((get-xdversion) -like "CC")
-    {
+    
+
     #Grabs Desktop info
     $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount 2000
         if($desktops -is [object])
@@ -134,18 +135,14 @@ function export-xd ($xdhost)
     
             foreach ($desktop in $desktops)
             {
-            Write-Host "Processing $($desktop.PublishedName)"
+            Write-Host "Processing $($desktop.Name)"
             #Adds delivery group name to object
             $desktop|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $dg.Name
             $desktopobject += $desktop
             }
     
         }
-    }
-    ELSE
-    {
-    write-host "LTSR FOUND SKIPPING DESKTOPS..." -ForegroundColor Yellow
-    }
+    #}
 
 
 }
@@ -309,7 +306,7 @@ foreach($t in $desktop.PSObject.Properties)
             switch ($t.name)
             {
                 "Name" {$tempstring = " -name `"$($t.value)`""}
-                "ColorDepth" {$tempstring = " -Description `"$($t.value)`""}
+                "ColorDepth" {$tempstring = " -ColorDepth `"$($t.value)`""}
                 "Description" {$tempstring = " -Description `"$($t.value)`""}
                 "Enabled" {$tempstring = " -Enabled `$$($t.value)"}
                 "LeasingBehavior" {$tempstring = " -LeasingBehavior `"$($t.value)`""}
@@ -317,6 +314,36 @@ foreach($t in $desktop.PSObject.Properties)
                 "RestrictToTag" {$tempstring = " -RestrictToTag `"$($t.value)`""}
                 "SecureIcaRequired" {$tempstring = " -SecureIcaRequired `"$($t.value)`""}
                 "SessionReconnection" {$tempstring = " -SessionReconnection `"$($t.value)`""}
+               
+            }
+         $tempvardesktop = $tempvardesktop +  $tempstring
+         }
+    }
+return $tempvardesktop
+}
+
+function clean-NewDesktopobject ($desktop, $xdhost, $dguid)
+{
+$tempvardesktop = "New-BrokerEntitlementPolicyRule -adminaddress $($xdhost) -DesktopGroupUid $($dguid)"
+foreach($t in $desktop.PSObject.Properties)
+    {
+           
+        if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
+        {
+        $tempstring = ""
+            switch ($t.name)
+            {
+                "Name" {$tempstring = " -name `"$($t.value)`""}
+                "ColorDepth" {$tempstring = " -ColorDepth `"$($t.value)`""}
+                "Description" {$tempstring = " -Description `"$($t.value)`""}
+                "Enabled" {$tempstring = " -Enabled `$$($t.value)"}
+                "IncludedUserFilterEnabled" {$tempstring = " -IncludedUserFilterEnabled `$$($t.value)"}
+                "LeasingBehavior" {$tempstring = " -LeasingBehavior `"$($t.value)`""}
+                "PublishedName" {$tempstring = " -PublishedName `"$($t.value)`""}
+                "RestrictToTag" {$tempstring = " -RestrictToTag `"$($t.value)`""}
+                "SecureIcaRequired" {$tempstring = " -SecureIcaRequired `"$($t.value)`""}
+
+                #"SessionReconnection" {$tempstring = " -SessionReconnection `"$($t.value)`""} Fails for LTSR
                
             }
          $tempvardesktop = $tempvardesktop +  $tempstring
@@ -427,6 +454,7 @@ function set-UserPerms ($app, $xdhost)
 {
     if($app.ResourceType -eq "Desktop")
     {
+        
         if ($app.IncludedUserFilterEnabled)
         {
         Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddIncludedUsers $app.includedusers -Name $app.Name
@@ -464,6 +492,27 @@ if ($app.UserFilterEnabled)
              }
         }
     
+
+}
+
+function Check-AppEntitlement ($dg, $desktop, $xdhost) {
+
+    if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
+    {
+        if((Get-BrokerAppEntitlementPolicyRule -name $dg.Name -AdminAddress $xdhost -ErrorAction SilentlyContinue) -is [Object])
+        {
+        write-host "AppEntitlement already present"
+        }
+        ELSE
+        {
+        write-host "Creating AppEntitlement"
+        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $desktop.DesktopGroupUid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
+        }
+    }
+    else
+    {
+    write-host "No AppEntitlement needed"
+    }
 
 }
 
@@ -608,9 +657,7 @@ function import-xd ($xdhost, $xdexport)
     
         $desktops = $XDEXPORT.desktops|where{$_.DGNAME -eq $dg.name}
 
-            if((get-xdversion) -like "CC")
-            {
-            write-host "HERE" -ForegroundColor DarkGreen
+
                 if($desktops)
                 {
                 foreach ($desktop in $desktops)
@@ -623,21 +670,19 @@ function import-xd ($xdhost, $xdexport)
                     clean-Desktopobject $desktop $xdhost|invoke-expression
                     clear-DesktopUserPerms $desktopmatch $xdhost
                     set-userperms $desktop $xdhost
+                    Check-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
                     else
                     {
                     Write-host "Creating Desktop" -ForegroundColor Green
-                    $desktopmatch = $desktop|New-BrokerEntitlementPolicyRule -DesktopGroupUid $dgmatch.Uid
+                    $desktopmatch = clean-NewDesktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
                     set-userperms $desktop $xdhost
+                    Check-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
 
                 }
             }
-            }
-            ELSE
-            {
-            write-host "LTSR FOUND SKIPPING DESKTOPS..." -ForegroundColor Yellow
-            }
+
         $apps = $XDEXPORT.apps|where{$_.DGNAME -eq $dg.name}
         
             if($apps)
@@ -697,6 +742,7 @@ function import-xd ($xdhost, $xdexport)
                     $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                     $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
                     set-UserPerms $makeapp $xdhost
+                    #Rename-BrokerApplication -Name $appmatch.ApplicationName -NewName $appmatch.PublishedName -ErrorAction SilentlyContinue|out-null
                     
                     if($app.FTA)
                     {
@@ -818,3 +864,5 @@ function import-xd ($xdhost, $xdexport)
                 export-xd $source $tag
                 }
             }
+
+           
