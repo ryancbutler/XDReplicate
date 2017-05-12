@@ -495,7 +495,7 @@ if ($app.UserFilterEnabled)
 
 }
 
-function Check-AppEntitlement ($dg, $desktop, $xdhost) {
+function Check-AppEntitlement ($dg, $xdhost) {
 
     if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
     {
@@ -506,7 +506,7 @@ function Check-AppEntitlement ($dg, $desktop, $xdhost) {
         ELSE
         {
         write-host "Creating AppEntitlement"
-        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $desktop.DesktopGroupUid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
+        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $dg.Uid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
         }
     }
     else
@@ -621,6 +621,7 @@ function import-xd ($xdhost, $xdexport)
         clean-ExistingDeliveryGroupObject $dg $xdhost|Invoke-Expression
         Get-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid|remove-BrokerAccessPolicyRule
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid|Out-Null
+        Check-AppEntitlement $dgmatch $xdhost
         }
         else
         {
@@ -634,6 +635,7 @@ function import-xd ($xdhost, $xdexport)
             throw "Delivery group failed. $($_.Exception.Message)"
             }
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
+        Check-AppEntitlement $dgmatch $xdhost
         
         if($dg.prelaunch -is [object])
         {
@@ -670,14 +672,12 @@ function import-xd ($xdhost, $xdexport)
                     clean-Desktopobject $desktop $xdhost|invoke-expression
                     clear-DesktopUserPerms $desktopmatch $xdhost
                     set-userperms $desktop $xdhost
-                    Check-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
                     else
                     {
                     Write-host "Creating Desktop" -ForegroundColor Green
                     $desktopmatch = clean-NewDesktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
-                    set-userperms $desktop $xdhost
-                    Check-AppEntitlement $dgmatch $desktopmatch $xdhost
+                    set-userperms $desktop $xdhost                    
                     }
 
                 }
@@ -829,8 +829,6 @@ function import-xd ($xdhost, $xdexport)
 
 
 }
-
-
 
 #Start process
         switch ($mode)
