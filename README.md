@@ -21,6 +21,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 01-16-2017: Initial release
 - 05-11-2017: Added check for LTSR and fixed ICON creation on new app creation
 - 05-12-2017: bug fixes
+- 05-22-17: browsername in apps and permission fixes
 
 ### XenDesktop Versions Tested
 
