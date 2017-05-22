@@ -3,9 +3,10 @@
    Keep PVS vDisks and versioning consistent across multiple PVS sites and additional PVS farms
 .DESCRIPTION
    Checks for vDisks and versioning and will export XML if required.  Script will then robocopy all vDisk files out to all PVS servers.  Once copied script will import and set versioning to match local server.
-   Version: 1.5
+   Version: 1.5.1
    By: Ryan Butler 02-28-17
    Updated: 5-9-17
+   5-22-17 Error checking
 .NOTES
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -44,7 +45,7 @@ Param
 
 )
 
-
+#Argument checking
 if(!$nocopy -and ([string]::IsNullOrWhiteSpace($storepaths)))
 {
     throw "Need Store Path! Otherwise run with -nocopy switch"
@@ -62,25 +63,37 @@ if([string]::IsNullOrWhiteSpace($site))
     $site = $null
 }
 
+#Import PVS module
+try{
 import-module "C:\Program Files\Citrix\Provisioning Services Console\Citrix.PVS.SnapIn.dll"
-CLS
+}
+Catch
+{
+    throw "Error Importing PVS module"
+    break
+}
+
+Clear-Host
 #Builds server array
 $adminservers = @($env:computername)
 if($PVSServers.Count -gt 0)
 {
     $adminservers += $PVSServers
 }
+
 #Uses robocopy to mirror local disk store
 function copy-vhds ($localstorepath) {
     if($site -ne $null)
     {
-    $pvsservers = Get-PvsServer -sitename $site|where{$_.name -ne $env:computername}
+    $pvsservers = Get-PvsServer -sitename $site|where-object{$_.name -ne $env:computername}
     }
     else
     {
-    $pvsservers = Get-PvsServer|where{$_.name -ne $env:computername}
+    $pvsservers = Get-PvsServer|where-object{$_.name -ne $env:computername}
     }
 
+if($pvsservers.count)
+{
     foreach ($pvsserver in $pvsservers)
     {
         write-host $pvsserver.Name
@@ -97,13 +110,19 @@ function copy-vhds ($localstorepath) {
 
     }
 }
+else
+{
+write-host "No PVS servers bound to site" -ForegroundColor Red
+}
+}
+
 #Checks through disks and exports XML if a new version exists or override present
 function export-alldisks {
     Set-PvsConnection -Server $env:computername -PassThru|out-null
     $pvsserversite = Get-PvsServer -ServerName $env:computername
     $pvssite = get-pvssite -SiteName $pvsserversite.SiteName
         write-host "Checking Site: $($pvssite.Name)" -ForegroundColor Yellow
-        $stores = Get-PvsStore|where{$_.SiteName -eq $pvssite.Name}
+        $stores = Get-PvsStore|where-object{$_.SiteName -eq $pvssite.Name}
         foreach ($store in $stores)
         {
         write-host "Checking Store: $($store.Name)" -ForegroundColor Yellow
@@ -118,12 +137,12 @@ function export-alldisks {
                         write-host "XML FILE FOUND. Now Checking versions." -ForegroundColor yellow
                         $diskxml = New-Object System.Xml.XmlDocument
                         $diskxml.Load($xmlpath)
-                        $xmlversion = ($diskxml.versionManifest.version|Sort-Object versionnumber -Descending|select -First 1).versionnumber
-                        $overridexml = ($diskxml.versionManifest.version|where{$_.access -eq 3}).versionnumber
+                        $xmlversion = ($diskxml.versionManifest.version|Sort-Object versionnumber -Descending|select-object -First 1).versionnumber
+                        $overridexml = ($diskxml.versionManifest.version|where-object{$_.access -eq 3}).versionnumber
                             if($diskinfo.DiskLocatorId)
                             {
-                            $diskversion = ($diskinfo|Get-PvsDiskVersion|where{$_.CanPromote -eq $false}|Sort-Object version -Descending|select -First 1).version
-                            $overridedisk = ($diskinfo|Get-PvsDiskVersion|where{$_.Access -eq 3}).version
+                            $diskversion = ($diskinfo|Get-PvsDiskVersion|where-object{$_.CanPromote -eq $false}|Sort-Object version -Descending|select-object -First 1).version
+                            $overridedisk = ($diskinfo|Get-PvsDiskVersion|where-object{$_.Access -eq 3}).version
                             write-host "Disk Version: $($diskversion) XMLVersion: $($xmlversion)"
                             Write-host "Selected Version: $($overridedisk) XMLOverride: $($overridexml)"
                                 if($diskversion -ne $xmlversion -or $overridedisk -ne $overridexml -or ([string]::IsNullOrWhiteSpace($diskxml.versionManifest.startingVersion)))
@@ -145,6 +164,7 @@ function export-alldisks {
                 }
         }
 }
+
 #Checks through imported disks and checks for new versions or overrides
 function import-versions {
     if($site -ne $null)
@@ -159,7 +179,7 @@ function import-versions {
     foreach($pvssite in $pvssites)
     {
         write-host "Checking Site: $($pvssite.Name)" -ForegroundColor Yellow
-        $stores = Get-PvsStore|where{$_.SiteName -eq $pvssite.Name}
+        $stores = Get-PvsStore|where-object{$_.SiteName -eq $pvssite.Name}
         foreach ($store in $stores)
         {
         write-host "Checking Store: $($store.Name)" -ForegroundColor Yellow
@@ -174,12 +194,12 @@ function import-versions {
                         write-host "XML FILE FOUND" -ForegroundColor Green
                         $diskxml = New-Object System.Xml.XmlDocument
                         $diskxml.Load($xmlpath)
-                        $xmlversion = ($diskxml.versionManifest.version|Sort-Object versionnumber -Descending|select -First 1).versionnumber
-                        $overridexml = ($diskxml.versionManifest.version|where{$_.access -eq 3}).versionnumber
+                        $xmlversion = ($diskxml.versionManifest.version|Sort-Object versionnumber -Descending|select-object -First 1).versionnumber
+                        $overridexml = ($diskxml.versionManifest.version|where-object{$_.access -eq 3}).versionnumber
                             if($diskinfo.DiskLocatorId)
                             {
-                            $diskversion = ($diskinfo|Get-PvsDiskVersion|where{$_.CanPromote -eq $false}|Sort-Object version -Descending|select -First 1).version
-                            $overridedisk = ($diskinfo|Get-PvsDiskVersion|where{$_.Access -eq 3}).version
+                            $diskversion = ($diskinfo|Get-PvsDiskVersion|where-object{$_.CanPromote -eq $false}|Sort-Object version -Descending|select-object -First 1).version
+                            $overridedisk = ($diskinfo|Get-PvsDiskVersion|where-object{$_.Access -eq 3}).version
                             write-host "Disk Version: $($diskversion) XMLVersion: $($xmlversion)"
                             Write-host "Disk Selected Version: $($overridedisk) XMLOverride: $($overridexml)"
                                 if($diskversion -lt $xmlversion -AND -not ([string]::IsNullOrWhiteSpace($diskxml.versionManifest.startingVersion)))
@@ -193,7 +213,7 @@ function import-versions {
                                 }
 
                                 write-host "Checking for versions to delete"
-                                $staleversions = $diskinfo|Get-PvsDiskVersion|where{$_.DeleteWhenFree -eq $true}|Sort-Object -Descending
+                                $staleversions = $diskinfo|Get-PvsDiskVersion|where-object{$_.DeleteWhenFree -eq $true}|Sort-Object -Descending
                                     foreach($staleversion in $staleversions)
                                     {
                                     $stalepath = $testpath + $staleversion.DiskFileName
@@ -228,6 +248,7 @@ function import-versions {
     }
 }
 
+#Checks to see if the vdisk is found
 function test-pvsdisk ($site,$store,$name) {
     try {
     $disk = Get-PvsDiskLocator -SiteName $site -StoreName $store -DiskLocatorName $name
@@ -240,11 +261,11 @@ function test-pvsdisk ($site,$store,$name) {
 return $disk
 }
 
+#Checks to see if the vdisk is found
 function test-pvsvhdx ($xmlfile) {
-
 $xmldisk = New-Object System.Xml.XmlDocument
 $xmldisk.Load($xmlfile.FullName)
-$found = $xmldisk.versionManifest.version|where{$_.diskfilename -like "*.vhdx"}
+$found = $xmldisk.versionManifest.version|where-object{$_.diskfilename -like "*.vhdx"}
     if($found)
     {
     return $true
@@ -256,7 +277,6 @@ $found = $xmldisk.versionManifest.version|where{$_.diskfilename -like "*.vhdx"}
 }
 
 function test-private ($xmlfile) {
-
 $xmldisk = New-Object System.Xml.XmlDocument
 $xmldisk.Load($xmlfile.FullName)
 $found = ([string]::IsNullOrWhiteSpace($xmldisk.versionManifest.startingVersion))
@@ -283,7 +303,7 @@ function import-vdisks {
     foreach($pvssite in $pvssites)
     {
         write-host "Checking Site: $($pvssite.Name)" -ForegroundColor Yellow
-        $stores = Get-PvsStore|where{$_.SiteName -eq $pvssite.Name}
+        $stores = Get-PvsStore|where-object{$_.SiteName -eq $pvssite.Name}
         foreach ($store in $stores)
         {
         write-host "Checking Store: $($store.Name)" -ForegroundColor Yellow
@@ -330,7 +350,18 @@ foreach ($adminserver in $adminservers)
     write-host "Connecting to $($adminserver)" -ForegroundColor Yellow
     if(Test-Connection $adminserver -Quiet -Count 2)
     {
-    Set-PvsConnection -Server $adminserver -PassThru|out-null
+    
+    #Connect to PVS server
+    try 
+    {
+        Set-PvsConnection -Server $adminserver -PassThru|out-null
+        }
+        Catch
+        {
+        Write-Error $_
+        break
+    } 
+
         if(!$nocopy)
         {
             foreach($storepath in $storepaths)

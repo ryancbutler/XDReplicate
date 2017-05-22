@@ -3,10 +3,11 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.2
+   Version: 1.2.1
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
+            05-22-17 fixes around browsername and permissions
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -45,13 +46,13 @@ Param
     [String]$xmlpath,
     [String]$tag = ""
 )
-CLS
+Clear-Host
 Add-PSSnapin citrix*
 
 #Gets XD controller version
 function get-xdversion 
 {
-   $version = Get-BrokerController
+   $version = Get-BrokerController -AdminAddress $xdhost
 
    if ($version.ControllerVersion -like "7.6*")
    {
@@ -152,9 +153,9 @@ function export-xd ($xdhost)
     Write-Host "Processing Administrators"
     $xdout|Add-Member -NotePropertyName "admins" -NotePropertyValue (Get-AdminAdministrator -AdminAddress $xdhost)
     Write-Host "Processing Scopes"
-    $xdout|Add-Member -NotePropertyName "adminscopes" -NotePropertyValue (Get-AdminScope -AdminAddress $xdhost|where{$_.BuiltIn -eq $false})
+    $xdout|Add-Member -NotePropertyName "adminscopes" -NotePropertyValue (Get-AdminScope -AdminAddress $xdhost|where-object{$_.BuiltIn -eq $false})
     Write-Host "Processing Roles"
-    $xdout|Add-Member -NotePropertyName "adminroles" -NotePropertyValue (Get-AdminRole -AdminAddress $xdhost|where{$_.BuiltIn -eq $false})
+    $xdout|Add-Member -NotePropertyName "adminroles" -NotePropertyValue (Get-AdminRole -AdminAddress $xdhost|where-object{$_.BuiltIn -eq $false})
     $xdout|Add-Member -NotePropertyName "dgs" -NotePropertyValue $DesktopGroups
     $xdout|Add-Member -NotePropertyName "apps" -NotePropertyValue $appobject
     $xdout|Add-Member -NotePropertyName "desktops" -NotePropertyValue $desktopobject
@@ -175,7 +176,7 @@ function export-xd ($xdhost)
 }
 
 
-function check-BrokerAdminFolder ($folder)
+function Set-BrokerAdminFolder ($folder)
 {
     write-host "Processing $folder"
     $foldermatch = Get-BrokerAdminFolder -AdminAddress $xdhost -name $folder -ErrorAction SilentlyContinue
@@ -192,16 +193,16 @@ function check-BrokerAdminFolder ($folder)
 return $found
 }
 
-function create-adminfolders ($folder, $xdhost)
+function new-adminfolders ($folder, $xdhost)
 {
-$paths = $folder -split "\\"|where{$_ -ne ""}
+$paths = $folder -split "\\"|where-object{$_ -ne ""}
 
             $lastfolder = $null
             for($d=0; $d -le ($paths.Count -1); $d++)
             {          
             if($d -eq 0)
                 {                  
-                    if((check-BrokerAdminFolder ($paths[$d] + "\")) -eq $false)
+                    if((Set-BrokerAdminFolder ($paths[$d] + "\")) -eq $false)
                     {
                      New-BrokerAdminFolder -AdminAddress $xdhost -FolderName $paths[$d]|Out-Null
                     }
@@ -209,7 +210,7 @@ $paths = $folder -split "\\"|where{$_ -ne ""}
                 }
                 else
                 {                    
-                    if((check-BrokerAdminFolder ($lastfolder + "\" + $paths[$d])) -eq $false)
+                    if((Set-BrokerAdminFolder ($lastfolder + "\" + $paths[$d])) -eq $false)
                     {
                     New-BrokerAdminFolder -FolderName $paths[$d] -ParentFolder $lastfolder|Out-Null
                     }
@@ -218,7 +219,7 @@ $paths = $folder -split "\\"|where{$_ -ne ""}
             }
 }
 
-function clean-newappobject ($app)
+function new-appobject ($app)
 {
 $tempvar = New-Object PSCustomObject
 foreach($t in $app.PSObject.Properties)
@@ -240,7 +241,7 @@ foreach($t in $app.PSObject.Properties)
                 "Enabled" {$tempvar|Add-Member -MemberType NoteProperty -Name "Enabled" -Value $t.Value}
                 "MaxPerUserInstances" {$tempvar|Add-Member -MemberType NoteProperty -Name "MaxPerUserInstances" -Value $t.Value}
                 "MaxTotalInstances" {$tempvar|Add-Member -MemberType NoteProperty -Name "MaxTotalInstances" -Value $t.Value}
-                "Name" {$tempvar|Add-Member -MemberType NoteProperty -Name "Name" -Value $app.BrowserName}
+                "Name" {$tempvar|Add-Member -MemberType NoteProperty -Name "Name" -Value $app.applicationname}
                 "Priority" {$tempvar|Add-Member -MemberType NoteProperty -Name "Priority" -Value $t.Value}
                 "PublishedName" {$tempvar|Add-Member -MemberType NoteProperty -Name "PublishedName" -Value $t.Value}
                 "SecureCmdLineArgumentsEnabled" {$tempvar|Add-Member -MemberType NoteProperty -Name "SecureCmdLineArgumentsEnabled" -Value $t.Value}
@@ -258,7 +259,7 @@ foreach($t in $app.PSObject.Properties)
 return $tempvar
 }
 
-function clean-existingappobject ($app, $appmatch, $xdhost)
+function set-existingappobject ($app, $appmatch, $xdhost)
 {
 $tempvarapp = "Set-BrokerApplication -adminaddress $($xdhost)"
 foreach($t in $app.PSObject.Properties)
@@ -294,7 +295,7 @@ foreach($t in $app.PSObject.Properties)
 return $tempvarapp
 }
 
-function clean-Desktopobject ($desktop, $xdhost)
+function Set-Desktopobject ($desktop, $xdhost)
 {
 $tempvardesktop = "Set-BrokerEntitlementPolicyRule -adminaddress $($xdhost)"
 foreach($t in $desktop.PSObject.Properties)
@@ -322,7 +323,7 @@ foreach($t in $desktop.PSObject.Properties)
 return $tempvardesktop
 }
 
-function clean-NewDesktopobject ($desktop, $xdhost, $dguid)
+function New-Desktopobject ($desktop, $xdhost, $dguid)
 {
 $tempvardesktop = "New-BrokerEntitlementPolicyRule -adminaddress $($xdhost) -DesktopGroupUid $($dguid)"
 foreach($t in $desktop.PSObject.Properties)
@@ -352,7 +353,7 @@ foreach($t in $desktop.PSObject.Properties)
 return $tempvardesktop
 }
 
-function clean-newDeliveryGroupObject ($dg, $xdhost)
+function New-DeliveryGroupObject ($dg, $xdhost)
 {
 $tempvardg = "New-BrokerDesktopGroup -adminaddress $($xdhost)"
 foreach($t in $dg.PSObject.Properties)
@@ -403,7 +404,7 @@ foreach($t in $dg.PSObject.Properties)
 return $tempvardg
 }
 
-function clean-ExistingDeliveryGroupObject ($dg, $xdhost)
+function Set-ExistingDeliveryGroupObject ($dg, $xdhost)
 {
 $tempvardg = "Set-BrokerDesktopGroup -adminaddress $($xdhost)"
 foreach($t in $dg.PSObject.Properties)
@@ -495,7 +496,7 @@ if ($app.UserFilterEnabled)
 
 }
 
-function Check-AppEntitlement ($dg, $xdhost) {
+function Set-AppEntitlement ($dg, $desktop, $xdhost) {
 
     if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
     {
@@ -506,7 +507,7 @@ function Check-AppEntitlement ($dg, $xdhost) {
         ELSE
         {
         write-host "Creating AppEntitlement"
-        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $dg.Uid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
+        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $desktop.DesktopGroupUid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
         }
     }
     else
@@ -520,9 +521,10 @@ function clear-AppUserPerms ($app, $xdhost)
 {
     if ($app.UserFilterEnabled)
         {
-             foreach($user in $app.AssociatedUserFullNames)
+             foreach($user in $app.AssociatedUserNames)
              {
-                Remove-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
+                $user = get-brokeruser $user
+                Remove-BrokerUser -AdminAddress $xdhost -inputobject $user -Application $app.Name|Out-Null
              }
         }
 }
@@ -548,7 +550,7 @@ function clear-DesktopUserPerms ($desktop, $xdhost)
  
 }
 
-function clean-FTAobject ($FTA)
+function New-FTAobject ($FTA)
 {
 $tempvarfta = New-Object PSCustomObject
 foreach($t in $fta.PSObject.Properties)
@@ -618,24 +620,22 @@ function import-xd ($xdhost, $xdexport)
         if ($dgmatch -is [object])
         {
         write-host "Setting $($dgmatch.name)"
-        clean-ExistingDeliveryGroupObject $dg $xdhost|Invoke-Expression
-        Get-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid|remove-BrokerAccessPolicyRule
-        $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid|Out-Null
-        Check-AppEntitlement $dgmatch $xdhost
+        Set-ExistingDeliveryGroupObject $dg $xdhost|Invoke-Expression
+        Get-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|remove-BrokerAccessPolicyRule -AdminAddress $xdhost -ErrorAction SilentlyContinue|Out-Null
+        $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|Out-Null
         }
         else
         {
         Write-host "Creating Delivery Group" -ForegroundColor Green
             try
             {
-            $dgmatch = clean-newDeliveryGroupObject $dg $xdhost|Invoke-Expression
+            $dgmatch = New-DeliveryGroupObject $dg $xdhost|Invoke-Expression
             }
             Catch
             {
             throw "Delivery group failed. $($_.Exception.Message)"
             }
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
-        Check-AppEntitlement $dgmatch $xdhost
         
         if($dg.prelaunch -is [object])
         {
@@ -657,7 +657,7 @@ function import-xd ($xdhost, $xdexport)
             }
         }
     
-        $desktops = $XDEXPORT.desktops|where{$_.DGNAME -eq $dg.name}
+        $desktops = $XDEXPORT.desktops|where-object{$_.DGNAME -eq $dg.name}
 
 
                 if($desktops)
@@ -669,28 +669,30 @@ function import-xd ($xdhost, $xdexport)
                     if($desktopmatch)
                     {
                     write-host "Setting desktop" -ForegroundColor Gray
-                    clean-Desktopobject $desktop $xdhost|invoke-expression
+                    Set-Desktopobject $desktop $xdhost|invoke-expression
                     clear-DesktopUserPerms $desktopmatch $xdhost
                     set-userperms $desktop $xdhost
+                    Set-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
                     else
                     {
                     Write-host "Creating Desktop" -ForegroundColor Green
-                    $desktopmatch = clean-NewDesktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
-                    set-userperms $desktop $xdhost                    
+                    $desktopmatch = New-Desktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
+                    set-userperms $desktop $xdhost
+                    Set-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
 
                 }
             }
 
-        $apps = $XDEXPORT.apps|where{$_.DGNAME -eq $dg.name}
+        $apps = $XDEXPORT.apps|where-object{$_.DGNAME -eq $dg.name}
         
             if($apps)
             {
                 foreach ($app in $apps)
                 {
                 write-host "Proccessing App $($app.browsername)"
-                $appmatch = Get-BrokerApplication -AdminAddress $xdhost -ApplicationName $app.browsername -ErrorAction SilentlyContinue
+                $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername -ErrorAction SilentlyContinue
                     if($appmatch -is [Object])
                     {
                     write-host "Setting App" -ForegroundColor Gray
@@ -703,17 +705,17 @@ function import-xd ($xdhost, $xdexport)
                         }
                         else
                         {
-                            if (-Not (check-BrokerAdminFolder $folder))
+                            if (-Not (Set-BrokerAdminFolder $folder))
                             {
                             write-host "Creating folder" -ForegroundColor Green
-                            create-adminfolders $folder $xdhost
+                            new-adminfolders $folder $xdhost
                             }
                         Write-host Moving App to correct folder -ForegroundColor Yellow
                         Move-BrokerApplication -AdminAddress $xdhost $appmatch -Destination $app.AdminFolderName
                         $appmatch = Get-BrokerApplication -AdminAddress $xdhost -ApplicationName $app.browsername -ErrorAction SilentlyContinue
                         }
                     }
-                    clean-existingappobject $app $appmatch $xdhost|Invoke-Expression
+                    set-existingappobject $app $appmatch $xdhost|Invoke-Expression
 
                         if((compare-icon $app $appmatch $xdhost) -eq $false)
                         {
@@ -729,26 +731,27 @@ function import-xd ($xdhost, $xdexport)
                     $folder = $app.AdminFolderName
                     if($folder -is [object])
                     {
-                        if (-Not (check-BrokerAdminFolder $folder))
+                        if (-Not (Set-BrokerAdminFolder $folder))
                         {
                         write-host "Creating folder" -ForegroundColor Green
-                        create-adminfolders $folder
+                        new-adminfolders $folder
                         }
                     }
-                    $makeapp = clean-newappobject $app
+                    $makeapp = new-appobject $app
                     
                     $appmatch = $makeapp|New-BrokerApplication -AdminAddress $xdhost -DesktopGroup $dgmatch.Name
+                    #sets browsername to match
+                    set-brokerapplication -adminaddress $xdhost -inputobject $appmatch -browsername $app.browsername|out-null
                   
                     $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                     $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
                     set-UserPerms $makeapp $xdhost
-                    #Rename-BrokerApplication -Name $appmatch.ApplicationName -NewName $appmatch.PublishedName -ErrorAction SilentlyContinue|out-null
                     
                     if($app.FTA)
                     {
                         foreach ($fta in $app.FTA)
                         {
-                        clean-FTAobject $fta|New-BrokerConfiguredFTA -ApplicationUid $newapp.Uid
+                        New-FTAobject $fta|New-BrokerConfiguredFTA -ApplicationUid $newapp.Uid
                         }
                     }
                     }
@@ -830,6 +833,8 @@ function import-xd ($xdhost, $xdexport)
 
 }
 
+
+
 #Start process
         switch ($mode)
             {
@@ -862,5 +867,8 @@ function import-xd ($xdhost, $xdexport)
                 export-xd $source $tag
                 }
             }
+
+#attempts to set the connection back to the local host
+Get-BrokerDBConnection -AdminAddress $env:COMPUTERNAME -ErrorAction SilentlyContinue|Out-Null
 
            
