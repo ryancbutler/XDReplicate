@@ -3,11 +3,12 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.2.1
+   Version: 1.2.2
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
             05-22-17 fixes around browsername and permissions
+            06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -98,6 +99,7 @@ function export-xd ($xdhost)
         write-host $DG.Name
         $dg|add-member -NotePropertyName 'AccessPolicyRule' -NotePropertyValue (Get-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount 2000)
         $dg|add-member -NotePropertyName 'PreLaunch' -NotePropertyValue (Get-BrokerSessionPreLaunch -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue)
+        $dg|add-member -NotePropertyName 'PowerTime' -NotePropertyValue (Get-BrokerPowerTimeScheme -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue)
         
         #Grabs APP inf
         $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000
@@ -587,6 +589,7 @@ function compare-icon ($app, $appmatch, $xdhost)
 return $match
 }
 
+
 function import-xd ($xdhost, $xdexport)
 {
     if (!($XDEXPORT))
@@ -623,6 +626,13 @@ function import-xd ($xdhost, $xdexport)
         Set-ExistingDeliveryGroupObject $dg $xdhost|Invoke-Expression
         Get-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|remove-BrokerAccessPolicyRule -AdminAddress $xdhost -ErrorAction SilentlyContinue|Out-Null
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|Out-Null
+            if(($dg.powertime).count -gt 0)
+            {
+                $dg.PowerTime|%{
+                write-host "Setting Power Time Scheme $($_.name)"
+                Set-BrokerPowerTimeScheme -AdminAddress $xdhost -Name $_.name|Out-Null
+                }
+            }
         }
         else
         {
@@ -636,6 +646,13 @@ function import-xd ($xdhost, $xdexport)
             throw "Delivery group failed. $($_.Exception.Message)"
             }
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
+            if(($dg.powertime).count -gt 0)
+            {        
+                ($dg.PowerTime)|%{
+                "Creating Power Time Scheme $($_.name)"
+                New-BrokerPowerTimeScheme -AdminAddress $xdhost -DesktopGroupUid $dgmatch.uid|Out-Null
+                }
+            }
         
         if($dg.prelaunch -is [object])
         {
