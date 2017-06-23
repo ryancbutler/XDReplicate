@@ -23,6 +23,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 05-12-2017: bug fixes
 - 05-22-17: browsername in apps and permission fixes
 - 06-01-17: Fixes for BrokerPowerTimeScheme on desktop groups
+- 06-23-17: Fixes for folder creation and BrokerPowerTimeScheme
 
 ### XenDesktop Versions Tested
 

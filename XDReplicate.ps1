@@ -3,12 +3,13 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.2.2
+   Version: 1.2.3
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
             05-22-17 fixes around browsername and permissions
             06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
+            06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -178,19 +179,20 @@ function export-xd ($xdhost)
 }
 
 
-function Set-BrokerAdminFolder ($folder)
+function Set-BrokerAdminFolder ($folder, $xdhost)
 {
     write-host "Processing $folder"
-    $foldermatch = Get-BrokerAdminFolder -AdminAddress $xdhost -name $folder -ErrorAction SilentlyContinue
-    if ($foldermatch -is [Object])
-    {
-    write-host "FOLDER FOUND" -ForegroundColor GREEN
-    $found = $true
-    }
-    else
+    #Doesn't follow normal error handling so can't use try\catch
+    Get-BrokerAdminFolder -AdminAddress $xdhost -name $folder -ErrorVariable myerror -ErrorAction SilentlyContinue
+    if ($myerror -like "Object does not exist")
     {
     write-host "FOLDER NOT FOUND" -ForegroundColor YELLOW
     $found = $false
+    }
+    else
+    {
+    write-host "FOLDER FOUND" -ForegroundColor GREEN
+    $found = $true
     }
 return $found
 }
@@ -204,7 +206,7 @@ $paths = $folder -split "\\"|where-object{$_ -ne ""}
             {          
             if($d -eq 0)
                 {                  
-                    if((Set-BrokerAdminFolder ($paths[$d] + "\")) -eq $false)
+                    if((Set-BrokerAdminFolder -folder ($paths[$d] + "\") -xdhost $xdhost) -eq $false)
                     {
                      New-BrokerAdminFolder -AdminAddress $xdhost -FolderName $paths[$d]|Out-Null
                     }
@@ -212,9 +214,9 @@ $paths = $folder -split "\\"|where-object{$_ -ne ""}
                 }
                 else
                 {                    
-                    if((Set-BrokerAdminFolder ($lastfolder + "\" + $paths[$d])) -eq $false)
+                    if((Set-BrokerAdminFolder -folder ($lastfolder + "\" + $paths[$d] + "\") -xdhost $xdhost) -eq $false)
                     {
-                    New-BrokerAdminFolder -FolderName $paths[$d] -ParentFolder $lastfolder|Out-Null
+                    New-BrokerAdminFolder -AdminAddress $xdhost -FolderName $paths[$d] -ParentFolder $lastfolder|Out-Null
                     }
                 $lastfolder = $lastfolder + "\" + $paths[$d]
                 }            
@@ -628,9 +630,9 @@ function import-xd ($xdhost, $xdexport)
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|Out-Null
             if(($dg.powertime).count -gt 0)
             {
-                $dg.PowerTime|%{
+                ($dg.PowerTime)|%{
                 write-host "Setting Power Time Scheme $($_.name)"
-                Set-BrokerPowerTimeScheme -AdminAddress $xdhost -Name $_.name|Out-Null
+                Set-BrokerPowerTimeScheme -AdminAddress $xdhost -Name $_.name -DisplayName $_.displayname -DaysOfWeek $_.daysofweek -PeakHours $_.peakhours -PoolSize $_.poolsize -PoolUsingPercentage $_.poolusingpercentage -ErrorAction SilentlyContinue|Out-Null
                 }
             }
         }
@@ -650,7 +652,7 @@ function import-xd ($xdhost, $xdexport)
             {        
                 ($dg.PowerTime)|%{
                 "Creating Power Time Scheme $($_.name)"
-                New-BrokerPowerTimeScheme -AdminAddress $xdhost -DesktopGroupUid $dgmatch.uid|Out-Null
+                New-BrokerPowerTimeScheme -AdminAddress $xdhost -DesktopGroupUid $dgmatch.uid -Name $_.name -DaysOfWeek $_.daysofweek -PeakHours $_.peakhours -PoolSize $_.poolsize -PoolUsingPercentage $_.poolusingpercentage -DisplayName $_.displayname|Out-Null
                 }
             }
         
@@ -722,7 +724,7 @@ function import-xd ($xdhost, $xdexport)
                         }
                         else
                         {
-                            if (-Not (Set-BrokerAdminFolder $folder))
+                            if (-Not (Set-BrokerAdminFolder -folder $folder -xdhost $xdhost))
                             {
                             write-host "Creating folder" -ForegroundColor Green
                             new-adminfolders $folder $xdhost
@@ -748,10 +750,10 @@ function import-xd ($xdhost, $xdexport)
                     $folder = $app.AdminFolderName
                     if($folder -is [object])
                     {
-                        if (-Not (Set-BrokerAdminFolder $folder))
+                        if (-Not (Set-BrokerAdminFolder -folder $folder -xdhost $xdhost))
                         {
                         write-host "Creating folder" -ForegroundColor Green
-                        new-adminfolders $folder
+                        new-adminfolders $folder $xdhost
                         }
                     }
                     $makeapp = new-appobject $app
