@@ -201,7 +201,7 @@ return $found
 
 function new-adminfolders ($folder, $xdhost)
 {
-$paths = $folder -split "\\"|where-object{$_ -ne ""}
+$paths = @($folder -split "\\"|where-object{$_ -ne ""})
 
             $lastfolder = $null
             for($d=0; $d -le ($paths.Count -1); $d++)
@@ -738,7 +738,7 @@ function import-xd ($xdhost, $xdexport)
                             }
                         Write-host Moving App to correct folder -ForegroundColor Yellow
                         Move-BrokerApplication -AdminAddress $xdhost $appmatch -Destination $app.AdminFolderName
-                        $appmatch = Get-BrokerApplication -AdminAddress $xdhost -ApplicationName $app.browsername -ErrorAction SilentlyContinue
+                        $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername -ErrorAction SilentlyContinue
                         }
                     }
                     set-existingappobject $app $appmatch $xdhost|Invoke-Expression
