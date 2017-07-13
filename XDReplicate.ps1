@@ -3,13 +3,14 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.2.3
+   Version: 1.2.4
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
             05-22-17 fixes around browsername and permissions
             06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
             06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
+            07-12-17 Fixes for app creation and user permissions
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -223,44 +224,48 @@ $paths = $folder -split "\\"|where-object{$_ -ne ""}
             }
 }
 
-function new-appobject ($app)
+function new-appobject ($app, $xdhost, $dgmatch)
 {
-$tempvar = New-Object PSCustomObject
+$tempvarapp = "New-BrokerApplication -adminaddress $($xdhost) -DesktopGroup `"$($dgmatch)`""
 foreach($t in $app.PSObject.Properties)
     {       
         if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
         {
+         $tempstring = "" 
             switch ($t.name)
             {
-                "AdminFolderName" {$tempvar|Add-Member -MemberType NoteProperty -Name "AdminFolder" -Value $t.Value}
-                "ApplicationGroup" {$tempvar|Add-Member -MemberType NoteProperty -Name "ApplicationGroup" -Value $t.Value}
-                "ApplicationType" {$tempvar|Add-Member -MemberType NoteProperty -Name "ApplicationType" -Value $t.Value}
-                "AssociatedUserNames" {$tempvar|Add-Member -MemberType NoteProperty -Name "AssociatedUserNames" -Value $t.Value}
-                "BrowserName" {$tempvar|Add-Member -MemberType NoteProperty -Name "BrowserName" -Value $t.Value}
-                "ClientFolder" {$tempvar|Add-Member -MemberType NoteProperty -Name "ClientFolder" -Value $t.Value}
-                "CommandLineArguments" {$tempvar|Add-Member -MemberType NoteProperty -Name "CommandLineArguments" -Value $t.Value}
-                "CommandLineExecutable" {$tempvar|Add-Member -MemberType NoteProperty -Name "CommandLineExecutable" -Value $t.Value}
-                "CpuPriorityLevel" {$tempvar|Add-Member -MemberType NoteProperty -Name "CpuPriorityLevel" -Value $t.Value}
-                "Description" {$tempvar|Add-Member -MemberType NoteProperty -Name "Description" -Value $t.Value}
-                "Enabled" {$tempvar|Add-Member -MemberType NoteProperty -Name "Enabled" -Value $t.Value}
-                "MaxPerUserInstances" {$tempvar|Add-Member -MemberType NoteProperty -Name "MaxPerUserInstances" -Value $t.Value}
-                "MaxTotalInstances" {$tempvar|Add-Member -MemberType NoteProperty -Name "MaxTotalInstances" -Value $t.Value}
-                "Name" {$tempvar|Add-Member -MemberType NoteProperty -Name "Name" -Value $app.applicationname}
-                "Priority" {$tempvar|Add-Member -MemberType NoteProperty -Name "Priority" -Value $t.Value}
-                "PublishedName" {$tempvar|Add-Member -MemberType NoteProperty -Name "PublishedName" -Value $t.Value}
-                "SecureCmdLineArgumentsEnabled" {$tempvar|Add-Member -MemberType NoteProperty -Name "SecureCmdLineArgumentsEnabled" -Value $t.Value}
-                "ShortcutAddedToDesktop" {$tempvar|Add-Member -MemberType NoteProperty -Name "ShortcutAddedToDesktop" -Value $t.Value}
-                "ShortcutAddedToStartMenu" {$tempvar|Add-Member -MemberType NoteProperty -Name "ShortcutAddedToStartMenu" -Value $t.Value}
-                "StartMenuFolder" {$tempvar|Add-Member -MemberType NoteProperty -Name "StartMenuFolder" -Value $t.Value}
-                "UserFilterEnabled" {$tempvar|Add-Member -MemberType NoteProperty -Name "UserFilterEnabled" -Value $t.Value}
-                "Visible" {$tempvar|Add-Member -MemberType NoteProperty -Name "Visible" -Value $t.Value}
-                "WaitForPrinterCreation" {$tempvar|Add-Member -MemberType NoteProperty -Name "WaitForPrinterCreation" -Value $t.Value}
-                "WorkingDirectory" {$tempvar|Add-Member -MemberType NoteProperty -Name "WorkingDirectory" -Value $t.Value}
+                "AdminFolderName" {$tempstring = " -AdminFolder `"$($t.value)`""}
+                "ApplicationGroup" {$tempstring = " -ApplicationGroup `"$($t.value)`""}
+                "ApplicationType" {$tempstring = " -ApplicationType `"$($t.value)`""}
+                "BrowserName" {$tempstring = " -BrowserName `"$($t.value)`""}
+                "ClientFolder" {$tempstring = " -ClientFolder `"$($t.value)`""}
+                #"CommandLineArguments" {$tempstring = " -CommandLineArguments {0}" -f $t.value }
+                "CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`"" }
+                "CommandLineExecutable" {$tempstring = " -CommandLineExecutable `"$($t.value)`""}
+                "CpuPriorityLevel" {$tempstring = " -CpuPriorityLevel `"$($t.value)`""}
+                "DesktopGroup" {$tempstring = " -DesktopGroup `"$($t.value)`""}
+                "Description" {$tempstring = " -Description `"$($t.value)`""}
+                "Enabled" {$tempstring = " -Enabled `$$($t.value)"}
+                "MaxPerUserInstances" {$tempstring = " -MaxPerUserInstances `"$($t.value)`""}
+                "MaxTotalInstances" {$tempstring = " -MaxTotalInstances `"$($t.value)`""}
+                "Name" {$tempstring = " -name `"$($app.applicationname)`""}
+                "Priority" {$tempstring = " -Priority `"$($t.value)`""}
+                "PublishedName" {$tempstring = " -PublishedName `"$($t.value)`""}
+                "SecureCmdLineArgumentsEnabled" {$tempstring = " -SecureCmdLineArgumentsEnabled `$$($t.value)"}
+                "ShortcutAddedToDesktop" {$tempstring = " -ShortcutAddedToDesktop `$$($t.value)"}
+                "ShortcutAddedToStartMenu" {$tempstring = " -ShortcutAddedToStartMenu `$$($t.value)"}
+                "StartMenuFolder" {$tempstring = " -StartMenuFolder `"$($t.value)`""}
+                "UserFilterEnabled" {$tempstring = " -UserFilterEnabled `$$($t.value)"}
+                "Visible" {$tempstring = " -Visible `$$($t.value)"}
+                "WaitForPrinterCreation" {$tempstring = " -WaitForPrinterCreation `$$($t.value)"}
+                "WorkingDirectory" {$tempstring = " -WorkingDirectory `"$($t.value)`""}
+            
             }
+         $tempvarapp = $tempvarapp +  $tempstring
          }
     }
 
-return $tempvar
+return $tempvarapp
 }
 
 function set-existingappobject ($app, $appmatch, $xdhost)
@@ -274,7 +279,8 @@ foreach($t in $app.PSObject.Properties)
             switch ($t.name)
             {
                 "ClientFolder" {$tempstring = " -ClientFolder `"$($t.value)`""}
-                "CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`""}
+                "CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`"" }
+                #"CommandLineArguments" {$tempstring = " -CommandLineArguments {0}" -f $t.value }
                 "CommandLineExecutable" {$tempstring = " -CommandLineExecutable `"$($t.value)`""}
                 "CpuPriorityLevel" {$tempstring = " -CpuPriorityLevel `"$($t.value)`""}
                 "Description" {$tempstring = " -Description `"$($t.value)`""}
@@ -756,15 +762,13 @@ function import-xd ($xdhost, $xdexport)
                         new-adminfolders $folder $xdhost
                         }
                     }
-                    $makeapp = new-appobject $app
-                    
-                    $appmatch = $makeapp|New-BrokerApplication -AdminAddress $xdhost -DesktopGroup $dgmatch.Name
+                    $appmatch = new-appobject $app $xdhost $dgmatch.Name|Invoke-Expression
                     #sets browsername to match
                     set-brokerapplication -adminaddress $xdhost -inputobject $appmatch -browsername $app.browsername|out-null
                   
                     $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                     $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
-                    set-UserPerms $makeapp $xdhost
+                    set-NewAppUserPerms $app $appmatch $xdhost
                     
                     if($app.FTA)
                     {
