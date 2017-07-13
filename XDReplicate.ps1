@@ -3,7 +3,7 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.2.4
+   Version: 1.2.5
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
@@ -11,6 +11,7 @@
             06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
             06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
             07-12-17 Fixes for app creation and user permissions
+            07-13-17 String fix for app creation on command line argument
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -239,8 +240,8 @@ foreach($t in $app.PSObject.Properties)
                 "ApplicationType" {$tempstring = " -ApplicationType `"$($t.value)`""}
                 "BrowserName" {$tempstring = " -BrowserName `"$($t.value)`""}
                 "ClientFolder" {$tempstring = " -ClientFolder `"$($t.value)`""}
-                #"CommandLineArguments" {$tempstring = " -CommandLineArguments {0}" -f $t.value }
-                "CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`"" }
+                "CommandLineArguments" {$tempstring = " -CommandLineArguments '{0}'" -f $t.value }
+                #"CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`"" }
                 "CommandLineExecutable" {$tempstring = " -CommandLineExecutable `"$($t.value)`""}
                 "CpuPriorityLevel" {$tempstring = " -CpuPriorityLevel `"$($t.value)`""}
                 "DesktopGroup" {$tempstring = " -DesktopGroup `"$($t.value)`""}
@@ -279,8 +280,8 @@ foreach($t in $app.PSObject.Properties)
             switch ($t.name)
             {
                 "ClientFolder" {$tempstring = " -ClientFolder `"$($t.value)`""}
-                "CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`"" }
-                #"CommandLineArguments" {$tempstring = " -CommandLineArguments {0}" -f $t.value }
+                #"CommandLineArguments" {$tempstring = " -CommandLineArguments `"$($t.value)`"" }
+                "CommandLineArguments" {$tempstring = " -CommandLineArguments '{0}'" -f $t.value }
                 "CommandLineExecutable" {$tempstring = " -CommandLineExecutable `"$($t.value)`""}
                 "CpuPriorityLevel" {$tempstring = " -CpuPriorityLevel `"$($t.value)`""}
                 "Description" {$tempstring = " -Description `"$($t.value)`""}
