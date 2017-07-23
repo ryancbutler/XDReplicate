@@ -44,8 +44,14 @@
    .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -dgtag "replicate"
    Exports data from localhost with delivery groups tagged with "replicate" and imports on DDC02.DOMAIN.COM
 .EXAMPLE
-   .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -IGNOREDGTAG "skip"
+   .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoredgtag "skip"
    Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM
+.EXAMPLE
+   .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -apptag "replicate"
+   Exports data from localhost delivery groups while only including apps tagged with "replicate" and imports on DDC02.DOMAIN.COM
+.EXAMPLE
+   .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoreapptag "skip"
+   Exports data from localhost delivery groups while ignoring apps tagged with "skip" and imports on DDC02.DOMAIN.COM
 .EXAMPLE
    .\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml"
    Exports data from localhost and exports to C:\temp\my.xml
@@ -62,7 +68,7 @@ Param
     [String]$destination,
     [String]$xmlpath,
     [String]$dgtag = "",
-    [string]$IGNOREDGTAG ="",
+    [string]$ignoredgtag ="",
     [String]$apptag = "",
     [String]$ignoreapptag = ""
 

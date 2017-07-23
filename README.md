@@ -26,6 +26,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 06-23-17: Fixes for folder creation and BrokerPowerTimeScheme
 - 07-12-17: Fixes for app creation and user permissions (issue #10)
 - 07-13-17: Fixes for app creation on command line argument (issue #9)
+- 07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
 
 ### XenDesktop Versions Tested
 
@@ -77,9 +78,18 @@ Exports data from localhost and exports to C:\temp\my.xml
 
 `.\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml"`
 
-Exports data and delivery groups that are tagged with "replicate" from localhost and exports to C:\temp\my.xml
+Exports data from localhost with delivery groups tagged with "replicate" and imports on DDC02.DOMAIN.COM
 
-`.\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml" -tag "replicate"`
+`\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -dgtag "replicate"`
+   
+Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM
+`.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoredgtag "skip"`
+
+Exports data from localhost delivery groups while only including apps tagged with "replicate" and imports on DDC02.DOMAIN.COM   
+`.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -apptag "replicate"`
+
+Exports data from localhost delivery groups while ignoring apps tagged with "skip" and imports on DDC02.DOMAIN.COM
+`.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoreapptag "skip"`
 
 Imports data from C:\temp\my.xml and imports to localhost
 
