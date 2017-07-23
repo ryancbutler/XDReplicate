@@ -3,7 +3,7 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.2.6
+   Version: 1.3
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
@@ -12,6 +12,7 @@
             06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
             07-12-17 Fixes for app creation and user permissions
             07-13-17 String fix for app creation on command line argument. Also fixes thanks to Joe Shonk
+            07-23-17 Added option for skip tags
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -28,11 +29,23 @@
    BOTH: Exports and imports in the same run (must have DESTINATION set)
 .PARAMETER XMLPATH
    Path used for XML file location on import and export operations
-.PARAMETER TAG
+.PARAMETER DGTAG
    Only export delivery groups with specified tag
+.PARAMETER IGNOREDGTAG
+   Skips export of delivery groups with specified tag
+.PARAMETER APPTAG
+   Export delivery group applications with specific tag
+.PARAMETER IGNOREAPPTAG
+   Exports all delivery group applications except ones with specific tag
 .EXAMPLE
    .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM
    Exports data from localhost and imports on DDC02.DOMAIN.COM
+.EXAMPLE
+   .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -dgtag "replicate"
+   Exports data from localhost with delivery groups tagged with "replicate" and imports on DDC02.DOMAIN.COM
+.EXAMPLE
+   .\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -IGNOREDGTAG "skip"
+   Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM
 .EXAMPLE
    .\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml"
    Exports data from localhost and exports to C:\temp\my.xml
@@ -48,7 +61,11 @@ Param
     [String]$source,
     [String]$destination,
     [String]$xmlpath,
-    [String]$tag = ""
+    [String]$dgtag = "",
+    [string]$IGNOREDGTAG ="",
+    [String]$apptag = "",
+    [String]$ignoreapptag = ""
+
 )
 Clear-Host
 Add-PSSnapin citrix*
@@ -78,13 +95,13 @@ function export-xd ($xdhost)
     throw "Must Set Export Path while mode is set to EXPORT"
     }
 
-    if(-not ([string]::IsNullOrWhiteSpace($tag)))
+    if(-not ([string]::IsNullOrWhiteSpace($dgtag)))
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $tag -MaxRecordCount 2000
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $dgtag -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoredgtag}
     }
     else
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -MaxRecordCount 2000
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoredgtag}
     }
 
     if(!($DesktopGroups -is [object]))
@@ -105,7 +122,16 @@ function export-xd ($xdhost)
         $dg|add-member -NotePropertyName 'PowerTime' -NotePropertyValue (Get-BrokerPowerTimeScheme -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue)
         
         #Grabs APP inf
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000
+        if(-not ([string]::IsNullOrWhiteSpace($apptag)))
+        {
+        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoreapptag}
+        }
+        else
+        {
+        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoreapptag}
+        }
+
+        
         if($apps -is [object])
         {   
             foreach ($app in $apps)
