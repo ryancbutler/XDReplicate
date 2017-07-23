@@ -3,7 +3,7 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.3
+   Version: 1.3.1
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
@@ -14,6 +14,7 @@
             07-13-17 String fix for app creation on command line argument. Also fixes thanks to Joe Shonk
             07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
             07-23-17: Edits to tag import based on XD site version
+            07-23-17: Better handling of app renames
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -769,6 +770,14 @@ function import-xd ($xdhost, $xdexport)
                         }
                     }
                     set-existingappobject $app $appmatch $xdhost|Invoke-Expression
+
+                    #makes sure to rename app to match
+                    if($appmatch.ApplicationName -notlike $app.ApplicationName)
+                    {
+                        write-host "Renaming Application..." -ForegroundColor Yellow
+                        rename-brokerapplication -AdminAddress $xdhost -inputobject $appmatch -newname $app.ApplicationName
+                        $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername
+                    }
 
                         if((compare-icon $app $appmatch $xdhost) -eq $false)
                         {

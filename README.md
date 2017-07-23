@@ -28,6 +28,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 07-13-17: Fixes for app creation on command line argument (issue #9)
 - 07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
 - 07-23-17: Edits to tag import based on XD site version
+- 07-23-17: Better handling of app renames
 
 ### XenDesktop Versions Tested
 
