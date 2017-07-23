@@ -12,7 +12,8 @@
             06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
             07-12-17 Fixes for app creation and user permissions
             07-13-17 String fix for app creation on command line argument. Also fixes thanks to Joe Shonk
-            07-23-17 Added option for skip tags
+            07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
+            07-23-17: Edits to tag import based on XD site version
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -76,24 +77,8 @@ Param
 Clear-Host
 Add-PSSnapin citrix*
 
-#Gets XD controller version
-function get-xdversion 
-{
-   $version = Get-BrokerController -AdminAddress $xdhost
 
-   if ($version.ControllerVersion -like "7.6*")
-   {
-    $foundver = "LTSR"
-   }
-   ELSE
-   {
-
-    $foundver = "CC"
-   }
-return $foundver
-} 
-
-function export-xd ($xdhost)
+function export-xd ($xdhost,$dgtag,$ignoredgtag,$apptag,$ignoreapptag)
 {
     #Need path for XML while in EXPORT
     if($mode -like "export" -and ([string]::IsNullOrWhiteSpace($XMLPath)))
@@ -639,6 +624,8 @@ function import-xd ($xdhost, $xdexport)
     }
 
     write-host "Proccessing Tags"
+    #Description argument not added until 7.11
+    $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion
     foreach($tag in $XDEXPORT.tags)
     {  
 
@@ -650,7 +637,15 @@ function import-xd ($xdhost, $xdexport)
         else
         {
         write-host "Creating TAG $($tag.name)" -ForegroundColor Gray
-        New-BrokerTag -AdminAddress $xdhost -Name $tag.name -Description $tag.description|Out-Null
+            #Description argument not added until 7.11
+            if ($ddcver -lt "7.11")
+            {
+            New-BrokerTag -AdminAddress $xdhost -Name $tag.name|Out-Null
+            }
+            else
+            {
+            New-BrokerTag -AdminAddress $xdhost -Name $tag.name -Description $tag.description|Out-Null
+            }
         }
     }
     
@@ -807,7 +802,7 @@ function import-xd ($xdhost, $xdexport)
                     {
                         foreach ($fta in $app.FTA)
                         {
-                        New-FTAobject $fta|New-BrokerConfiguredFTA -ApplicationUid $newapp.Uid
+                        New-FTAobject -AdminAddress $xdhost $fta|New-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $newapp.Uid
                         }
                     }
                     }
@@ -899,7 +894,7 @@ function import-xd ($xdhost, $xdexport)
                     {
                     throw "Must have destination DDC set"
                     }
-                $xdexport = export-xd $source $tag
+                $xdexport = export-xd $source $dgtag $ignoredgtag $apptag $ignoreapptag
                 import-xd $destination $xdexport
                 }
                 "import"{
@@ -920,11 +915,9 @@ function import-xd ($xdhost, $xdexport)
                     {
                     throw "Must have XMLPATH set"
                     }
-                export-xd $source $tag
+                export-xd $source $dgtag $ignoredgtag $apptag $ignoreapptag
                 }
             }
 
 #attempts to set the connection back to the local host
-Get-BrokerDBConnection -AdminAddress $env:COMPUTERNAME -ErrorAction SilentlyContinue|Out-Null
-
-           
+Get-BrokerDBConnection -AdminAddress $env:COMPUTERNAME -ErrorAction SilentlyContinue|Out-Null       
