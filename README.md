@@ -85,12 +85,15 @@ Exports data from localhost with delivery groups tagged with "replicate" and imp
 `\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -dgtag "replicate"`
    
 Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM
+
 `.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoredgtag "skip"`
 
 Exports data from localhost delivery groups while only including apps tagged with "replicate" and imports on DDC02.DOMAIN.COM   
+
 `.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -apptag "replicate"`
 
 Exports data from localhost delivery groups while ignoring apps tagged with "skip" and imports on DDC02.DOMAIN.COM
+
 `.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoreapptag "skip"`
 
 Imports data from C:\temp\my.xml and imports to localhost
