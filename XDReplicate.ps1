@@ -80,8 +80,10 @@ Clear-Host
 Add-PSSnapin citrix*
 
 
-function export-xd ($xdhost,$dgtag,$ignoredgtag,$apptag,$ignoreapptag)
+function export-xd 
 {
+Param ($xdhost,$dgtag,$ignoredgtag,$apptag,$ignoreapptag)
+    
     #Need path for XML while in EXPORT
     if($mode -like "export" -and ([string]::IsNullOrWhiteSpace($XMLPath)))
     {
@@ -200,8 +202,10 @@ function export-xd ($xdhost,$dgtag,$ignoredgtag,$apptag,$ignoreapptag)
 }
 
 
-function Set-BrokerAdminFolder ($folder, $xdhost)
+function Set-BrokerAdminFolder 
 {
+Param($folder,$xdhost)
+    
     write-host "Processing $folder"
     #Doesn't follow normal error handling so can't use try\catch
     Get-BrokerAdminFolder -AdminAddress $xdhost -name $folder -ErrorVariable myerror -ErrorAction SilentlyContinue
@@ -218,8 +222,9 @@ function Set-BrokerAdminFolder ($folder, $xdhost)
 return $found
 }
 
-function new-adminfolders ($folder, $xdhost)
+function new-adminfolders 
 {
+Param($folder, $xdhost)
 $paths = @($folder -split "\\"|where-object{$_ -ne ""})
 
             $lastfolder = $null
@@ -244,8 +249,9 @@ $paths = @($folder -split "\\"|where-object{$_ -ne ""})
             }
 }
 
-function new-appobject ($app, $xdhost, $dgmatch)
+function new-appobject 
 {
+Param($app, $xdhost, $dgmatch)
 $tempvarapp = "New-BrokerApplication -adminaddress $($xdhost) -DesktopGroup `"$($dgmatch)`""
 foreach($t in $app.PSObject.Properties)
     {       
@@ -288,8 +294,10 @@ foreach($t in $app.PSObject.Properties)
 return $tempvarapp
 }
 
-function set-existingappobject ($app, $appmatch, $xdhost)
+function set-existingappobject 
 {
+Param($app, $appmatch, $xdhost)
+
 $tempvarapp = "Set-BrokerApplication -adminaddress $($xdhost)"
 foreach($t in $app.PSObject.Properties)
     {       
@@ -325,8 +333,10 @@ foreach($t in $app.PSObject.Properties)
 return $tempvarapp
 }
 
-function Set-Desktopobject ($desktop, $xdhost)
+function Set-Desktopobject 
 {
+Param ($desktop, $xdhost)
+
 $tempvardesktop = "Set-BrokerEntitlementPolicyRule -adminaddress $($xdhost)"
 foreach($t in $desktop.PSObject.Properties)
     {
@@ -353,8 +363,10 @@ foreach($t in $desktop.PSObject.Properties)
 return $tempvardesktop
 }
 
-function New-Desktopobject ($desktop, $xdhost, $dguid)
+function New-Desktopobject 
 {
+Param($desktop, $xdhost, $dguid)
+
 $tempvardesktop = "New-BrokerEntitlementPolicyRule -adminaddress $($xdhost) -DesktopGroupUid $($dguid)"
 foreach($t in $desktop.PSObject.Properties)
     {
@@ -383,8 +395,10 @@ foreach($t in $desktop.PSObject.Properties)
 return $tempvardesktop
 }
 
-function New-DeliveryGroupObject ($dg, $xdhost)
+function New-DeliveryGroupObject 
 {
+Param($dg, $xdhost)
+
 $tempvardg = "New-BrokerDesktopGroup -adminaddress $($xdhost)"
 foreach($t in $dg.PSObject.Properties)
     {       
@@ -434,8 +448,10 @@ foreach($t in $dg.PSObject.Properties)
 return $tempvardg
 }
 
-function Set-ExistingDeliveryGroupObject ($dg, $xdhost)
+function Set-ExistingDeliveryGroupObject
 {
+Param ($dg,$xdhost)
+
 $tempvardg = "Set-BrokerDesktopGroup -adminaddress $($xdhost)"
 foreach($t in $dg.PSObject.Properties)
     {       
@@ -481,8 +497,10 @@ foreach($t in $dg.PSObject.Properties)
 return $tempvardg
 }
 
-function set-UserPerms ($app, $xdhost)
+function set-UserPerms
 {
+Param ($app, $xdhost)
+    
     if($app.ResourceType -eq "Desktop")
     {
         
@@ -510,8 +528,9 @@ function set-UserPerms ($app, $xdhost)
     }
 }
 
-function set-NewAppUserPerms ($app, $appmatch, $xdhost)
+function set-NewAppUserPerms
 {
+Param ($app, $appmatch, $xdhost)
 
 if ($app.UserFilterEnabled)
         {
@@ -526,8 +545,9 @@ if ($app.UserFilterEnabled)
 
 }
 
-function Set-AppEntitlement ($dg, $desktop, $xdhost) {
-
+function Set-AppEntitlement  {
+Param ($dg, $desktop, $xdhost)
+    
     if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
     {
         if((Get-BrokerAppEntitlementPolicyRule -name $dg.Name -AdminAddress $xdhost -ErrorAction SilentlyContinue) -is [Object])
@@ -547,8 +567,10 @@ function Set-AppEntitlement ($dg, $desktop, $xdhost) {
 
 }
 
-function clear-AppUserPerms ($app, $xdhost)
+function clear-AppUserPerms 
 {
+Param ($app, $xdhost)
+    
     if ($app.UserFilterEnabled)
         {
              foreach($user in $app.AssociatedUserNames)
@@ -559,8 +581,9 @@ function clear-AppUserPerms ($app, $xdhost)
         }
 }
 
-function clear-DesktopUserPerms ($desktop, $xdhost)
+function clear-DesktopUserPerms
 {
+Param ($desktop, $xdhost)
 
         if ($desktop.IncludedUserFilterEnabled)
         {
@@ -580,8 +603,9 @@ function clear-DesktopUserPerms ($desktop, $xdhost)
  
 }
 
-function New-FTAobject ($FTA)
+function New-FTAobject
 {
+Param ($FTA)
 $tempvarfta = New-Object PSCustomObject
 foreach($t in $fta.PSObject.Properties)
     {       
@@ -601,8 +625,10 @@ foreach($t in $fta.PSObject.Properties)
 return $tempvarfta
 }
 
-function compare-icon ($app, $appmatch, $xdhost)
+function compare-icon
 {
+Param ($app, $appmatch, $xdhost)
+
     $newicon = (Get-BrokerIcon -AdminAddress $xdhost -Uid ($appmatch.IconUid)).EncodedIconData
     if($newicon -like $app.EncodedIconData)
     {
@@ -617,9 +643,9 @@ function compare-icon ($app, $appmatch, $xdhost)
 return $match
 }
 
-
-function import-xd ($xdhost, $xdexport)
+function import-xd
 {
+Param ($xdhost, $xdexport)
     if (!($XDEXPORT))
     {
     throw "Nothing to import"
