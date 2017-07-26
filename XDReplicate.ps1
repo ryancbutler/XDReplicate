@@ -75,6 +75,7 @@ Param
     [String]$ignoreapptag = ""
 
 )
+Set-StrictMode -Version Latest
 Clear-Host
 Add-PSSnapin citrix*
 
@@ -650,7 +651,6 @@ function import-xd ($xdhost, $xdexport)
         }
     }
     
-
     foreach($dg in $XDEXPORT.dgs)
     {
     write-host "Proccessing $($dg.name)"
@@ -663,7 +663,8 @@ function import-xd ($xdhost, $xdexport)
         Set-ExistingDeliveryGroupObject $dg $xdhost|Invoke-Expression
         Get-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|remove-BrokerAccessPolicyRule -AdminAddress $xdhost -ErrorAction SilentlyContinue|Out-Null
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|Out-Null
-            if(($dg.powertime).count -gt 0)
+            
+            if($dg.powertime -is [object])
             {
                 ($dg.PowerTime)|%{
                 write-host "Setting Power Time Scheme $($_.name)"
@@ -683,7 +684,7 @@ function import-xd ($xdhost, $xdexport)
             throw "Delivery group failed. $($_.Exception.Message)"
             }
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
-            if(($dg.powertime).count -gt 0)
+            if($dg.powertime -is [object])
             {        
                 ($dg.PowerTime)|%{
                 "Creating Power Time Scheme $($_.name)"
