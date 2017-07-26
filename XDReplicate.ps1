@@ -775,7 +775,7 @@ foreach($t in $fta.PSObject.Properties)
 return $tempvarfta
 }
 
-function compare-icon
+function test-icon
 {
 Param ($app, $appmatch, $xdhost)
 
@@ -956,7 +956,7 @@ Param ($xdhost, $xdexport)
                         $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername
                     }
 
-                        if((compare-icon $app $appmatch $xdhost) -eq $false)
+                        if((test-icon $app $appmatch $xdhost) -eq $false)
                         {
                         $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                         $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
@@ -1008,7 +1008,7 @@ Param ($xdhost, $xdexport)
             }  
   
     }
-
+<#
     $currentscopes = Get-AdminScope -AdminAddress $xdhost
     write-host "Checking Admin scopes"
     foreach ($scope in $XDEXPORT.adminscopes)
@@ -1027,7 +1027,7 @@ Param ($xdhost, $xdexport)
         }
 
     }
-
+#>
     $currentroles = Get-AdminPermission -AdminAddress $xdhost
     write-host "Checking Admin Roles"
     foreach ($role in $XDEXPORT.adminroles)
