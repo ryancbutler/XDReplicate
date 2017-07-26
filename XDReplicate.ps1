@@ -3,7 +3,7 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.3.1
+   Version: 1.4
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
@@ -15,6 +15,7 @@
             07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
             07-23-17: Edits to tag import based on XD site version
             07-23-17: Better handling of app renames
+            07-26-17: Converted to strict-mode and documented functions
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -118,11 +119,11 @@ Param (
 
     if(-not ([string]::IsNullOrWhiteSpace($dgtag)))
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $dgtag -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoredgtag}
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $dgtag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoredgtag}
     }
     else
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoredgtag}
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoredgtag}
     }
 
     if(!($DesktopGroups -is [object]))
@@ -145,11 +146,11 @@ Param (
         #Grabs APP inf
         if(-not ([string]::IsNullOrWhiteSpace($apptag)))
         {
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoreapptag}
+        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
         }
         else
         {
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|where{$_.Tags -notcontains $ignoreapptag}
+        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
         }
 
         
@@ -942,7 +943,7 @@ Param (
             
             if($dg.powertime -is [object])
             {
-                ($dg.PowerTime)|%{
+                ($dg.PowerTime)|ForEach-Object{
                 write-host "Setting Power Time Scheme $($_.name)"
                 Set-BrokerPowerTimeScheme -AdminAddress $xdhost -Name $_.name -DisplayName $_.displayname -DaysOfWeek $_.daysofweek -PeakHours $_.peakhours -PoolSize $_.poolsize -PoolUsingPercentage $_.poolusingpercentage -ErrorAction SilentlyContinue|Out-Null
                 }
@@ -962,7 +963,7 @@ Param (
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
             if($dg.powertime -is [object])
             {        
-                ($dg.PowerTime)|%{
+                ($dg.PowerTime)|ForEach-Object{
                 "Creating Power Time Scheme $($_.name)"
                 New-BrokerPowerTimeScheme -AdminAddress $xdhost -DesktopGroupUid $dgmatch.uid -Name $_.name -DaysOfWeek $_.daysofweek -PeakHours $_.peakhours -PoolSize $_.poolsize -PoolUsingPercentage $_.poolusingpercentage -DisplayName $_.displayname|Out-Null
                 }
@@ -1128,7 +1129,7 @@ Param (
 
     }
 #>
-    $currentroles = Get-AdminPermission -AdminAddress $xdhost
+    #$currentroles = Get-AdminPermission -AdminAddress $xdhost
     write-host "Checking Admin Roles"
     foreach ($role in $XDEXPORT.adminroles)
     {
@@ -1146,7 +1147,7 @@ Param (
     }
 
 
-    $currentadmins = Get-AdminAdministrator -AdminAddress $xdhost
+    #$currentadmins = Get-AdminAdministrator -AdminAddress $xdhost
     write-host "Checking admins"
     foreach ($admin in $XDEXPORT.admins)
     {
@@ -1160,9 +1161,7 @@ Param (
         {
         write-host "Adding $($admin.Name)" -ForegroundColor Green
         New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid|out-null
-        $rights = $admin.Rights -split ":"
-        Add-AdminRight -Administrator $admin.name -scope $rights[1] -Role $rights[0]|out-null
-
+        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights
         }
 
     }
