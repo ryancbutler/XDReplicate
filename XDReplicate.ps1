@@ -1161,7 +1161,7 @@ Param (
         {
         write-host "Adding $($admin.Name)" -ForegroundColor Green
         New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid|out-null
-        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights
+        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
         }
 
     }
