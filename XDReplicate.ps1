@@ -16,6 +16,7 @@
             07-23-17: Edits to tag import based on XD site version
             07-23-17: Better handling of app renames
             07-26-17: Converted to strict-mode and documented functions
+            07-26-17: Added check for name conflict on app creation and warns user
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -318,9 +319,9 @@ function new-appobject
 
 #>
 Param(
-[Parameter(Mandatory=$true)]$app,
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app,
 [Parameter(Mandatory=$true)][string]$xdhost, 
-[Parameter(Mandatory=$true)]$dgmatch
+[Parameter(Mandatory=$true)][string]$dgmatch
 )
 
 $tempvarapp = "New-BrokerApplication -adminaddress $($xdhost) -DesktopGroup `"$($dgmatch)`""
@@ -380,9 +381,9 @@ function set-existingappobject
     XenDesktop DDC hostname to connect to
 #>
 Param(
-[Parameter(Mandatory=$true)]$app,
-[Parameter(Mandatory=$true)]$appmatch, 
-[Parameter(Mandatory=$true)]$xdhost)
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app,
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$appmatch, 
+[Parameter(Mandatory=$true)][string]$xdhost)
 
 $tempvarapp = "Set-BrokerApplication -adminaddress $($xdhost)"
 foreach($t in $app.PSObject.Properties)
@@ -432,7 +433,7 @@ function Set-Desktopobject
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)]$desktop, 
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Desktop]$desktop, 
 [Parameter(Mandatory=$true)][string]$xdhost)
 
 $tempvardesktop = "Set-BrokerEntitlementPolicyRule -adminaddress $($xdhost)"
@@ -476,9 +477,9 @@ function New-Desktopobject
     Delivery group UID to create desktop
 #>
 Param(
-[Parameter(Mandatory=$true)]$desktop, 
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Desktop]$desktop, 
 [Parameter(Mandatory=$true)][string]$xdhost, 
-[Parameter(Mandatory=$true)]$dguid)
+[Parameter(Mandatory=$true)][string]$dguid)
 
 $tempvardesktop = "New-BrokerEntitlementPolicyRule -adminaddress $($xdhost) -DesktopGroupUid $($dguid)"
 foreach($t in $desktop.PSObject.Properties)
@@ -521,7 +522,7 @@ function New-DeliveryGroupObject
     XenDesktop DDC hostname to connect to
 #>
 Param(
-[Parameter(Mandatory=$true)]$dg, 
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.DesktopGroup]$dg, 
 [Parameter(Mandatory=$true)][string]$xdhost
 )
 
@@ -587,7 +588,7 @@ function Set-ExistingDeliveryGroupObject
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)]$dg,
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.DesktopGroup]$dg,
 [Parameter(Mandatory=$true)][string]$xdhost
 )
 
@@ -649,7 +650,7 @@ function set-UserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)]$app, 
+[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
 [Parameter(Mandatory=$true)][string]$xdhost)
     
     if($app.ResourceType -eq "Desktop")
@@ -694,8 +695,8 @@ function set-NewAppUserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)]$app, 
-    [Parameter(Mandatory=$true)]$appmatch, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$appmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
@@ -726,8 +727,8 @@ function Set-AppEntitlement  {
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)]$dg, 
-    [Parameter(Mandatory=$true)]$desktop, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.DesktopGroup]$dg, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Desktop]$desktop, 
     [Parameter(Mandatory=$true)][string]$xdhost)
     
     if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
@@ -762,7 +763,7 @@ function clear-AppUserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)]$app, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
     
@@ -789,7 +790,7 @@ function clear-DesktopUserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)]$desktop, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$desktop, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
@@ -824,7 +825,7 @@ function New-FTAobject
 
 #>
 Param (
-    [Parameter(Mandatory=$true)]$FTA
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.ConfiguredFTA]$FTA
     )
 
 $tempvarfta = New-Object PSCustomObject
@@ -862,8 +863,8 @@ function test-icon
 
 #>
 Param (
-    [Parameter(Mandatory=$true)]$app, 
-    [Parameter(Mandatory=$true)]$appmatch, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
+    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$appmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
@@ -1078,30 +1079,39 @@ Param (
                         }
                     }
                     $appmatch = new-appobject $app $xdhost $dgmatch.Name|Invoke-Expression
-                    #sets browsername to match
-                    set-brokerapplication -adminaddress $xdhost -inputobject $appmatch -browsername $app.browsername|out-null
-                  
-                    $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
-                    $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
-                    set-NewAppUserPerms $app $appmatch $xdhost
                     
-                    if($app|Select-Object -ExpandProperty FTA -ErrorAction SilentlyContinue)
+                    if($appmatch -is [Object])
                     {
-                        foreach ($fta in $app.FTA)
-                        {
-                        New-FTAobject -AdminAddress $xdhost $fta|New-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $newapp.Uid
-                        }
-                    }
-                    }
 
-                  
-                    if(-not([string]::IsNullOrWhiteSpace($app.tags)))
-                    {
-                     foreach ($tag in $app.tags)
-                     {
-                       write-host "Adding TAG $tag" -ForegroundColor gray
-                       add-brokertag -Name $tag -AdminAddress $xdhost -Application $appmatch.name
+                        #sets browsername to match
+                        set-brokerapplication -adminaddress $xdhost -inputobject $appmatch -browsername $app.browsername|out-null
+                    
+                        $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
+                        $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
+                        set-NewAppUserPerms $app $appmatch $xdhost
+                        
+                        if($app|Select-Object -ExpandProperty FTA -ErrorAction SilentlyContinue)
+                        {
+                            foreach ($fta in $app.FTA)
+                            {
+                            New-FTAobject -AdminAddress $xdhost $fta|New-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $newapp.Uid
+                            }
+                        }
+                     
+                     if(-not([string]::IsNullOrWhiteSpace($app.tags)))
+                        {
+                         foreach ($tag in $app.tags)
+                         {
+                           write-host "Adding TAG $tag" -ForegroundColor gray
+                           add-brokertag -Name $tag -AdminAddress $xdhost -Application $appmatch.name
+                         }
+                        }
+                     
                      }
+                    else
+                    {
+                        Write-Warning "App Creation failed.  Check for name conflict."
+ 
                     }
 
                 }
@@ -1168,7 +1178,7 @@ Param (
 
 
 }
-
+}
 
 
 #Start process
