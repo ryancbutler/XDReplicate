@@ -232,7 +232,7 @@ function Test-BrokerAdminFolder
 {
 <#
 .SYNOPSIS
-    Validates administrative folder
+    Tests if administrative folder exists
 .DESCRIPTION
     Checks for administrative folder and returns bool
 .PARAMETER FOLDER
@@ -265,7 +265,7 @@ function new-adminfolders
 {
 <#
 .SYNOPSIS
-    Creates administrative folder
+    Creates new administrative folder
 .DESCRIPTION
     Checks for and creates administrative folder if not found
 .PARAMETER FOLDER
@@ -422,9 +422,9 @@ function Set-Desktopobject
 {
 <#
 .SYNOPSIS
-    Sets an existing desktop settings
+    Sets existing desktop entitlement settings
 .DESCRIPTION
-    Script block to set a desktop is returned to be piped to invoke-command
+    Script block to set desktop entitlement is returned to be piped to invoke-expression
 .PARAMETER Desktop
     Exported Desktop
 .PARAMETER XDHOST
@@ -464,9 +464,9 @@ function New-Desktopobject
 {
 <#
 .SYNOPSIS
-    Creates new Desktop Object script block
+    Creates new Desktop entitlement policy Object script block
 .DESCRIPTION
-    Creates new desktop object script block and returns to be used by invoke-command
+    Creates new Desktop entitlement policy object script block and returns to be used by invoke-expression
 .PARAMETER Desktop
     New desktop object
 .PARAMETER XDHOST
@@ -579,7 +579,7 @@ function Set-ExistingDeliveryGroupObject
 .SYNOPSIS
     Creats existing delivery group object scriptblock
 .DESCRIPTION
-    Creats existing delivery group object scriptblock and returned to be used with invoke-command
+    Creats existing delivery group object scriptblock and returned to be used with invoke-expression
 .PARAMETER DG
     Delivery Group object to be created
 .PARAMETER XDHOST
@@ -639,9 +639,9 @@ function set-UserPerms
 {
 <#
 .SYNOPSIS
-    Sets user permissions on XD app or desktop
+    Sets user permissions on app or desktop
 .DESCRIPTION
-    Sets user permissions on XD app or desktop
+    Sets user permissions on app or desktop
 .PARAMETER APP
     Exported application or desktop object
 .PARAMETER XDHOST
@@ -680,7 +680,23 @@ Param (
 
 function set-NewAppUserPerms
 {
-Param ($app, $appmatch, $xdhost)
+<#
+.SYNOPSIS
+    Sets user permissions on NEW app
+.DESCRIPTION
+    Sets user permissions on NEW app
+.PARAMETER APP
+    Exported application
+.PARAMETER APPMATCH
+    Newly created app
+.PARAMETER XDHOST
+    XenDesktop DDC hostname to connect to
+#>
+Param (
+    [Parameter(Mandatory=$true)]$app, 
+    [Parameter(Mandatory=$true)]$appmatch, 
+    [Parameter(Mandatory=$true)][string]$xdhost
+    )
 
 if ($app.UserFilterEnabled)
         {
@@ -696,7 +712,22 @@ if ($app.UserFilterEnabled)
 }
 
 function Set-AppEntitlement  {
-Param ($dg, $desktop, $xdhost)
+<#
+.SYNOPSIS
+    Sets AppEntitlement if missing
+.DESCRIPTION
+    Sets AppEntitlement if missing
+.PARAMETER DG
+    Desktop Group where to create entitlement
+.PARAMETER DESKTOP
+    Newly created desktop
+.PARAMETER XDHOST
+    XenDesktop DDC hostname to connect to
+#>
+Param (
+    [Parameter(Mandatory=$true)]$dg, 
+    [Parameter(Mandatory=$true)]$desktop, 
+    [Parameter(Mandatory=$true)][string]$xdhost)
     
     if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
     {
@@ -719,7 +750,20 @@ Param ($dg, $desktop, $xdhost)
 
 function clear-AppUserPerms 
 {
-Param ($app, $xdhost)
+<#
+.SYNOPSIS
+    Clears permissions from App
+.DESCRIPTION
+    Clears permissions from App
+.PARAMETER APP
+    Application to remove permissions
+.PARAMETER XDHOST
+    XenDesktop DDC hostname to connect to
+#>
+Param (
+    [Parameter(Mandatory=$true)]$app, 
+    [Parameter(Mandatory=$true)][string]$xdhost
+    )
     
     if ($app.UserFilterEnabled)
         {
@@ -733,7 +777,21 @@ Param ($app, $xdhost)
 
 function clear-DesktopUserPerms
 {
-Param ($desktop, $xdhost)
+<#
+.SYNOPSIS
+    Clears permissions from Desktop object
+.DESCRIPTION
+    Clears permissions from Desktop object
+.PARAMETER DESKTOP
+    Desktop to remove permissions
+.PARAMETER XDHOST
+    XenDesktop DDC hostname to connect to
+#>
+Param (
+    [Parameter(Mandatory=$true)]$desktop, 
+    [Parameter(Mandatory=$true)][string]$xdhost
+    )
+
 
         if ($desktop.IncludedUserFilterEnabled)
         {
@@ -755,7 +813,19 @@ Param ($desktop, $xdhost)
 
 function New-FTAobject
 {
-Param ($FTA)
+<#
+.SYNOPSIS
+    Creates object to create FTA (File Type Association) object
+.DESCRIPTION
+    Creates object to create FTA (File Type Association) object
+.PARAMETER FTA
+    Existing FTA object
+
+#>
+Param (
+    [Parameter(Mandatory=$true)]$FTA
+    )
+
 $tempvarfta = New-Object PSCustomObject
 foreach($t in $fta.PSObject.Properties)
     {       
@@ -777,7 +847,24 @@ return $tempvarfta
 
 function test-icon
 {
-Param ($app, $appmatch, $xdhost)
+<#
+.SYNOPSIS
+    Tests to see if Icon exists and matches new application
+.DESCRIPTION
+    Tests to see if Icon exists and matches new application
+.PARAMETER APP
+    Newly created application
+.PARAMETER APPMATCH
+    Existing application
+.PARAMETER XDHOST
+    XenDesktop DDC hostname to connect to
+
+#>
+Param (
+    [Parameter(Mandatory=$true)]$app, 
+    [Parameter(Mandatory=$true)]$appmatch, 
+    [Parameter(Mandatory=$true)][string]$xdhost
+    )
 
     $newicon = (Get-BrokerIcon -AdminAddress $xdhost -Uid ($appmatch.IconUid)).EncodedIconData
     if($newicon -like $app.EncodedIconData)
@@ -795,7 +882,20 @@ return $match
 
 function import-xd
 {
-Param ($xdhost, $xdexport)
+<#
+.SYNOPSIS
+    Imports XD site information from object
+.DESCRIPTION
+    Imports XD site information from object
+.PARAMETER XDHOST
+    XenDesktop DDC hostname to connect to
+.PARAMETER XDEXPORT
+    XD site object to import
+#>
+
+Param (
+    [Parameter(Mandatory=$true)][string]$xdhost, 
+    [Parameter(Mandatory=$true)]$xdexport)
     if (!($XDEXPORT))
     {
     throw "Nothing to import"
@@ -1081,7 +1181,7 @@ Param ($xdhost, $xdexport)
                     throw "Must have destination DDC set"
                     }
                 $xdexport = export-xd -xdhost $source -mode $mode -dgtag $dgtag -ignoredgtag $ignoredgtag -apptag $apptag -ignoreapptag $ignoreapptag
-                import-xd $destination $xdexport
+                import-xd -xdhost $destination -xdexport $xdexport
                 }
                 "import"{
                     if([string]::IsNullOrWhiteSpace($XMLPATH))
@@ -1094,7 +1194,7 @@ Param ($xdhost, $xdexport)
                     $destination = "localhost"
                     }
                 
-                import-xd $destination (Import-Clixml $xmlpath)
+                import-xd -xdhost $destination -xdexport (Import-Clixml $xmlpath)
                 }
                 "export"{
                     if([string]::IsNullOrWhiteSpace($XMLPATH))
