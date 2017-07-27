@@ -1142,7 +1142,7 @@ Param (
     }
 #>
     #$currentroles = Get-AdminPermission -AdminAddress $xdhost
-    write-host "Checking Admin Roles"
+    write-host "Processing Admin Roles" -ForegroundColor Magenta
     foreach ($role in $XDEXPORT.adminroles)
     {
         $rolematch = Get-AdminRole -AdminAddress $xdhost -Name $role.name -ErrorAction SilentlyContinue
@@ -1160,7 +1160,7 @@ Param (
 
 
     #$currentadmins = Get-AdminAdministrator -AdminAddress $xdhost
-    write-host "Checking admins"
+    write-host "Processing admins" -ForegroundColor Magenta
     foreach ($admin in $XDEXPORT.admins)
     {
 
@@ -1191,7 +1191,9 @@ Param (
                     {
                     throw "Must have destination DDC set"
                     }
+                write-host "Begining export..." -ForegroundColor Yellow
                 $xdexport = export-xd -xdhost $source -mode $mode -dgtag $dgtag -ignoredgtag $ignoredgtag -apptag $apptag -ignoreapptag $ignoreapptag
+                write-host "Begining import..." -ForegroundColor Yellow
                 import-xd -xdhost $destination -xdexport $xdexport
                 }
                 "import"{
