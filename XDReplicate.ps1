@@ -1112,7 +1112,7 @@ Param (
                      }
                     else
                     {
-                        Write-Warning "App Creation failed.  Check for name conflict."
+                        Write-Warning "App Creation failed.  Check for name conflict. An ApplicationName of $($app.ApplicationName) already exists when using the browser name of $($app.BrowserName)."
  
                     }
 
