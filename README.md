@@ -131,6 +131,8 @@ Keep PVS vDisk versioning consistent across multiple PVS sites and additional PV
 
 - 02-28-2017: Initial release
 - 05-09-2017: Added "Site" option to only replicate specific site.
+- 07-27-2017: Added 'JustAdmin' switch to only replicate to single server
+- 07-27-2017: Added 'disk' argument to copy specific disk
 
 ### PVS Versions Tested
 
@@ -169,3 +171,12 @@ Copies and imports disks and versions to all PVS farm servers in 'General' site 
 Imports disks and versions on all PVS farm servers accessible via localhost for each server. Does not perform any robocopy
 
 `.\PVSReplicate.ps1 -nocopy`
+
+Copies and imports "MYDISK" ONLY to all servers in "MYSITE"
+
+`.\PVSReplicate.ps1 -StorePath "E:\teststore" -Site "MySite" -Disk "MYDISK"`
+
+Copies and imports disks and versions from MYSITE to PVSFARM01 server ONLY. (Images must be replicated from PVSFARM01)   
+
+`.\PVSReplicate.ps1 -StorePath "E:\teststore" -Site "MySite" -PVSServers "PVSFARM01" -JUSTADMIN`
+   
