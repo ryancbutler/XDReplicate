@@ -17,6 +17,7 @@
             07-23-17: Better handling of app renames
             07-26-17: Converted to strict-mode and documented functions
             07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
+            07-26-17: Added some color to output
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -247,7 +248,7 @@ Param(
 [Parameter(Mandatory=$true)][string]$folder,
 [Parameter(Mandatory=$true)][string]$xdhost)
     
-    write-host "Processing $folder"
+    write-host "Processing Folder $folder" -ForegroundColor Magenta
     #Doesn't follow normal error handling so can't use try\catch
     Get-BrokerAdminFolder -AdminAddress $xdhost -name $folder -ErrorVariable myerror -ErrorAction SilentlyContinue
     if ($myerror -like "Object does not exist")
@@ -903,7 +904,7 @@ Param (
     throw "Nothing to import"
     }
 
-    write-host "Proccessing Tags"
+    write-host "Proccessing Tags" -ForegroundColor Magenta
     #Description argument not added until 7.11
     $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion
     foreach($tag in $XDEXPORT.tags)
@@ -931,7 +932,7 @@ Param (
     
     foreach($dg in $XDEXPORT.dgs)
     {
-    write-host "Proccessing $($dg.name)"
+    write-host "Proccessing $($dg.name)" -ForegroundColor Magenta
 
     $dgmatch = Get-BrokerDesktopGroup -AdminAddress $xdhost -Name $dg.NAME -ErrorAction SilentlyContinue
 
@@ -997,7 +998,7 @@ Param (
                 {
                 foreach ($desktop in $desktops)
                 {
-                write-host "Proccessing Desktop $($desktop.name)"
+                write-host "Proccessing Desktop $($desktop.name)" -ForegroundColor Magenta
                 $desktopmatch = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid -Name $desktop.Name -ErrorAction SilentlyContinue
                     if($desktopmatch)
                     {
@@ -1024,7 +1025,7 @@ Param (
             {
                 foreach ($app in $apps)
                 {
-                write-host "Proccessing App $($app.browsername)"
+                write-host "Proccessing App $($app.browsername)" -ForegroundColor Magenta
                 $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername -ErrorAction SilentlyContinue
                     if($appmatch -is [Object])
                     {
@@ -1215,4 +1216,4 @@ Param (
             }
 
 #attempts to set the connection back to the local host
-Get-BrokerDBConnection -AdminAddress $env:COMPUTERNAME -ErrorAction SilentlyContinue|Out-Null       
+Get-BrokerDBConnection -AdminAddress $env:COMPUTERNAME -ErrorAction SilentlyContinue|Out-Null
