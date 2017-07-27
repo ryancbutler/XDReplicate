@@ -29,6 +29,9 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
 - 07-23-17: Edits to tag import based on XD site version
 - 07-23-17: Better handling of app renames
+- 07-26-17: Converted to strict-mode and documented functions
+- 07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
+- 07-26-17: Added some color to output
 
 ### XenDesktop Versions Tested
 

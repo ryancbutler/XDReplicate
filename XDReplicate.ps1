@@ -16,7 +16,7 @@
             07-23-17: Edits to tag import based on XD site version
             07-23-17: Better handling of app renames
             07-26-17: Converted to strict-mode and documented functions
-            07-26-17: Added check for name conflict on app creation and warns user
+            07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
