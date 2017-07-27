@@ -1121,6 +1121,7 @@ Param (
             }  
   
     }
+    }
 <#
     $currentscopes = Get-AdminScope -AdminAddress $xdhost
     write-host "Checking Admin scopes"
@@ -1141,6 +1142,8 @@ Param (
 
     }
 #>
+
+
     #$currentroles = Get-AdminPermission -AdminAddress $xdhost
     write-host "Processing Admin Roles" -ForegroundColor Magenta
     foreach ($role in $XDEXPORT.adminroles)
@@ -1179,7 +1182,7 @@ Param (
     }
 
 
-}
+
 }
 
 
