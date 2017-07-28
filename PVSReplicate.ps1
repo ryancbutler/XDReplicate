@@ -3,7 +3,7 @@
    Keep PVS vDisks and versioning consistent across multiple PVS sites and additional PVS farms
 .DESCRIPTION
    Checks for vDisks and versioning and will export XML if required.  Script will then robocopy all vDisk files out to all PVS servers.  Once copied script will import and set versioning to match local server.
-   Version: 1.6
+   Version: 1.6.1
    By: Ryan Butler 02-28-17
    Updated: 5-9-17
             07-27-17: Added copy for specific disk
@@ -345,7 +345,7 @@ $found = ([string]::IsNullOrWhiteSpace($xmldisk.versionManifest.startingVersion)
     }
 }
 
-function import-vdisks ($site,$specdisk) {
+function import-vdisks ($site,$specdisk,$justadmin,$pvserver) {
     if($site -ne $null)
     {
     $pvssites = Get-PvsSite -SiteName $site
@@ -363,18 +363,30 @@ function import-vdisks ($site,$specdisk) {
         foreach ($store in $stores)
         {
         write-host "Checking Store: $($store.Name)" -ForegroundColor Yellow
+        if($justadmin)
+        {
+        $testpath = "\\" + $pvserver + "\" + (($store.Path).Replace(":",'$')) + "\"
+        }
+        else
+        {
         $testpath = "\\" + $pvssite.DiskUpdateServerName + "\" + (($store.Path).Replace(":",'$')) + "\"
+        }
             if (test-path $testpath)
             {
-            if([string]::IsNullOrWhiteSpace($specdisk))
-            {
-            $xmls = Get-childitem -Path $testpath -Filter *.xml
-            }
-            $xmls = Get-childitem -Path $testpath -Filter "$($specdisk).xml"
-            }
+            
+                if([string]::IsNullOrWhiteSpace($specdisk))
+                {
+                write-host $testpath
+                $xmls = Get-childitem -Path $testpath -Filter *.xml
+                }
+                else
+                {
+                $xmls = Get-childitem -Path $testpath -Filter "$($specdisk).xml"
+                }
+                
                 foreach($xml in $xmls)
                 {
-
+                    $xml
                     $disk = test-pvsdisk -site $pvssite.Name -store $store.Name -DiskLocatorName -name $xml.baseName
                         if($disk -ne $false -or (test-private $xml) -eq $true)
                         {
@@ -398,10 +410,11 @@ function import-vdisks ($site,$specdisk) {
                 }
 
             }
-        }
+        
     }
 
-
+    }
+}
 #call script functions here
 
 export-alldisks $disk
@@ -423,7 +436,7 @@ foreach ($adminserver in $adminservers)
         if(-not ($adminserver -like $env:computername))
         {
 
-        import-vdisks $site $disk
+        import-vdisks $site $disk $justadmin $adminserver
         import-versions $site $disk
         }
     }
