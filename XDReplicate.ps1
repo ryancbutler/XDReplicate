@@ -18,6 +18,7 @@
             07-26-17: Converted to strict-mode and documented functions
             07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
             07-26-17: Added some color to output
+            08-04-17: LTSR doesn't like APP tags for get-brokerapplication
 
 .NOTES 
    Twitter: ryan_c_butler
@@ -119,6 +120,8 @@ Param (
     {
     throw "Must Set Export Path while mode is set to EXPORT"
     }
+    $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion
+
 
     if(-not ([string]::IsNullOrWhiteSpace($dgtag)))
     {
@@ -149,11 +152,27 @@ Param (
         #Grabs APP inf
         if(-not ([string]::IsNullOrWhiteSpace($apptag)))
         {
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            #App argument doesn't exist for LTSR.  Guessing 7.11 is the first to support
+            if ($ddcver -lt "7.11")
+            {
+                write-warning "Ignoring APP TAG ARGUMENTS."
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000
+            }
+            else {
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            }
+        
         }
         else
         {
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            if ($ddcver -lt "7.11")
+            {
+            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            }
+            else {
+            write-warning "Ignoring APP TAG ARGUMENTS."
+            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000  
+            }
         }
 
         
@@ -1185,6 +1204,13 @@ Param (
 
 }
 
+#LTSR doesn't have TAG argument in get-brokerapplication.
+$ddcver = (Get-BrokerController -AdminAddress $source).ControllerVersion
+if ($ddcver -lt 7.11 -and (-not [string]::IsNullOrWhiteSpace($ignoreapptag) -or -not [string]::IsNullOrWhiteSpace($apptag) ))
+{
+    write-warning "TAGS not available for Get-BrokerApplication in this XD version.  ALL APPLICATIONS WILL BE EXPORTED."
+    Start-Sleep -Seconds 10
+}
 
 #Start process
         switch ($mode)
