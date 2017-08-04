@@ -18,6 +18,7 @@
             07-26-17: Converted to strict-mode and documented functions
             07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
             07-26-17: Added some color to output
+            08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
 
 .NOTES 
    Twitter: ryan_c_butler
@@ -79,7 +80,7 @@ Param
     [String]$ignoreapptag = ""
 
 )
-Set-StrictMode -Version Latest
+#Set-StrictMode -Version Latest
 Clear-Host
 Add-PSSnapin citrix*
 
@@ -119,6 +120,8 @@ Param (
     {
     throw "Must Set Export Path while mode is set to EXPORT"
     }
+    $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion
+
 
     if(-not ([string]::IsNullOrWhiteSpace($dgtag)))
     {
@@ -149,11 +152,27 @@ Param (
         #Grabs APP inf
         if(-not ([string]::IsNullOrWhiteSpace($apptag)))
         {
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            #App argument doesn't exist for LTSR.  Guessing 7.11 is the first to support
+            if ([version]$ddcver -lt "7.11")
+            {
+                write-warning "Ignoring APP TAG ARGUMENTS."
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000
+            }
+            else {
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            }
+        
         }
         else
         {
-        $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            if ([version]$ddcver -lt "7.11")
+            {
+            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000  
+            
+            }
+            else {
+            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            }
         }
 
         
@@ -321,7 +340,7 @@ function new-appobject
 
 #>
 Param(
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app,
+[Parameter(Mandatory=$true)]$app,
 [Parameter(Mandatory=$true)][string]$xdhost, 
 [Parameter(Mandatory=$true)][string]$dgmatch
 )
@@ -383,8 +402,8 @@ function set-existingappobject
     XenDesktop DDC hostname to connect to
 #>
 Param(
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app,
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$appmatch, 
+[Parameter(Mandatory=$true)]$app,
+[Parameter(Mandatory=$true)]$appmatch, 
 [Parameter(Mandatory=$true)][string]$xdhost)
 
 $tempvarapp = "Set-BrokerApplication -adminaddress $($xdhost)"
@@ -435,7 +454,7 @@ function Set-Desktopobject
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Desktop]$desktop, 
+[Parameter(Mandatory=$true)]$desktop, 
 [Parameter(Mandatory=$true)][string]$xdhost)
 
 $tempvardesktop = "Set-BrokerEntitlementPolicyRule -adminaddress $($xdhost)"
@@ -479,7 +498,7 @@ function New-Desktopobject
     Delivery group UID to create desktop
 #>
 Param(
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Desktop]$desktop, 
+[Parameter(Mandatory=$true)]$desktop, 
 [Parameter(Mandatory=$true)][string]$xdhost, 
 [Parameter(Mandatory=$true)][string]$dguid)
 
@@ -524,10 +543,9 @@ function New-DeliveryGroupObject
     XenDesktop DDC hostname to connect to
 #>
 Param(
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.DesktopGroup]$dg, 
+[Parameter(Mandatory=$true)]$dg, 
 [Parameter(Mandatory=$true)][string]$xdhost
 )
-
 $tempvardg = "New-BrokerDesktopGroup -adminaddress $($xdhost)"
 foreach($t in $dg.PSObject.Properties)
     {       
@@ -574,7 +592,7 @@ foreach($t in $dg.PSObject.Properties)
              
          }
     }
-return $tempvardg
+ return $tempvardg
 }
 
 function Set-ExistingDeliveryGroupObject
@@ -590,7 +608,7 @@ function Set-ExistingDeliveryGroupObject
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.DesktopGroup]$dg,
+[Parameter(Mandatory=$true)]$dg,
 [Parameter(Mandatory=$true)][string]$xdhost
 )
 
@@ -652,7 +670,7 @@ function set-UserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
+[Parameter(Mandatory=$true)]$app, 
 [Parameter(Mandatory=$true)][string]$xdhost)
     
     if($app.ResourceType -eq "Desktop")
@@ -697,8 +715,8 @@ function set-NewAppUserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$appmatch, 
+    [Parameter(Mandatory=$true)]$app, 
+    [Parameter(Mandatory=$true)]$appmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
@@ -729,8 +747,8 @@ function Set-AppEntitlement  {
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.DesktopGroup]$dg, 
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Desktop]$desktop, 
+    [Parameter(Mandatory=$true)]$dg, 
+    [Parameter(Mandatory=$true)]$desktop, 
     [Parameter(Mandatory=$true)][string]$xdhost)
     
     if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
@@ -765,7 +783,7 @@ function clear-AppUserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
+    [Parameter(Mandatory=$true)]$app, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
     
@@ -792,7 +810,7 @@ function clear-DesktopUserPerms
     XenDesktop DDC hostname to connect to
 #>
 Param (
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$desktop, 
+    [Parameter(Mandatory=$true)]$desktop, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
@@ -827,7 +845,7 @@ function New-FTAobject
 
 #>
 Param (
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.ConfiguredFTA]$FTA
+    [Parameter(Mandatory=$true)]$FTA
     )
 
 $tempvarfta = New-Object PSCustomObject
@@ -865,8 +883,8 @@ function test-icon
 
 #>
 Param (
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$app, 
-    [Parameter(Mandatory=$true)][Citrix.Broker.Admin.SDK.Application]$appmatch, 
+    [Parameter(Mandatory=$true)]$app, 
+    [Parameter(Mandatory=$true)]$appmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
@@ -920,7 +938,7 @@ Param (
         {
         write-host "Creating TAG $($tag.name)" -ForegroundColor Gray
             #Description argument not added until 7.11
-            if ($ddcver -lt "7.11")
+            if ([version]$ddcver -lt "7.11")
             {
             New-BrokerTag -AdminAddress $xdhost -Name $tag.name|Out-Null
             }
@@ -957,6 +975,7 @@ Param (
         Write-host "Creating Delivery Group" -ForegroundColor Green
             try
             {
+            write-host $dg.Name
             $dgmatch = New-DeliveryGroupObject $dg $xdhost|Invoke-Expression
             }
             Catch
@@ -1072,7 +1091,7 @@ Param (
                     {
                     write-host "Creating App" -ForegroundColor Green
                     $folder = $app.AdminFolderName
-                    if($folder -is [object])
+                    if(-not [string]::IsNullOrWhiteSpace($folder))
                     {
                         if (-Not (Test-BrokerAdminFolder -folder $folder -xdhost $xdhost))
                         {
@@ -1185,8 +1204,17 @@ Param (
 
 }
 
-
 #Start process
+
+#LTSR doesn't have TAG argument in get-brokerapplication.
+$ddcver = (Get-BrokerController -AdminAddress $source).ControllerVersion
+if ([version]$ddcver -lt 7.11 -and (-not [string]::IsNullOrWhiteSpace($ignoreapptag) -or -not [string]::IsNullOrWhiteSpace($apptag) ))
+{
+    write-warning "TAGS not available for Get-BrokerApplication in $ddcver version.  APP TAG filtering not possible.  ALL APPLICATIONS WILL BE EXPORTED! `nContinue in 10 seconds..."
+    Start-Sleep -Seconds 10
+}
+
+
         switch ($mode)
             {
                "both"{
