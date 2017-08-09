@@ -120,7 +120,7 @@ Param (
     {
     throw "Must Set Export Path while mode is set to EXPORT"
     }
-    $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion
+    $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion | select -first 1
 
 
     if(-not ([string]::IsNullOrWhiteSpace($dgtag)))
@@ -925,7 +925,7 @@ Param (
 
     write-host "Proccessing Tags" -ForegroundColor Magenta
     #Description argument not added until 7.11
-    $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion
+    $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion | select -first 1
     foreach($tag in $XDEXPORT.tags)
     {  
 
@@ -1207,7 +1207,7 @@ Param (
 #Start process
 
 #LTSR doesn't have TAG argument in get-brokerapplication.
-$ddcver = (Get-BrokerController -AdminAddress $source).ControllerVersion
+$ddcver = (Get-BrokerController -AdminAddress $source).ControllerVersion | select -first 1
 if ([version]$ddcver -lt 7.11 -and (-not [string]::IsNullOrWhiteSpace($ignoreapptag) -or -not [string]::IsNullOrWhiteSpace($apptag) ))
 {
     write-warning "TAGS not available for Get-BrokerApplication in $ddcver version.  APP TAG filtering not possible.  ALL APPLICATIONS WILL BE EXPORTED! `nContinue in 10 seconds..."
