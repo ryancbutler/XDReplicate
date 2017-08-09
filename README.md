@@ -33,6 +33,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
 - 07-26-17: Added some color to output
 - 08-04-17: LTSR doesn't like APP tags for get-brokerapplication. Removed strict-mode for now.
+- 08-09-17: Changes to DDCVERSION check
 
 ### XenDesktop Versions Tested
 
