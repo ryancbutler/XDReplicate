@@ -3,7 +3,7 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.4
+   Version: 1.4.1
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
@@ -19,6 +19,7 @@
             07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
             07-26-17: Added some color to output
             08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
+            08-09-17: Changes to DDCVERSION check
 
 .NOTES 
    Twitter: ryan_c_butler
