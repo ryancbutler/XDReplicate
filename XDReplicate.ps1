@@ -3,7 +3,7 @@
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
-   Version: 1.4.1
+   Version: 1.4.2
    By: Ryan Butler 01-16-17
    Updated: 05-11-17 Added LTSR Check and fix ICON creation
             05-12-17 Bug fixes
@@ -20,6 +20,7 @@
             07-26-17: Added some color to output
             08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
             08-09-17: Changes to DDCVERSION check
+            08-21-17: App Entitlement fixes for DG groups without desktops
 
 .NOTES 
    Twitter: ryan_c_butler
@@ -742,17 +743,13 @@ function Set-AppEntitlement  {
     Sets AppEntitlement if missing
 .PARAMETER DG
     Desktop Group where to create entitlement
-.PARAMETER DESKTOP
-    Newly created desktop
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 #>
 Param (
     [Parameter(Mandatory=$true)]$dg, 
-    [Parameter(Mandatory=$true)]$desktop, 
     [Parameter(Mandatory=$true)][string]$xdhost)
-    
-    if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
+    if (($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
     {
         if((Get-BrokerAppEntitlementPolicyRule -name $dg.Name -AdminAddress $xdhost -ErrorAction SilentlyContinue) -is [Object])
         {
@@ -761,7 +758,7 @@ Param (
         ELSE
         {
         write-host "Creating AppEntitlement"
-        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $desktop.DesktopGroupUid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
+        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $dg.uid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
         }
     }
     else
@@ -1013,7 +1010,7 @@ Param (
         }
     
         $desktops = $XDEXPORT.desktops|where-object{$_.DGNAME -eq $dg.name}
-
+        Set-AppEntitlement $dgmatch $xdhost
 
                 if($desktops)
                 {
@@ -1027,14 +1024,14 @@ Param (
                     Set-Desktopobject $desktop $xdhost|invoke-expression
                     clear-DesktopUserPerms $desktopmatch $xdhost
                     set-userperms $desktop $xdhost
-                    Set-AppEntitlement $dgmatch $desktopmatch $xdhost
+                   # Set-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
                     else
                     {
                     Write-host "Creating Desktop" -ForegroundColor Green
                     $desktopmatch = New-Desktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
                     set-userperms $desktop $xdhost
-                    Set-AppEntitlement $dgmatch $desktopmatch $xdhost
+                    #Set-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
 
                 }
