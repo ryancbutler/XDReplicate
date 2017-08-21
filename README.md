@@ -34,6 +34,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 07-26-17: Added some color to output
 - 08-04-17: LTSR doesn't like APP tags for get-brokerapplication. Removed strict-mode for now.
 - 08-09-17: Changes to DDCVERSION check
+- 08-21-17: App Entitlement fixes for DG groups without desktops
 
 ### XenDesktop Versions Tested
 
