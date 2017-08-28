@@ -23,7 +23,10 @@ If running PowerShell version 5 or above you can install via [Microsoft PowerShe
 ```
 Install-Script -Name XDReplicate -Scope currentuser
 ```
-
+### Inspect
+```
+Save-Script -Name XDReplicate -Path <path>
+```
 #### Update
 ```
 Update-Script XDReplicate
@@ -151,7 +154,10 @@ If running PowerShell version 5 or above you can install via [Microsoft PowerShe
 ```
 Install-Script -Name PVSReplicate -Scope currentuser
 ```
-
+### Inspect
+```
+Save-Script -Name PVSReplicate -Path <path>
+```
 #### Update
 ```
 Update-Script PVSReplicate
