@@ -35,6 +35,8 @@ install:
     Install-PackageProvider -Name NuGet -Force | Out-Null
     Install-Module -Name Pester -Force
     Install-Module -Name posh-git -Force
+    Find-Module PowerShellGet 
+    Install-Module -Name PowerShellGet -Force
 
 # Invoke Pester to run all of the unit tests, then save the results into XML in order to populate the AppVeyor tests section
 # If any of the tests fail, consider the pipeline failed
