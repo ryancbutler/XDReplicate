@@ -24,7 +24,7 @@ else
         foreach ($script in $scripts)
         {
             write-host "Checking $script"
-            $scriptinfo  = Test-ScriptFileInfo -path ..\$script
+            $scriptinfo  = Test-ScriptFileInfo -path $script
             [System.Version]$scriptver = $scriptinfo.version
             $psinfo = find-script $scriptinfo.name
             [System.Version]$psver = $psinfo.version
@@ -32,7 +32,7 @@ else
             if($psver -lt $scriptver)
             {
                 write-host "Updating PS Gallery"
-                Publish-Script -path ..\$script -NuGetApiKey $env:NuGetApiKey
+                Publish-Script -path $script -NuGetApiKey $env:NuGetApiKey
             }
             else {
                 write-host "Version matches.."
