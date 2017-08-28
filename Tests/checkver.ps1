@@ -14,8 +14,8 @@ elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0)
 else
 {
     
-    Try 
-    {
+    #Try 
+    #{
         
         #scripts to check
         $scripts = @()
@@ -43,11 +43,11 @@ else
 
         }
         
-    }
-    catch
-    {
-        throw $_
-    }
+    #}
+    #catch
+    #{
+    #    throw $_
+    #}
 
 
 
