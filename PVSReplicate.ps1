@@ -1,13 +1,47 @@
+<#PSScriptInfo
+
+.VERSION 1.6.2
+
+.GUID ae5930b7-9160-4a4f-9b65-88a1574eb06e
+
+.AUTHOR @ryan_c_butler
+
+.COMPANYNAME Techdrabble.com
+
+.COPYRIGHT 2017
+
+.TAGS PVS Replicate vDisk Import Export
+
+.LICENSEURI https://github.com/ryancbutler/XDReplicate/blob/master/License.txt
+
+.PROJECTURI https://github.com/ryancbutler/XDReplicate
+
+.ICONURI 
+
+.EXTERNALMODULEDEPENDENCIES 
+
+.REQUIREDSCRIPTS 
+
+.EXTERNALSCRIPTDEPENDENCIES 
+
+.RELEASENOTES
+02-28-17: Initial release
+05-09-17: Added "Site" option to only replicate specific site.
+07-27-17: Added 'JustAdmin' switch to only replicate to single server
+07-27-17: Added 'disk' argument to copy specific disk
+08-28-17: Updated for PS gallery
+
+#> 
+
+
+
+
+
 <#
 .SYNOPSIS
    Keep PVS vDisks and versioning consistent across multiple PVS sites and additional PVS farms
 .DESCRIPTION
    Checks for vDisks and versioning and will export XML if required.  Script will then robocopy all vDisk files out to all PVS servers.  Once copied script will import and set versioning to match local server.
-   Version: 1.6.1
-   By: Ryan Butler 02-28-17
-   Updated: 5-9-17
-            07-27-17: Added copy for specific disk
-            07-27-17: Added justadmin switch
 .NOTES
    Twitter: ryan_c_butler
    Website: Techdrabble.com

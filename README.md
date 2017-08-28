@@ -16,6 +16,19 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - Admin access to XenDesktop site
 - PowerShell v3 or greater
 
+### PS Gallery
+If running PowerShell version 5 or above you can install via [Microsoft PowerShell Gallery](https://www.powershellgallery.com/)
+
+#### Install
+```
+Install-Script -Name XDReplicate -Scope currentuser
+```
+
+#### Update
+```
+Update-Script XDReplicate
+```
+
 ### Changelog
 
 - 01-16-17: Initial release
@@ -35,6 +48,7 @@ Exports XenDesktop 7.x site information and imports to another 'Site' via remote
 - 08-04-17: LTSR doesn't like APP tags for get-brokerapplication. Removed strict-mode for now.
 - 08-09-17: Changes to DDCVERSION check
 - 08-21-17: App Entitlement fixes for DG groups without desktops
+- 08-28-17: Updated for PS gallery
 
 ### XenDesktop Versions Tested
 
@@ -130,12 +144,26 @@ Keep PVS vDisk versioning consistent across multiple PVS sites and additional PV
 - PassThru is used for all PVS server authentication
 - vDisk store path is the same across all servers (eg E:\vdisks)
 
+### PS Gallery
+If running PowerShell version 5 or above you can install via [Microsoft PowerShell Gallery](https://www.powershellgallery.com/)
+
+#### Install
+```
+Install-Script -Name PVSReplicate -Scope currentuser
+```
+
+#### Update
+```
+Update-Script PVSReplicate
+```
+
 ### Changelog
 
 - 02-28-2017: Initial release
 - 05-09-2017: Added "Site" option to only replicate specific site.
 - 07-27-2017: Added 'JustAdmin' switch to only replicate to single server
 - 07-27-2017: Added 'disk' argument to copy specific disk
+- 08-28-17: Updated for PS gallery
 
 ### PVS Versions Tested
 
