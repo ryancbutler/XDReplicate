@@ -7,6 +7,10 @@ if ($env:APPVEYOR_REPO_BRANCH -ne 'master')
 {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
+elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0)
+{
+    Write-Warning -Message "Skipping version increment and publish for pull request #$env:APPVEYOR_PULL_REQUEST_NUMBER"
+}
 else
 {
     
@@ -14,18 +18,21 @@ else
     {
         
         #scripts to check
+        $scripts = @()
         $scripts = @($env:PSScripts -split ",")
         
         foreach ($script in $scripts)
         {
-            $scriptinfo  = Test-ScriptFileInfo -path $script
+            write-host "Checking $script"
+            $scriptinfo  = Test-ScriptFileInfo -path ..\$script
             [System.Version]$scriptver = $scriptinfo.version
             $psinfo = find-script $scriptinfo.name
             [System.Version]$psver = $psinfo.version
-            write-host "Found Github script version $scriptinfo and PS gallery version $psver"
+            write-host "Found Github script version $scriptver and PS gallery version $psver"
             if($psver -lt $scriptver)
             {
                 write-host "Updating PS Gallery"
+                Publish-Script -path ..\$script -NuGetApiKey $env:NuGetApiKey
             }
             else {
                 write-host "Version matches.."
