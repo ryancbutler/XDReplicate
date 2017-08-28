@@ -25,8 +25,11 @@ else
         {
             write-host "Checking $script"
             $scriptinfo  = Test-ScriptFileInfo -path $script
+            write-host $scriptinfo
             [System.Version]$scriptver = $scriptinfo.version
+            write-host $scriptver
             $psinfo = find-script $scriptinfo.name
+            write-host $psinfo
             [System.Version]$psver = $psinfo.version
             write-host "Found Github script version $scriptver and PS gallery version $psver"
             if($psver -lt $scriptver)
