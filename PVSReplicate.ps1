@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.6.2
+.VERSION 1.6.3
 
 .GUID ae5930b7-9160-4a4f-9b65-88a1574eb06e
 
@@ -10,7 +10,7 @@
 
 .COPYRIGHT 2017
 
-.TAGS PVS Replicate vDisk Import Export
+.TAGS Citrix PVS Replicate vDisk Import Export
 
 .LICENSEURI https://github.com/ryancbutler/XDReplicate/blob/master/License.txt
 
@@ -32,10 +32,6 @@
 08-28-17: Updated for PS gallery
 
 #> 
-
-
-
-
 
 <#
 .SYNOPSIS

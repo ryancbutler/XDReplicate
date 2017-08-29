@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.4.3
+.VERSION 1.4.4
 
 .GUID a71f41cd-c06d-4735-803c-c3689b962f0a
 
@@ -10,7 +10,7 @@
 
 .COPYRIGHT 2017
 
-.TAGS XenDesktop Export Import PublishedApps
+.TAGS Citrix XenDesktop Export Import PublishedApps
 
 .LICENSEURI https://github.com/ryancbutler/XDReplicate/blob/master/License.txt
 
@@ -44,10 +44,6 @@
 08-28-2017: Updated for PS gallery
 
 #> 
-
-
-
-
 
 <#
 .SYNOPSIS
