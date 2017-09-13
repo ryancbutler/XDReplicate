@@ -52,6 +52,8 @@ Update-Script XDReplicate
 - 08-09-17: Changes to DDCVERSION check
 - 08-21-17: App Entitlement fixes for DG groups without desktops
 - 08-28-17: Updated for PS gallery
+- 09-12-17: Fix for desktop permissions
+- 09-13-17: Fix for admin permsissions
 
 ### XenDesktop Versions Tested
 
@@ -59,6 +61,7 @@ Update-Script XDReplicate
 - 7.11
 - 7.12
 - 7.14.1
+- 7.15
 
 ### What is copied for XenDesktop?
 

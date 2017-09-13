@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.4.4
+.VERSION 1.4.6
 
 .GUID a71f41cd-c06d-4735-803c-c3689b962f0a
 
@@ -41,8 +41,9 @@
 08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
 08-09-17: Changes to DDCVERSION check
 08-21-17: App Entitlement fixes for DG groups without desktops
-08-28-2017: Updated for PS gallery
-
+08-28-17: Updated for PS gallery
+09-12-17: Fix for desktop permissions
+09-13-17: Fix for admin permsissions
 #> 
 
 <#
@@ -689,43 +690,28 @@ function set-UserPerms
 {
 <#
 .SYNOPSIS
-    Sets user permissions on app or desktop
+    Sets user permissions on desktop
 .DESCRIPTION
-    Sets user permissions on app or desktop
+    Sets user permissions on desktop
 .PARAMETER APP
-    Exported application or desktop object
+    Exported desktop object
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)]$app, 
+[Parameter(Mandatory=$true)]$desktop, 
 [Parameter(Mandatory=$true)][string]$xdhost)
     
-    if($app.ResourceType -eq "Desktop")
+    if ($desktop.IncludedUserFilterEnabled)
     {
-        
-        if ($app.IncludedUserFilterEnabled)
-        {
-        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddIncludedUsers $app.includedusers -Name $app.Name
-        }
+        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddIncludedUsers $desktop.includedusers -Name $desktop.Name
+    }
 
-        if ($app.ExcludedUserFilterEnabled)
-        {
-        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUserss $app.excludedusers -Name $app.Name
-        }
-    }
-    else
+    if ($desktop.ExcludedUserFilterEnabled)
     {
-        if ($app.UserFilterEnabled)
-        {
-        write-host "Setting App Permissions" -ForegroundColor Green
-             foreach($user in $app.AssociatedUserNames)
-             {
-                write-host $user
-                Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
-             }
-        }
+        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUsers $desktop.excludedusers -Name $desktop.Name
     }
+
 }
 
 function set-NewAppUserPerms
@@ -1218,8 +1204,10 @@ Param (
         else
         {
         write-host "Adding $($admin.Name)" -ForegroundColor Green
+        $rights = ($admin.Rights) -split ":"
         New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid|out-null
-        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
+        #Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
+        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.name -Role $rights[0] -Scope $rights[1]
         }
 
     }
