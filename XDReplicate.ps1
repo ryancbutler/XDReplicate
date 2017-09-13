@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.4.4
+.VERSION 1.4.5
 
 .GUID a71f41cd-c06d-4735-803c-c3689b962f0a
 
@@ -41,8 +41,8 @@
 08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
 08-09-17: Changes to DDCVERSION check
 08-21-17: App Entitlement fixes for DG groups without desktops
-08-28-2017: Updated for PS gallery
-
+08-28-17: Updated for PS gallery
+09-12-17: Fix for desktop permissions
 #> 
 
 <#
