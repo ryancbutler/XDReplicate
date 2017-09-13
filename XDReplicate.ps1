@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.4.5
+.VERSION 1.4.6
 
 .GUID a71f41cd-c06d-4735-803c-c3689b962f0a
 
@@ -43,6 +43,7 @@
 08-21-17: App Entitlement fixes for DG groups without desktops
 08-28-17: Updated for PS gallery
 09-12-17: Fix for desktop permissions
+09-13-17: Fix for admin permsissions
 #> 
 
 <#
@@ -1203,8 +1204,10 @@ Param (
         else
         {
         write-host "Adding $($admin.Name)" -ForegroundColor Green
+        $rights = ($admin.Rights) -split ":"
         New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid|out-null
-        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
+        #Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
+        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.name -Role $rights[0] -Scope $rights[1]
         }
 
     }
