@@ -689,43 +689,28 @@ function set-UserPerms
 {
 <#
 .SYNOPSIS
-    Sets user permissions on app or desktop
+    Sets user permissions on desktop
 .DESCRIPTION
-    Sets user permissions on app or desktop
+    Sets user permissions on desktop
 .PARAMETER APP
-    Exported application or desktop object
+    Exported desktop object
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)]$app, 
+[Parameter(Mandatory=$true)]$desktop, 
 [Parameter(Mandatory=$true)][string]$xdhost)
     
-    if($app.ResourceType -eq "Desktop")
+    if ($desktop.IncludedUserFilterEnabled)
     {
-        
-        if ($app.IncludedUserFilterEnabled)
-        {
-        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddIncludedUsers $app.includedusers -Name $app.Name
-        }
+        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddIncludedUsers $desktop.includedusers -Name $desktop.Name
+    }
 
-        if ($app.ExcludedUserFilterEnabled)
-        {
-        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUserss $app.excludedusers -Name $app.Name
-        }
-    }
-    else
+    if ($desktop.ExcludedUserFilterEnabled)
     {
-        if ($app.UserFilterEnabled)
-        {
-        write-host "Setting App Permissions" -ForegroundColor Green
-             foreach($user in $app.AssociatedUserNames)
-             {
-                write-host $user
-                Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
-             }
-        }
+        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUserss $desktop.excludedusers -Name $desktop.Name
     }
+
 }
 
 function set-NewAppUserPerms
