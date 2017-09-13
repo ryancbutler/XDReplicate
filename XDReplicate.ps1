@@ -708,7 +708,7 @@ Param (
 
     if ($desktop.ExcludedUserFilterEnabled)
     {
-        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUserss $desktop.excludedusers -Name $desktop.Name
+        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUsers $desktop.excludedusers -Name $desktop.Name
     }
 
 }
