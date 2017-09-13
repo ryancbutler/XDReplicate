@@ -61,6 +61,7 @@ Update-Script XDReplicate
 - 7.11
 - 7.12
 - 7.14.1
+- 7.15
 
 ### What is copied for XenDesktop?
 
