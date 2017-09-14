@@ -1,0 +1,48 @@
+version: 1.0.{build}
+os: WMF 5
+skip_commits:
+  files:
+    - README.md
+  message: /updated readme.*|update readme.*s|update docs.*|PSGallery Version.*|update appveyor.*/
+pull_requests:
+  do_not_increment_build_number: true
+only_commits:
+  files:
+    - XDReplicate.ps1
+build_script:
+- ps: |
+    Install-PackageProvider -Name NuGet -Force | Out-Null
+    find-module -Repository PSGallery -Name PowerShellGet | Out-Null
+    save-module -name PowerShellGet -path "C:\Program Files\WindowsPowerShell\Modules" | out-null
+    Import-Module -Name "C:\Program Files\WindowsPowerShell\Modules\PowerShellGet\1.1.3.2\PSModule.psm1" -force | out-null
+    find-module -Repository PSGallery -Name PSScriptAnalyzer | Out-Null
+    Install-Module -Name PSScriptAnalyzer -Force -Repository PSGallery | Out-Null
+    find-module -Repository PSGallery -Name Pester | Out-Null
+    Install-Module -Name Pester -Force -Repository PSGallery | Out-Null
+    find-module -Repository PSGallery -Name PSDeploy | Out-Null
+    Install-Module -Name PSDeploy -Force -Repository PSGallery | Out-Null
+    find-module -Repository PSGallery -Name posh-git | Out-Null
+    Install-Module -Name posh-git -Force -Repository PSGallery | Out-Null
+    $env:Path += ";$env:ProgramFiles\Git\cmd"
+test_script:
+  - ps: |
+      write-verbose "Running Pester..."
+      $pest = Invoke-Pester -passthru
+      if ($pest.FailedCount -gt 0) { 
+        throw "$($pest.FailedCount) tests failed."
+        }
+deploy_script:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:github):x-oauth-basic@github.com`n"
+  - git config --global user.email "ryan@ryancbutler.com"
+  - git config --global user.name "Ryan Butler"
+  - git config --global core.autocrlf false
+  - git config --global core.safecrlf false
+  - ps: |
+      Write-Verbose "Deploying..."
+      . .\AppVeyor\deploy.ps1
+environment:
+  PSGKey:
+    secure: XbgpBX+B+lBgfWt4379Ez1823W4nLM2zPlOWWvw8zGrvKmZD7/uIlpLYrW4zpjMb
+  github:
+    secure: qJwCE47jamnSv6Au8wD9CcJmovghdkcm/qoX0IjWa3SDGaeZkGQlQMUlfW9RlsHe
