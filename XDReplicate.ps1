@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.4.6
+.VERSION 1.4.7
 
 .GUID a71f41cd-c06d-4735-803c-c3689b962f0a
 
@@ -44,7 +44,12 @@
 08-28-17: Updated for PS gallery
 09-12-17: Fix for desktop permissions
 09-13-17: Fix for admin permsissions
+
+.PRIVATEDATA 
+
 #> 
+
+
 
 <#
 .SYNOPSIS
