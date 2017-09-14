@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.4.7
+.VERSION 1.4.6
 
 .GUID a71f41cd-c06d-4735-803c-c3689b962f0a
 
@@ -44,12 +44,7 @@
 08-28-17: Updated for PS gallery
 09-12-17: Fix for desktop permissions
 09-13-17: Fix for admin permsissions
-
-.PRIVATEDATA 
-
 #> 
-
-
 
 <#
 .SYNOPSIS
@@ -119,6 +114,14 @@ Param
 #Set-StrictMode -Version Latest
 Clear-Host
 Add-PSSnapin citrix*
+
+
+############ (SPONTREL)
+#INSERT GLOBAL MAX RECORD COUNT VARIABLE -- set a max record count in one place
+    $global:maxrecordcount = "3000"
+############
+
+
 function export-xd 
 {
 <#
@@ -159,11 +162,11 @@ Param (
 
     if(-not ([string]::IsNullOrWhiteSpace($dgtag)))
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $dgtag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoredgtag}
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -Tag $dgtag -MaxRecordCount $maxrecordcount|Where-Object{$_.Tags -notcontains $ignoredgtag}
     }
     else
     {
-    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoredgtag}
+    $DesktopGroups = Get-BrokerDesktopGroup -AdminAddress $xdhost -MaxRecordCount $maxrecordcount|Where-Object{$_.Tags -notcontains $ignoredgtag}
     }
 
     if(!($DesktopGroups -is [object]))
@@ -179,7 +182,7 @@ Param (
     foreach ($DG in $DesktopGroups)
     {
         write-host $DG.Name
-        $dg|add-member -NotePropertyName 'AccessPolicyRule' -NotePropertyValue (Get-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount 2000)
+        $dg|add-member -NotePropertyName 'AccessPolicyRule' -NotePropertyValue (Get-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount $maxrecordcount)
         $dg|add-member -NotePropertyName 'PreLaunch' -NotePropertyValue (Get-BrokerSessionPreLaunch -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue)
         $dg|add-member -NotePropertyName 'PowerTime' -NotePropertyValue (Get-BrokerPowerTimeScheme -AdminAddress $xdhost -Desktopgroupuid $dg.Uid -ErrorAction SilentlyContinue)
         
@@ -190,10 +193,10 @@ Param (
             if ([version]$ddcver -lt "7.11")
             {
                 write-warning "Ignoring APP TAG ARGUMENTS."
-                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount $maxrecordcount
             }
             else {
-                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount $maxrecordcount|Where-Object{$_.Tags -notcontains $ignoreapptag}
             }
         
         }
@@ -201,11 +204,11 @@ Param (
         {
             if ([version]$ddcver -lt "7.11")
             {
-            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000  
+            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount $maxrecordcount  
             
             }
             else {
-            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{$_.Tags -notcontains $ignoreapptag}
+            $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount $maxrecordcount|Where-Object{$_.Tags -notcontains $ignoreapptag}
             }
         }
 
@@ -239,7 +242,7 @@ Param (
     
 
     #Grabs Desktop info
-    $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount 2000
+    $desktops = Get-BrokerEntitlementPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dg.Uid -MaxRecordCount $maxrecordcount
         if($desktops -is [object])
         {
     
@@ -268,8 +271,23 @@ Param (
     $xdout|Add-Member -NotePropertyName "dgs" -NotePropertyValue $DesktopGroups
     $xdout|Add-Member -NotePropertyName "apps" -NotePropertyValue $appobject
     $xdout|Add-Member -NotePropertyName "desktops" -NotePropertyValue $desktopobject
+ 
+################## (SPONTREL)
+#  SERVERS Insert exported data
+    Write-Host "Processing Machines"
+    $xdout|Add-Member -NotePropertyName "machines" -NotePropertyValue (Get-BrokerDesktop -MaxRecordCount $maxrecordcount) 
+##################
+
+    
+################## (SPONTREL)
+#  APPGROUP Insert exported data
+    Write-Host "Processing Application Groups"
+    $xdout|Add-Member -NotePropertyName "AppGroups" -NotePropertyValue  (Get-BrokerApplicationGroup -MaxRecordCount $maxrecordcount) #| Where-Object {$_.name -like "*~TestServers*"})
+##################
+    
     Write-Host "Processing Tags"
-    $xdout|Add-Member -NotePropertyName "tags" -NotePropertyValue (Get-BrokerTag -AdminAddress $xdhost -MaxRecordCount 2000)
+    $xdout|Add-Member -NotePropertyName "tags" -NotePropertyValue (Get-BrokerTag -AdminAddress $xdhost -MaxRecordCount $maxrecordcount)
+
 
     #Export to either variable or XML
     if($mode -like "export")
@@ -1213,13 +1231,135 @@ Param (
         New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid|out-null
         #Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
         Add-AdminRight -AdminAddress $xdhost -Administrator $admin.name -Role $rights[0] -Scope $rights[1]
+####################  (SPONTREL)
+# INSERT NEW FUNCTION
+####################
+function AppGroups
+{
+    Param (
+        [Parameter(Mandatory=$true)][string]$xdhost, 
+        [Parameter(Mandatory=$true)]$xdexport)
+        if (!($XDEXPORT))
+        {
+        throw "Nothing to import"
         }
 
+foreach($dg in $XDEXPORT.dgs)
+    {
+
+    #Bring in appgroups
+        #including the where-object {$_.DGNAME -eq $dg.name} fails to run.
+    write-host "Importing AppGroups from XML file"
+    $export_appgroups = $XDEXPORT.appgroups #|where-object{$_.DGNAME -eq $dg.name}
+ 
+    #Get all local machine data.
+    write-host "Importing all local machines from this site"
+    $local_allmachines = get-BrokerMachine -MaxRecordCount $maxrecordcount
+
+    write-host "Importing apps from XML file"
+    $apps = $XDEXPORT.apps
+ 
+    if ($export_appgroups)
+        {      
+        write-host -ForegroundColor Magenta "Processing AppGroups"
+
+        foreach ($export_appgroup in $export_appgroups)
+            {
+            #Create the Application group if it doesn't exist
+            $export_appgroup_name = $export_appgroup.name 
+            if ((Get-BrokerApplicationGroup -Name $export_appgroup_name -ea 0) -eq $null) 
+                {New-BrokerApplicationGroup -Name $export_appgroup_name | out-null; write-host -foregroundcolor green "Creating AppGroup: $export_appgroup_name"}
+            else {write-host -foregroundcolor gray "AppGroup: $export_appgroup_name found"}
+            
+            #Set paramaters for the new Application Group 
+            Add-BrokerApplicationGroup -Name $export_appgroup_name -DesktopGroup $dg.name
+
+            #Restrict the app group to a machine tag
+            Set-BrokerApplicationGroup `
+                -name $export_appgroup.name `
+                -RestrictToTag $export_appgroup.RestrictToTag `
+                -SessionSharingEnabled $export_appgroup.SessionSharingEnabled `
+                -Enabled $export_appgroup.Enabled
+            }   
+        }    
+
+
+                #get all local names
+        write-host "Importing AppGroups from this site"
+        $local_appgroups = Get-BrokerApplicationGroup -MaxRecordCount $maxrecordcount
+ 
+ $export_app = $apps | Where-Object {$_.publishedname -eq "Prod Apps Test"}   
+       
+        foreach ($export_app in $apps)     
+
+            {   
+            $export_appgroup_uuids = $export_app.AssociatedApplicationGroupUUIDs.GUID
+            foreach ($export_appgroup_uuid in $export_appgroup_uuids) 
+                {
+                $export_appgroup_name = ($export_appgroups | Where-Object {$_.UUID -eq $export_appgroup_uuid}).Name
+                $local_appgroup_uid = ($local_appgroups |  Where-Object {$_.Name -eq $export_appgroup_name}).Uid
+                $local_appname = $export_app.PublishedName
+         
+                #add application to application group of local site
+                write-host -foregroundcolor gray "Adding App: " -NoNewline
+                Write-host -foregroundcolor green "$local_appname " -nonewline
+                write-host -foregroundcolor gray "to AppGroup: " -nonewline
+                write-host -foregroundcolor magenta $export_appgroup_name
+
+                Get-BrokerApplication -PublishedName $local_appname | Add-BrokerApplication -ApplicationGroup $local_appgroup_uid 
+                }
+            }     
+
+
+        #  MACHINE TAG SECTION
+        write-host "Adding tags from XML to matching local machine names" 
+   
+        Foreach ($export_machine in $xdexport.machines)
+        {            
+            $export_machinetags = $export_machine.Tags
+        
+            #Convert machine name to usable data
+            $fullmachinename = $export_machine.machinename
+        
+            $local_machine = Get-BrokerDesktop -MachineName $fullmachinename
+  
+  
+            
+            
+            
+            if (($local_machine.DesktopGroupUid) -eq $null) 
+                {
+                write-host -ForegroundColor Red "$fullmachinename not in a Delivery Group, not setting a tag"
+                }
+            else
+                {
+                #Remove any tag already applied
+                $local_machine.tags | % {Remove-BrokerTag $_ -Machine $fullmachinename}
+    
+                #Convert to usable format (remove "DOMAIN\" name from the machine name)
+                [string]$local_machinename = ($local_machine.MachineName).split('\')[1].split(' ')
+
+
+                foreach ($tag in $export_machinetags)
+                    {
+                    #Set the tags to the machine
+                    write-host -foreground Gray "Setting tag: " -NoNewline
+                    write-host -foreground green "$tag " -nonewline
+                    write-host -ForegroundColor Gray "on machine: " -NoNewline
+                    write-host -foreground cyan $local_machinename
+                    
+                    Add-BrokerTag -name $tag -Desktop $fullmachinename
+                    }
+                }
+        }
+
+    
     }
-
-
-
 }
+
+############## (SPONTREL)
+# END NEW FUNCTION INSERT
+##############
 
 #Start process
 
@@ -1256,6 +1396,12 @@ if ([version]$ddcver -lt 7.11 -and (-not [string]::IsNullOrWhiteSpace($ignoreapp
                     }
                 
                 import-xd -xdhost $destination -xdexport (Import-Clixml $xmlpath)
+
+################ (SPONTREL)
+# APPRGOUP INSERT
+                #apps must be created before the AppGroup function can tie them to app groups
+                AppGroups -xdhost $destination -xdexport (Import-Clixml $xmlpath)
+################
                 }
                 "export"{
                     if([string]::IsNullOrWhiteSpace($XMLPATH))
