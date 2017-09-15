@@ -100,39 +100,40 @@ Update-Module CTXXD-Replicate
 
 ### Usage
 
-Exports data from localhost and exports to C:\temp\my.xml
+**Exports data from localhost and exports to C:\temp\my.xml**
 
 `Export-XDSite -xdhost localhost -XMLPATH "C:\temp\my.xml"`
 
-Exports data from localhost with delivery groups tagged with "replicate" and imports on DDC02.DOMAIN.COM
+**Exports data from localhost with delivery groups tagged with "replicate" and imports on DDC02.DOMAIN.COM**
 
 `Export-XDSite -xdhost localhost -dgtag "replicate"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
    
-Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM
+**Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM**
 
 `Export-XDSite -xdhost localhost -ignoredgtag "skip"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Exports data from localhost delivery groups while only including apps tagged with "replicate" and imports on DDC02.DOMAIN.COM   
+**Exports data from localhost delivery groups while only including apps tagged with "replicate" and imports on DDC02.DOMAIN.COM**
 
 `Export-XDSite -xdhost localhost -apptag "replicate"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Exports data from localhost delivery groups while ignoring apps tagged with "skip" and imports on DDC02.DOMAIN.COM
+**Exports data from localhost delivery groups while ignoring apps tagged with "skip" and imports on DDC02.DOMAIN.COM**
 
 `Export-XDSite -xdhost localhost -ignoreapptag "skip"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Imports data from C:\temp\my.xml and imports to localhost
+**Imports data from C:\temp\my.xml and imports to localhost**
 
 `Import-XDSite -xdhost localhost -xmlpath "C:\temp\mypath.xml"`
 
-Exports data from localhost and imports on DDC02.DOMAIN.COM
+**Exports data from localhost and imports on DDC02.DOMAIN.COM**
 
 `Export-XDSite -xdhost localhost|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Exports data from DDC01.DOMAIN.COM and imports on DDC02.DOMAIN.COM
+**Exports data from DDC01.DOMAIN.COM and imports on DDC02.DOMAIN.COM**
 
 `Export-XDSite -xdhost DDC01.DOMAIN.COM|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Exports data from localhost and imports on DDC02.DOMAIN.COM outputs verbose
+**Exports data from localhost and imports on DDC02.DOMAIN.COM outputs verbose**
+
 `Export-XDSite -xdhost localhost -verbose|Import-XDSite -xdhost DDC02.DOMAIN.COM -verbose`
 
 ## Provisioning Services 7.x vDisk version Export and Import Script
