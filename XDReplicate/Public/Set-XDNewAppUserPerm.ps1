@@ -12,22 +12,24 @@ function Set-XDNewAppUserPerm
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 #>
-[CmdletBinding()]
+[cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact='Low')]
 Param (
     [Parameter(Mandatory=$true)]$app, 
     [Parameter(Mandatory=$true)]$appmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
-if ($app.UserFilterEnabled)
+    if ($PSCmdlet.ShouldProcess("App Permissions")) {  
+    
+        if ($app.UserFilterEnabled)
         {
-        write-host "Setting App Permissions" -ForegroundColor Green
+        Write-Verbose "Setting App Permissions"
              foreach($user in $app.AssociatedUserNames)
              {
-                write-host $user
+                Write-Verbose $user
                 Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $appmatch.Name
              }
         }
-    
+    }
 
 }
