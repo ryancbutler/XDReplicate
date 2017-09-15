@@ -119,7 +119,7 @@ Param
 #Set-StrictMode -Version Latest
 Clear-Host
 Add-PSSnapin citrix*
-function export-xd 
+function export-xdsite
 {
 <#
 .SYNOPSIS
@@ -285,7 +285,7 @@ Param (
 }
 
 
-function Test-BrokerAdminFolder 
+function Test-XDBrokerAdminFolder 
 {
 <#
 .SYNOPSIS
@@ -318,7 +318,7 @@ Param(
 return $found
 }
 
-function new-adminfolders 
+function new-xdadminfolder 
 {
 <#
 .SYNOPSIS
@@ -341,7 +341,7 @@ $paths = @($folder -split "\\"|where-object{$_ -ne ""})
             {          
             if($d -eq 0)
                 {                  
-                    if((Test-BrokerAdminFolder -folder ($paths[$d] + "\") -xdhost $xdhost) -eq $false)
+                    if((Test-XDBrokerAdminFolder -folder ($paths[$d] + "\") -xdhost $xdhost) -eq $false)
                     {
                      New-BrokerAdminFolder -AdminAddress $xdhost -FolderName $paths[$d]|Out-Null
                     }
@@ -349,7 +349,7 @@ $paths = @($folder -split "\\"|where-object{$_ -ne ""})
                 }
                 else
                 {                    
-                    if((Test-BrokerAdminFolder -folder ($lastfolder + "\" + $paths[$d] + "\") -xdhost $xdhost) -eq $false)
+                    if((Test-XDBrokerAdminFolder -folder ($lastfolder + "\" + $paths[$d] + "\") -xdhost $xdhost) -eq $false)
                     {
                     New-BrokerAdminFolder -AdminAddress $xdhost -FolderName $paths[$d] -ParentFolder $lastfolder|Out-Null
                     }
@@ -358,7 +358,7 @@ $paths = @($folder -split "\\"|where-object{$_ -ne ""})
             }
 }
 
-function new-appobject 
+function new-xdappobject 
 {
 <#
 .SYNOPSIS
@@ -421,7 +421,7 @@ foreach($t in $app.PSObject.Properties)
 return $tempvarapp
 }
 
-function set-existingappobject 
+function set-xdexistingappobject 
 {
 <#
 .SYNOPSIS
@@ -475,7 +475,7 @@ foreach($t in $app.PSObject.Properties)
 return $tempvarapp
 }
 
-function Set-Desktopobject 
+function Set-XDDesktopobject 
 {
 <#
 .SYNOPSIS
@@ -517,7 +517,7 @@ foreach($t in $desktop.PSObject.Properties)
 return $tempvardesktop
 }
 
-function New-Desktopobject 
+function New-XDDesktopobject 
 {
 <#
 .SYNOPSIS
@@ -564,7 +564,7 @@ foreach($t in $desktop.PSObject.Properties)
 return $tempvardesktop
 }
 
-function New-DeliveryGroupObject 
+function New-XDDeliveryGroupObject 
 {
 <#
 .SYNOPSIS
@@ -629,7 +629,7 @@ foreach($t in $dg.PSObject.Properties)
  return $tempvardg
 }
 
-function Set-ExistingDeliveryGroupObject
+function Set-XDExistingDeliveryGroupObject
 {
 <#
 .SYNOPSIS
@@ -691,7 +691,7 @@ foreach($t in $dg.PSObject.Properties)
 return $tempvardg
 }
 
-function set-UserPerms
+function set-XDUserPerm
 {
 <#
 .SYNOPSIS
@@ -719,7 +719,7 @@ Param (
 
 }
 
-function set-NewAppUserPerms
+function set-XDNewAppUserPerm
 {
 <#
 .SYNOPSIS
@@ -752,7 +752,7 @@ if ($app.UserFilterEnabled)
 
 }
 
-function Set-AppEntitlement  {
+function Set-XDAppEntitlement  {
 <#
 .SYNOPSIS
     Sets AppEntitlement if missing
@@ -785,7 +785,7 @@ Param (
 
 }
 
-function clear-AppUserPerms 
+function clear-XDAppUserPerm 
 {
 <#
 .SYNOPSIS
@@ -812,7 +812,7 @@ Param (
         }
 }
 
-function clear-DesktopUserPerms
+function clear-XDDesktopUserPerm
 {
 <#
 .SYNOPSIS
@@ -848,7 +848,7 @@ Param (
  
 }
 
-function New-FTAobject
+function New-XDFTAobject
 {
 <#
 .SYNOPSIS
@@ -882,7 +882,7 @@ foreach($t in $fta.PSObject.Properties)
 return $tempvarfta
 }
 
-function test-icon
+function test-xdicon
 {
 <#
 .SYNOPSIS
@@ -917,7 +917,7 @@ Param (
 return $match
 }
 
-function import-xd
+function import-xdsite
 {
 <#
 .SYNOPSIS
@@ -973,7 +973,7 @@ Param (
         if ($dgmatch -is [object])
         {
         write-host "Setting $($dgmatch.name)"
-        Set-ExistingDeliveryGroupObject $dg $xdhost|Invoke-Expression
+        Set-XDExistingDeliveryGroupObject $dg $xdhost|Invoke-Expression
         Get-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|remove-BrokerAccessPolicyRule -AdminAddress $xdhost -ErrorAction SilentlyContinue|Out-Null
         $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -DesktopGroupUid $dgmatch.Uid -adminaddress $xdhost|Out-Null
             
@@ -991,7 +991,7 @@ Param (
             try
             {
             write-host $dg.Name
-            $dgmatch = New-DeliveryGroupObject $dg $xdhost|Invoke-Expression
+            $dgmatch = New-XDDeliveryGroupObject $dg $xdhost|Invoke-Expression
             }
             Catch
             {
@@ -1027,7 +1027,7 @@ Param (
         }
     
         $desktops = $XDEXPORT.desktops|where-object{$_.DGNAME -eq $dg.name}
-        Set-AppEntitlement $dgmatch $xdhost
+        Set-XDAppEntitlement $dgmatch $xdhost
 
                 if($desktops)
                 {
@@ -1038,17 +1038,17 @@ Param (
                     if($desktopmatch)
                     {
                     write-host "Setting desktop" -ForegroundColor Gray
-                    Set-Desktopobject $desktop $xdhost|invoke-expression
-                    clear-DesktopUserPerms $desktopmatch $xdhost
-                    set-userperms $desktop $xdhost
-                   # Set-AppEntitlement $dgmatch $desktopmatch $xdhost
+                    Set-XDDesktopobject $desktop $xdhost|invoke-expression
+                    clear-XDDesktopUserPerm $desktopmatch $xdhost
+                    set-XDUserPerm $desktop $xdhost
+                   # Set-XDAppEntitlement $dgmatch $desktopmatch $xdhost
                     }
                     else
                     {
                     Write-host "Creating Desktop" -ForegroundColor Green
-                    $desktopmatch = New-Desktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
-                    set-userperms $desktop $xdhost
-                    #Set-AppEntitlement $dgmatch $desktopmatch $xdhost
+                    $desktopmatch = New-XDDesktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
+                    set-XDUserPerm $desktop $xdhost
+                    #Set-XDAppEntitlement $dgmatch $desktopmatch $xdhost
                     }
 
                 }
@@ -1074,17 +1074,17 @@ Param (
                         }
                         else
                         {
-                            if (-Not (Test-BrokerAdminFolder -folder $folder -xdhost $xdhost))
+                            if (-Not (Test-XDBrokerAdminFolder -folder $folder -xdhost $xdhost))
                             {
                             write-host "Creating folder" -ForegroundColor Green
-                            new-adminfolders $folder $xdhost
+                            new-xdadminfolder $folder $xdhost
                             }
                         Write-host Moving App to correct folder -ForegroundColor Yellow
                         Move-BrokerApplication -AdminAddress $xdhost $appmatch -Destination $app.AdminFolderName
                         $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername -ErrorAction SilentlyContinue
                         }
                     }
-                    set-existingappobject $app $appmatch $xdhost|Invoke-Expression
+                    set-xdexistingappobject $app $appmatch $xdhost|Invoke-Expression
 
                     #makes sure to rename app to match
                     if($appmatch.ApplicationName -notlike $app.ApplicationName)
@@ -1094,13 +1094,13 @@ Param (
                         $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername
                     }
 
-                        if((test-icon $app $appmatch $xdhost) -eq $false)
+                        if((test-xdicon $app $appmatch $xdhost) -eq $false)
                         {
                         $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                         $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
                         }
-                    clear-AppUserPerms $appmatch $xdhost
-                    set-NewAppUserPerms $app $appmatch $xdhost
+                    clear-XDAppUserPerm $appmatch $xdhost
+                    set-XDNewAppUserPerm $app $appmatch $xdhost
                     }
                     else
                     {
@@ -1108,13 +1108,13 @@ Param (
                     $folder = $app.AdminFolderName
                     if(-not [string]::IsNullOrWhiteSpace($folder))
                     {
-                        if (-Not (Test-BrokerAdminFolder -folder $folder -xdhost $xdhost))
+                        if (-Not (Test-XDBrokerAdminFolder -folder $folder -xdhost $xdhost))
                         {
                         write-host "Creating folder" -ForegroundColor Green
-                        new-adminfolders $folder $xdhost
+                        new-xdadminfolder $folder $xdhost
                         }
                     }
-                    $appmatch = new-appobject $app $xdhost $dgmatch.Name|Invoke-Expression
+                    $appmatch = new-xdappobject $app $xdhost $dgmatch.Name|Invoke-Expression
                     
                     if($appmatch -is [Object])
                     {
@@ -1124,13 +1124,13 @@ Param (
                     
                         $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
                         $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
-                        set-NewAppUserPerms $app $appmatch $xdhost
+                        set-XDNewAppUserPerm $app $appmatch $xdhost
                         
                         if($app|Select-Object -ExpandProperty FTA -ErrorAction SilentlyContinue)
                         {
                             foreach ($fta in $app.FTA)
                             {
-                            New-FTAobject -AdminAddress $xdhost $fta|New-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $newapp.Uid
+                            New-XDFTAobject -AdminAddress $xdhost $fta|New-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $newapp.Uid
                             }
                         }
                      
@@ -1240,9 +1240,9 @@ if ([version]$ddcver -lt 7.11 -and (-not [string]::IsNullOrWhiteSpace($ignoreapp
                     throw "Must have destination DDC set"
                     }
                 write-host "Begining export..." -ForegroundColor Yellow
-                $xdexport = export-xd -xdhost $source -mode $mode -dgtag $dgtag -ignoredgtag $ignoredgtag -apptag $apptag -ignoreapptag $ignoreapptag
+                $xdexport = export-xdsite -xdhost $source -mode $mode -dgtag $dgtag -ignoredgtag $ignoredgtag -apptag $apptag -ignoreapptag $ignoreapptag
                 write-host "Begining import..." -ForegroundColor Yellow
-                import-xd -xdhost $destination -xdexport $xdexport
+                import-xdsite -xdhost $destination -xdexport $xdexport
                 }
                 "import"{
                     if([string]::IsNullOrWhiteSpace($XMLPATH))
@@ -1255,14 +1255,14 @@ if ([version]$ddcver -lt 7.11 -and (-not [string]::IsNullOrWhiteSpace($ignoreapp
                     $destination = "localhost"
                     }
                 
-                import-xd -xdhost $destination -xdexport (Import-Clixml $xmlpath)
+                import-xdsite -xdhost $destination -xdexport (Import-Clixml $xmlpath)
                 }
                 "export"{
                     if([string]::IsNullOrWhiteSpace($XMLPATH))
                     {
                     throw "Must have XMLPATH set"
                     }
-                export-xd -xdhost $source -mode $mode -dgtag $dgtag -ignoredgtag $ignoredgtag -apptag $apptag -ignoreapptag $ignoreapptag
+                export-xdsite -xdhost $source -mode $mode -dgtag $dgtag -ignoredgtag $ignoredgtag -apptag $apptag -ignoreapptag $ignoreapptag
                 }
             }
 
