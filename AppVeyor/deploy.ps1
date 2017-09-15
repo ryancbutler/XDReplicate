@@ -57,7 +57,7 @@ else
         {
         git checkout master
         git add --all
-        git commit -m "PSGallery Version Update RUN Number:$env:APPVEYOR_BUILD_VERSION"
+        git commit -m "PSGallery Version Update to $newVersion"
         git push origin master
         Write-Verbose "Repo has been pushed to github"
         }
