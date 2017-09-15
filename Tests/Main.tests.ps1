@@ -2,7 +2,7 @@ $projectRoot = $env:APPVEYOR_BUILD_FOLDER
 
 Describe "General project validation" {
 
-    $scripts = Get-ChildItem "$projectRoot\XDReplicate\" -Recurse -Include *.ps1,*.psm1
+    $scripts = Get-ChildItem "$projectRoot\CTXXD-Replicate\" -Recurse -Include *.ps1,*.psm1
 
     # TestCases are splatted to the script so we need hashtables
     $testCase = $scripts | Foreach-Object{@{file=$_}}         

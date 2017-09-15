@@ -1,4 +1,4 @@
-$sut = "$env:APPVEYOR_BUILD_FOLDER\XDReplicate\XDReplicate.psd1"
+$sut = "$env:APPVEYOR_BUILD_FOLDER\XDReplicate\CTXXD-Replicate.psd1"
 
 Describe 'Script Metadata Validation' {      
         it 'Script fileinfo should be ok' {
