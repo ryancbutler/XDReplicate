@@ -9,13 +9,13 @@ function Test-XDmodule
     [CmdletBinding()]
     Param ()
     Write-Verbose "Checking for Citrix Snapins"
-     if ((Get-PSSnapin Citrix*) -eq $null)
+     if ((Get-PSSnapin Citrix*))
      {
-        throw "Please load Citrix Snapins Before running"
+        Write-Verbose "Found snapins"
      }
      else
      {
-        Write-Verbose "Found snapins"
+        throw "Please load Citrix Snapins Before running"
      }
     
 }

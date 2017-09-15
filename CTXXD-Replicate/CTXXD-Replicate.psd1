@@ -114,25 +114,25 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = "05-11-17 Added LTSR Check and fix ICON creation
-        05-12-17 Bug fixes
-        05-22-17 fixes around browsername and permissions
-        06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
-        06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
-        07-12-17 Fixes for app creation and user permissions
-        07-13-17 String fix for app creation on command line argument. Also fixes thanks to Joe Shonk
-        07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
-        07-23-17: Edits to tag import based on XD site version
-        07-23-17: Better handling of app renames
-        07-26-17: Converted to strict-mode and documented functions
-        07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
-        07-26-17: Added some color to output
-        08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
-        08-09-17: Changes to DDCVERSION check
-        08-21-17: App Entitlement fixes for DG groups without desktops
-        08-28-17: Updated for PS gallery
-        09-12-17: Fix for desktop permissions
-        09-13-17: Fix for admin permsissions
-        09-15-17: Convert to function"
+    05-12-17 Bug fixes
+    05-22-17 fixes around browsername and permissions
+    06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
+    06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
+    07-12-17 Fixes for app creation and user permissions
+    07-13-17 String fix for app creation on command line argument. Also fixes thanks to Joe Shonk
+    07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
+    07-23-17: Edits to tag import based on XD site version
+    07-23-17: Better handling of app renames
+    07-26-17: Converted to strict-mode and documented functions
+    07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
+    07-26-17: Added some color to output
+    08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
+    08-09-17: Changes to DDCVERSION check
+    08-21-17: App Entitlement fixes for DG groups without desktops
+    08-28-17: Updated for PS gallery
+    09-12-17: Fix for desktop permissions
+    09-13-17: Fix for admin permsissions
+    09-15-17: Convert to function"
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
