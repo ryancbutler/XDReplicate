@@ -124,6 +124,10 @@ Update-Module CTXXD-Replicate
 
 `Import-XDSite -xdhost localhost -xmlpath "C:\temp\mypath.xml"`
 
+**Imports data from C:\temp\my.xml and imports to localhost with no confirmation**
+
+`Import-XDSite -xdhost localhost -xmlpath "C:\temp\mypath.xml" -confirm:$false`
+
 **Exports data from localhost and imports on DDC02.DOMAIN.COM**
 
 `Export-XDSite -xdhost localhost|Import-XDSite -xdhost DDC02.DOMAIN.COM`
