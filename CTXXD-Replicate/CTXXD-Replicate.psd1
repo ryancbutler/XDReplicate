@@ -69,13 +69,7 @@ Description = 'Functions to export XenDesktop site information such as administr
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('Clear-XDAppUserPerm', 'Clear-XDDesktopUserPerm', 'Export-XDsite', 
-               'Import-XDsite', 'New-XDadminfolder', 'New-XDappobject', 
-               'New-XDDeliveryGroupObject', 'New-XDDesktopobject', 'New-XDFTAobject', 
-               'Set-XDAppEntitlement', 'Set-XDDesktopobject', 
-               'Set-XDexistingappobject', 'Set-XDExistingDeliveryGroupObject', 
-               'Set-XDNewAppUserPerm', 'Set-XDUserPerm', 'Test-XDBrokerAdminFolder', 
-               'Test-XDicon')
+FunctionsToExport = @(Export-XDsite','Import-XDsite')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
