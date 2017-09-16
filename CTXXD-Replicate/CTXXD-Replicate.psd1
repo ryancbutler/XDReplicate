@@ -107,8 +107,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = `
-"05-11-17 Added LTSR Check and fix ICON creation
+        ReleaseNotes = "05-11-17 Added LTSR Check and fix ICON creation
 05-12-17 Bug fixes
 05-22-17 fixes around browsername and permissions
 06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
