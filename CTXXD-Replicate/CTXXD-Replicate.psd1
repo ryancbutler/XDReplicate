@@ -126,7 +126,8 @@ PrivateData = @{
 08-28-17: Updated for PS gallery
 09-12-17: Fix for desktop permissions
 09-13-17: Fix for admin permsissions
-09-15-17: Convert to function"
+09-15-17: Convert to function
+09-16-17: Folder function changes"
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
