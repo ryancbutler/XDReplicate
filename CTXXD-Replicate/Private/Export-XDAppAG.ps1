@@ -1,10 +1,10 @@
-function Export-XDapp
+function Export-XDappAG
 {
 <#
 .SYNOPSIS
-    Adds delivery group names to Application Object
+    Adds Application group names to Application Object
 .DESCRIPTION
-    Adds delivery group names to Application Object
+    Adds Application group names to Application Object
 .PARAMETER appgroupobject
     Application Group
 .PARAMETER XDHOST
@@ -18,9 +18,9 @@ Param(
     
     process{
         $found = @()
-        foreach($ag in $appobject.AssociatedDesktopGroupUids)
+        foreach($ag in $appobject.AssociatedApplicationGroupUids)
         {
-            $found += (get-brokerdesktopgroup -adminaddress $xdhost -Uid $ag).name
+            $found += (Get-BrokerApplicationGroup -adminaddress $xdhost -Uid $ag).name
         }
         return $found
     }
