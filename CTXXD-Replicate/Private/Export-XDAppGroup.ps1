@@ -2,21 +2,28 @@ function Export-XDappgroup
 {
 <#
 .SYNOPSIS
-    Creates new administrative folder
+    Adds delivery group names to Application Group Object
 .DESCRIPTION
-    Checks for and creates administrative folder if not found
-.PARAMETER FOLDER
-    Folder to validate
+    Adds delivery group names to Application Group Object
+.PARAMETER appgroupobject
+    Application Group
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 #>
-[cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact='Low')]
+[cmdletbinding()]
 Param(
-[Parameter(Mandatory=$true,ValueFromPipeline=$true)][string]$folder,
+[Parameter(Mandatory=$true,ValueFromPipeline=$true)]$appgroupobject,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
     
     process{
-
+        $found = @()
+        foreach($ag in $appgroupobject.AssociatedDesktopGroupUids)
+        {
+            $found += (get-brokerdesktopgroup -adminaddress $xdhost -Uid $ag).name
+        }
+        $appgroupobject|Add-Member -NotePropertyName "DGNAMES" -NotePropertyValue $found
+        return $appgroupobject
     }
+    
 }
