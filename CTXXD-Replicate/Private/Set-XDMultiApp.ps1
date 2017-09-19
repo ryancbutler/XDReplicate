@@ -20,7 +20,7 @@ Param(
 
 foreach ($app in $apps)
 {
-    $appmatch = Get-BrokerDesktopGroup -Name $app.name -adminaddress $xdhost
+    $appmatch = Get-BrokerApplication -Name $app.name -adminaddress $xdhost
     if(($app.AssociatedDesktopGroupUids).count -gt 1)
     {
         Write-Verbose "Setting Delivery Group(s) for $($app.name)"

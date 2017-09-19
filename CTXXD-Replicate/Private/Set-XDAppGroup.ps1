@@ -30,8 +30,8 @@ foreach($t in $appgroup.PSObject.Properties)
                 "Description" {$temp.Add("Description",$t.value)}
                 "Enabled" {$temp.Add("Enabled",$t.value)}
                 "RestrictToTag" {$temp.Add("RestrictToTag",$t.value)}
-                "Scopes" {$temp.Add("Scope",$t.value)}
-                "SessionSharingEnabled"{$temp.Add("Scope",$t.value)}
+                #"Scopes" {$temp.Add("Scope",$t.value)}
+                "SessionSharingEnabled"{$temp.Add("SessionSharingEnabled",$t.value)}
                 "UserFilterEnabled" {$temp.Add("UserFilterEnabled",$t.value)}
            
             }
