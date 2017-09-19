@@ -1,56 +1,26 @@
-<#PSScriptInfo
-
-.VERSION 1.4.6
-
-.GUID a71f41cd-c06d-4735-803c-c3689b962f0a
-
-.AUTHOR @ryan_c_butler
-
-.COMPANYNAME Techdrabble.com
-
-.COPYRIGHT 2017
-
-.TAGS Citrix XenDesktop Export Import PublishedApps
-
-.LICENSEURI https://github.com/ryancbutler/XDReplicate/blob/master/License.txt
-
-.PROJECTURI https://github.com/ryancbutler/XDReplicate
-
-.ICONURI 
-
-.EXTERNALMODULEDEPENDENCIES 
-
-.REQUIREDSCRIPTS 
-
-.EXTERNALSCRIPTDEPENDENCIES 
-
-.RELEASENOTES
-05-11-17 Added LTSR Check and fix ICON creation
-05-12-17 Bug fixes
-05-22-17 fixes around browsername and permissions
-06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
-06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
-07-12-17 Fixes for app creation and user permissions
-07-13-17 String fix for app creation on command line argument. Also fixes thanks to Joe Shonk
-07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
-07-23-17: Edits to tag import based on XD site version
-07-23-17: Better handling of app renames
-07-26-17: Converted to strict-mode and documented functions
-07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
-07-26-17: Added some color to output
-08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
-08-09-17: Changes to DDCVERSION check
-08-21-17: App Entitlement fixes for DG groups without desktops
-08-28-17: Updated for PS gallery
-09-12-17: Fix for desktop permissions
-09-13-17: Fix for admin permsissions
-#> 
-
 <#
 .SYNOPSIS
    Exports XenDesktop 7.x site information and imports to another Site
 .DESCRIPTION
    Exports XenDesktop site information such as administrators, delivery groups, desktops, applications and admin folder to either variable or XML file.  Then will import same information and either create or update.   
+   Version: 1.4.1
+   By: Ryan Butler 01-16-17
+   Updated: 05-11-17 Added LTSR Check and fix ICON creation
+            05-12-17 Bug fixes
+            05-22-17 fixes around browsername and permissions
+            06-01-17 Fixes for BrokerPowerTimeScheme on desktop groups
+            06-23-17 Fixes for folder creation and BrokerPowerTimeScheme
+            07-12-17 Fixes for app creation and user permissions
+            07-13-17 String fix for app creation on command line argument. Also fixes thanks to Joe Shonk
+            07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
+            07-23-17: Edits to tag import based on XD site version
+            07-23-17: Better handling of app renames
+            07-26-17: Converted to strict-mode and documented functions
+            07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
+            07-26-17: Added some color to output
+            08-04-17: LTSR doesn't like APP tags for get-brokerapplication.  Removed strict-mode for now
+            08-09-17: Changes to DDCVERSION check
+
 .NOTES 
    Twitter: ryan_c_butler
    Website: Techdrabble.com
@@ -96,6 +66,11 @@
 .EXAMPLE
    .\XDReplicate.ps1 -mode import -XMLPATH "C:\temp\my.xml"
    Imports data from C:\temp\my.xml and imports to localhost
+
+My commands:
+
+
+
 #>
 Param
 (
@@ -152,6 +127,9 @@ Param (
 [Parameter(Mandatory=$false)][string]$ignoreapptag
 )
     
+
+
+
     #Need path for XML while in EXPORT
     if($mode -like "export" -and ([string]::IsNullOrWhiteSpace($XMLPath)))
     {
@@ -713,28 +691,43 @@ function set-UserPerms
 {
 <#
 .SYNOPSIS
-    Sets user permissions on desktop
+    Sets user permissions on app or desktop
 .DESCRIPTION
-    Sets user permissions on desktop
+    Sets user permissions on app or desktop
 .PARAMETER APP
-    Exported desktop object
+    Exported application or desktop object
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 #>
 Param (
-[Parameter(Mandatory=$true)]$desktop, 
+[Parameter(Mandatory=$true)]$app, 
 [Parameter(Mandatory=$true)][string]$xdhost)
     
-    if ($desktop.IncludedUserFilterEnabled)
+    if($app.ResourceType -eq "Desktop")
     {
-        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddIncludedUsers $desktop.includedusers -Name $desktop.Name
-    }
+        
+        if ($app.IncludedUserFilterEnabled)
+        {
+        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddIncludedUsers $app.includedusers -Name $app.Name
+        }
 
-    if ($desktop.ExcludedUserFilterEnabled)
+        if ($app.ExcludedUserFilterEnabled)
+        {
+        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUserss $app.excludedusers -Name $app.Name
+        }
+    }
+    else
     {
-        Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -AddExcludedUsers $desktop.excludedusers -Name $desktop.Name
+        if ($app.UserFilterEnabled)
+        {
+        write-host "Setting App Permissions" -ForegroundColor Green
+             foreach($user in $app.AssociatedUserNames)
+             {
+                write-host $user
+                Add-BrokerUser -AdminAddress $xdhost -Name $user -Application $app.Name
+             }
+        }
     }
-
 }
 
 function set-NewAppUserPerms
@@ -778,13 +771,17 @@ function Set-AppEntitlement  {
     Sets AppEntitlement if missing
 .PARAMETER DG
     Desktop Group where to create entitlement
+.PARAMETER DESKTOP
+    Newly created desktop
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 #>
 Param (
     [Parameter(Mandatory=$true)]$dg, 
+    [Parameter(Mandatory=$true)]$desktop, 
     [Parameter(Mandatory=$true)][string]$xdhost)
-    if (($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
+    
+    if ($dg.DesktopKind -like "Shared" -and ($dg.DeliveryType -like "AppsOnly" -or $dg.DeliveryType -like "DesktopsAndApps"))
     {
         if((Get-BrokerAppEntitlementPolicyRule -name $dg.Name -AdminAddress $xdhost -ErrorAction SilentlyContinue) -is [Object])
         {
@@ -793,7 +790,7 @@ Param (
         ELSE
         {
         write-host "Creating AppEntitlement"
-        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $dg.uid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
+        New-BrokerAppEntitlementPolicyRule -Name $dg.Name -DesktopGroupUid $desktop.DesktopGroupUid -AdminAddress $xdhost -IncludedUserFilterEnabled $false|Out-Null
         }
     }
     else
@@ -956,6 +953,8 @@ Param (
     throw "Nothing to import"
     }
 
+
+
     write-host "Proccessing Tags" -ForegroundColor Magenta
     #Description argument not added until 7.11
     $ddcver = (Get-BrokerController -AdminAddress $xdhost).ControllerVersion | select -first 1
@@ -1034,6 +1033,12 @@ Param (
 
         }
         
+##########(SPONTREL)
+    #insert get all local delivery groups variable after they are all created    
+        write-host "Getting local Delivery Group data"
+        $local_DesktopGroups = Get-BrokerDesktopGroup
+##########
+
 
         if(-not([string]::IsNullOrWhiteSpace($dg.tags)))
         {
@@ -1045,7 +1050,7 @@ Param (
         }
     
         $desktops = $XDEXPORT.desktops|where-object{$_.DGNAME -eq $dg.name}
-        Set-AppEntitlement $dgmatch $xdhost
+
 
                 if($desktops)
                 {
@@ -1059,21 +1064,21 @@ Param (
                     Set-Desktopobject $desktop $xdhost|invoke-expression
                     clear-DesktopUserPerms $desktopmatch $xdhost
                     set-userperms $desktop $xdhost
-                   # Set-AppEntitlement $dgmatch $desktopmatch $xdhost
+                    Set-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
                     else
                     {
                     Write-host "Creating Desktop" -ForegroundColor Green
                     $desktopmatch = New-Desktopobject $desktop $xdhost $dgmatch.Uid|invoke-expression
                     set-userperms $desktop $xdhost
-                    #Set-AppEntitlement $dgmatch $desktopmatch $xdhost
+                    Set-AppEntitlement $dgmatch $desktopmatch $xdhost
                     }
 
                 }
             }
 
         $apps = $XDEXPORT.apps|where-object{$_.DGNAME -eq $dg.name}
-        
+         
             if($apps)
             {
                 foreach ($app in $apps)
@@ -1150,8 +1155,10 @@ Param (
                             {
                             New-FTAobject -AdminAddress $xdhost $fta|New-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $newapp.Uid
                             }
-                        }
-                     
+                        }                
+
+
+
                      if(-not([string]::IsNullOrWhiteSpace($app.tags)))
                         {
                          foreach ($tag in $app.tags)
@@ -1161,6 +1168,37 @@ Param (
                          }
                         }
                      
+
+############ (SPONTREL) 
+    #insert code for more than one Delivery Group
+############
+                    $app_DesktopGroup_uuids = $app.AllAssociatedDesktopGroupUUIDs.GUID                 
+                    foreach ($app_DesktopGroup_uuid in $app_DesktopGroup_uuids) 
+                        {                            
+                        #convert the Delivery Group guid in the export app to a name
+                        $app_DesktopGroup_name = ($XDEXPORT.dgs | Where-Object {$_.uuid.guid -eq $app_DesktopGroup_uuid}).Name
+                        #match the export Delivery Group name to a local Delivery Group
+                        $local_DesktopGroup_name = ($local_DesktopGroups |  Where-Object {$_.Name -eq $app_DesktopGroup_name}).name 
+                        #match the local app to the export app
+                        $local_appname = $app.PublishedName
+                
+                        if (($app_DesktopGroup_name -ne $dg) -and ($local_DesktopGroup_name -ne $null))
+                            {
+                            #setup the colors 
+                            write-host -foregroundcolor gray "Adding App: " -NoNewline
+                            Write-host -foregroundcolor green "$local_appname " -nonewline
+                            write-host -foregroundcolor gray "to DeliveryGroup: " -nonewline
+                            write-host -foregroundcolor magenta $local_DesktopGroup_name
+
+                            # Set the Delivery Groups
+                            Get-BrokerApplication -PublishedName $local_appname | add-BrokerApplication -DesktopGroup  $local_DesktopGroup_name 
+                            }
+                        }
+
+############
+#END CODE INSERT
+############
+
                      }
                     else
                     {
@@ -1174,6 +1212,7 @@ Param (
   
     }
     }
+
 <#
     $currentscopes = Get-AdminScope -AdminAddress $xdhost
     write-host "Checking Admin scopes"
@@ -1227,13 +1266,20 @@ Param (
         else
         {
         write-host "Adding $($admin.Name)" -ForegroundColor Green
-        $rights = ($admin.Rights) -split ":"
         New-AdminAdministrator -AdminAddress $xdhost -Enabled $admin.Enabled -Sid $admin.Sid|out-null
-        #Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
-        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.name -Role $rights[0] -Scope $rights[1]
+        Add-AdminRight -AdminAddress $xdhost -Administrator $admin.Name -InputObject $admin.Rights|Out-Null
+        }
+
+    }
+
+
+
+}
+
 ####################  (SPONTREL)
 # INSERT NEW FUNCTION
 ####################
+
 function AppGroups
 {
     Param (
@@ -1360,6 +1406,7 @@ foreach($dg in $XDEXPORT.dgs)
 ############## (SPONTREL)
 # END NEW FUNCTION INSERT
 ##############
+
 
 #Start process
 
