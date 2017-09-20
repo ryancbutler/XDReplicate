@@ -15,7 +15,7 @@ function Test-XDmodule
      }
      else
      {
-        throw "Please load Citrix Snapins Before running"
+        throw "Please load Citrix Snapins Before running. Run add-pssnapin citrix*"
      }
     
 }

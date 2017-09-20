@@ -5,8 +5,8 @@ function Set-XDMultiApp
     Sets application options for apps with multiple delivery groups and application groups
 .DESCRIPTION
     Sets application options for apps with multiple delivery groups and application groups
-.PARAMETER APPS
-    Exported applications with multiple delivery groups and application groups
+.PARAMETER APP
+    Exported application with multiple delivery groups and application groups
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
 
@@ -14,12 +14,13 @@ function Set-XDMultiApp
 #>
 [cmdletbinding()]
 Param(
-[Parameter(Mandatory=$true)]$apps,
+[Parameter(Mandatory=$true,ValueFromPipeline=$true)]$app,
 [Parameter(Mandatory=$true)][string]$xdhost 
 )
 
-foreach ($app in $apps)
-{
+    process
+    {
+    Write-Verbose "Setting $($app.name)"
     $appmatch = Get-BrokerApplication -Name $app.name -adminaddress $xdhost
     if(($app.AssociatedDesktopGroupUids).count -gt 1)
     {
@@ -41,10 +42,10 @@ foreach ($app in $apps)
             switch ($compare.SideIndicator)
             {
                 "=>" {$dg = Get-BrokerDesktopGroup -name $compare.InputObject
-                    Remove-BrokerApplication -InputObject $appmatch -DeliveryGroup $dg
+                    Remove-BrokerApplication -InputObject $appmatch -DesktopGroup $dg
                 }
                 "<=" {$dg = Get-BrokerDesktopGroup -name $compare.InputObject
-                    ADD-BrokerApplication -InputObject $appmatch -DeliveryGroup $dg
+                    ADD-BrokerApplication -InputObject $appmatch -DesktopGroup $dg
                 }
             }
         }

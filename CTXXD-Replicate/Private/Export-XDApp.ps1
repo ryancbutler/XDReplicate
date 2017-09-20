@@ -16,6 +16,9 @@ Param(
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
  process {
+        
+    if($app)
+        {
          Write-Verbose "Processing $($app.ApplicationName)"
         
          #multi dg or ag flag
@@ -58,7 +61,8 @@ Param(
          }
 
  
-     return $app
+        return $app
+        }
      }    
  
 }

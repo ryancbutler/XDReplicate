@@ -20,8 +20,8 @@ Param (
         {
              foreach($user in $appgroup.AssociatedUserNames)
              {
-                $user = get-brokeruser $user
-                Remove-BrokerUser -AdminAddress $xdhost -inputobject $user -Applicationgroup $app.Name|Out-Null
+                write-verbose "Setting $user"
+                Remove-BrokerUser -AdminAddress $xdhost -Name $user -Applicationgroup $appgroupmatch.Name|Out-Null
              }
         }
 }
