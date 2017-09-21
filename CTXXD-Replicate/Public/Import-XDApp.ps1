@@ -20,7 +20,7 @@ Param(
 [Parameter(Mandatory=$false)][string]$agmatch
 )
 begin{
-Write-Verbose "$($MyInvocation.MyCommand): Enter"
+Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
 }
     Process
     {
@@ -145,6 +145,6 @@ Write-Verbose "$($MyInvocation.MyCommand): Enter"
     
     return $appmatch
     }
-end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
+end{Write-Verbose "END: $($MyInvocation.MyCommand)"}
 }
 

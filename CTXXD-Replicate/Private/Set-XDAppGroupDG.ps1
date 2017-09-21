@@ -19,7 +19,7 @@ Param(
 )
 
     begin{
-    Write-Verbose "$($MyInvocation.MyCommand): Enter"
+    Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
     }
 
     process
@@ -70,5 +70,5 @@ Param(
         }
         
     }
- end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}   
+ end{Write-Verbose "END: $($MyInvocation.MyCommand)"}   
 }

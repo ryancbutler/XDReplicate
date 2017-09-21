@@ -19,7 +19,7 @@ Param(
 )
 
     begin{
-    Write-Verbose "$($MyInvocation.MyCommand): Enter"
+    Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
     }
 
     process
@@ -58,7 +58,7 @@ Param(
     
     if(($app.AssociatedApplicationGroupUids).count -gt 0)
     {
-        Write-Verbose "Setting Application Group(s) for $($app.name)"
+        Write-Verbose "Setting Application Group(s) for $($app.PublishedName)"
         if(($appmatch.AssociatedApplicationGroupUids).count -gt 0)
         {
             $agtemp = @()
@@ -71,7 +71,7 @@ Param(
             $needed = $app.agname|Sort-Object
 
             $compares = Compare-Object -ReferenceObject $present -DifferenceObject $needed
-            if ($PSCmdlet.ShouldProcess("Setting Application Groups for $($app.name)")) {
+            if ($PSCmdlet.ShouldProcess("Setting Application Groups for $($app.PublishedName)")) {
                 foreach ($compare in $compares)
                 {
                     switch ($compare.SideIndicator)
@@ -95,6 +95,6 @@ Param(
 
     }
 }
-end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
+end{Write-Verbose "END: $($MyInvocation.MyCommand)"}
 
 }

@@ -16,7 +16,7 @@ Param(
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
 begin{
-Write-Verbose "$($MyInvocation.MyCommand): Enter"
+Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
 }
  process {
         
@@ -67,5 +67,5 @@ Write-Verbose "$($MyInvocation.MyCommand): Enter"
         return $app
         }
      }    
-end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
+end{Write-Verbose "END: $($MyInvocation.MyCommand)"}
 }

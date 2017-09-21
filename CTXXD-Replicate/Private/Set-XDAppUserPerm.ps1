@@ -19,7 +19,7 @@ Param (
     [Parameter(Mandatory=$true)][string]$xdhost
     )
     
-    Write-Verbose "$($MyInvocation.MyCommand): Enter"
+    Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
     if ($PSCmdlet.ShouldProcess("App Permissions")) {  
     
         if ($app.UserFilterEnabled)
@@ -32,5 +32,5 @@ Param (
              }
         }
     }
-    Write-Verbose "$($MyInvocation.MyCommand): Exit"
+    Write-Verbose "END: $($MyInvocation.MyCommand)"
 }

@@ -16,7 +16,7 @@ Param(
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
     begin{
-    Write-Verbose "$($MyInvocation.MyCommand): Enter"}
+    Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"}
 
     process{
         $found = @()
@@ -28,7 +28,7 @@ Param(
     }
 
     end{
-        Write-Verbose "$($MyInvocation.MyCommand): Exit"
+        Write-Verbose "END: $($MyInvocation.MyCommand)"
     }
     
 }

@@ -16,7 +16,7 @@ Param(
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
 begin{
-Write-Verbose "$($MyInvocation.MyCommand): Enter"  
+Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"  
 }
     process{
         $found = @()
@@ -27,5 +27,5 @@ Write-Verbose "$($MyInvocation.MyCommand): Enter"
         $appgroupobject|Add-Member -NotePropertyName "DGNAMES" -NotePropertyValue $found
         return $appgroupobject
     }
-end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}   
+end{Write-Verbose "END: $($MyInvocation.MyCommand)"}   
 }

@@ -18,5 +18,5 @@ Write-Verbose "Checking for Citrix Snapins"
      {
         throw "Please load Citrix Snapins Before running. Run add-pssnapin citrix*"
      }
-Write-Verbose "$($MyInvocation.MyCommand): Exit"   
+Write-Verbose "END: $($MyInvocation.MyCommand)"   
 }
