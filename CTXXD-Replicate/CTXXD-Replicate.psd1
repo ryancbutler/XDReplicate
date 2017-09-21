@@ -12,7 +12,7 @@
  RootModule = 'CTXXD-Replicate.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.5'
+ModuleVersion = '0.0.6'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -69,7 +69,7 @@ Description = 'Functions to export XenDesktop site information such as administr
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('Export-XDsite','Import-XDsite','New-XDadminfolder')
+FunctionsToExport = @('Export-XDApp','Export-XDAppGroup','Export-XDDesktop','Export-XDsite','Import-XDApp','Import-XDsite','New-XDadminfolder')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -127,7 +127,9 @@ PrivateData = @{
 09-12-17: Fix for desktop permissions
 09-13-17: Fix for admin permsissions
 09-15-17: Convert to function
-09-16-17: Folder function changes"
+09-16-17: Folder function changes
+09-20-17: Application Groups and multiple Delivery group functionality
+"
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

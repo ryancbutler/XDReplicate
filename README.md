@@ -52,6 +52,7 @@ Update-Module CTXXD-Replicate
 - 09-12-17: Fix for desktop permissions
 - 09-13-17: Fix for admin permsissions
 - 09-15-17: Move to module
+- 09-20-17: Application Groups and multiple Delivery group functionality
 
 ### XenDesktop Versions Tested
 

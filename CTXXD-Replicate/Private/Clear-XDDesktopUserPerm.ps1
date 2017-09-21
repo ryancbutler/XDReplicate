@@ -16,6 +16,7 @@ Param (
     [Parameter(Mandatory=$true)][string]$xdhost
     )
 
+    Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
 
         if ($desktop.IncludedUserFilterEnabled)
         {
@@ -32,5 +33,5 @@ Param (
             Set-BrokerEntitlementPolicyRule -AdminAddress $xdhost -RemoveExcludedUsers $user -Name $desktop.Name
             }
         }
- 
+    Write-Verbose "END: $($MyInvocation.MyCommand)"
 }

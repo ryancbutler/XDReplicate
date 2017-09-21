@@ -17,6 +17,8 @@ Param(
 [Parameter(Mandatory=$true)]$app,
 [Parameter(Mandatory=$true)]$appmatch, 
 [Parameter(Mandatory=$true)][string]$xdhost)
+
+Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
 $temp = @{}
 foreach($t in $app.PSObject.Properties)
     {       
@@ -48,11 +50,12 @@ foreach($t in $app.PSObject.Properties)
     }
     if ($PSCmdlet.ShouldProcess("Setting Existing App")) {    
         try {
-        $tempvar = Set-BrokerApplication @temp -adminaddress $xdhost -Verbose:$VerbosePreference
+        $tempvar = Set-BrokerApplication @temp -adminaddress $xdhost -Verbose:$VerbosePreference|Out-Null
         }
         catch {
             throw $_
         }
     }
     return $tempvar
+    Write-Verbose "END: $($MyInvocation.MyCommand)"
 }

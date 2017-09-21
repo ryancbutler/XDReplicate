@@ -1,4 +1,4 @@
-function Set-XDNewAppUserPerm
+function Set-XDAppUserPerm
 {
 <#
 .SYNOPSIS
@@ -18,7 +18,8 @@ Param (
     [Parameter(Mandatory=$true)]$appmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
-
+    
+    Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
     if ($PSCmdlet.ShouldProcess("App Permissions")) {  
     
         if ($app.UserFilterEnabled)
@@ -31,5 +32,5 @@ Param (
              }
         }
     }
-
+    Write-Verbose "END: $($MyInvocation.MyCommand)"
 }
