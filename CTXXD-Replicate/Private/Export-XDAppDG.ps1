@@ -15,7 +15,10 @@ Param(
 [Parameter(Mandatory=$true,ValueFromPipeline=$true)]$appobject,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
-    
+
+    begin{
+    Write-Verbose "$($MyInvocation.MyCommand): Enter"
+    } 
     process{
         $found = @()
         foreach($dg in $appobject.AssociatedDesktopGroupUids)
@@ -24,5 +27,5 @@ Param(
         }
         return $found
     }
-    
+    end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
 }

@@ -18,12 +18,17 @@ Param(
 [Parameter(Mandatory=$true)][string]$xdhost 
 )
 
+    begin{
+    Write-Verbose "$($MyInvocation.MyCommand): Enter"
+    }
+
     process
     {
     Write-Verbose "Setting $($appgroup.name)"
     $appgroupmatch = Get-BrokerApplicationGroup -Name $appgroup.name -adminaddress $xdhost
 
-        if(($appgroup.DGNAMES).count -gt 0)
+ 
+    if(($appgroup.DGNAMES).count -gt 0)
         {
             if(($appmatch.AssociatedDesktopGroupUids).count -gt 0)
             {
@@ -39,30 +44,31 @@ Param(
                 $needed = $appgroup.dgnames|Sort-Object
 
                 $compares = Compare-Object -ReferenceObject $present -DifferenceObject $needed
-            if ($PSCmdlet.ShouldProcess("Setting Application Group $($appgroup.name) Permissions")) {  
-                foreach ($compare in $compares)
-                {
-                    switch ($compare.SideIndicator)
+                if ($PSCmdlet.ShouldProcess("Setting Application Group $($appgroup.name) Permissions")) {  
+                    foreach ($compare in $compares)
                     {
-                        "=>" {#$dg = Get-BrokerDesktopGroup -name $compare.InputObject
-                            Remove-BrokerApplicationGroup -InputObject $appgroupmatch -DesktopGroup $compare.InputObject
+                        switch ($compare.SideIndicator)
+                        {
+                            "=>" {#$dg = Get-BrokerDesktopGroup -name $compare.InputObject
+                                Remove-BrokerApplicationGroup -InputObject $appgroupmatch -DesktopGroup $compare.InputObject
+                            }
+                            "<=" {#$dg = Get-BrokerDesktopGroup -name $compare.InputObject
+                                Add-BrokerApplicationGroup -InputObject $appgroupmatch -DesktopGroup $compare.InputObject
+                            }
                         }
-                        "<=" {#$dg = Get-BrokerDesktopGroup -name $compare.InputObject
-                            Add-BrokerApplicationGroup -InputObject $appgroupmatch -DesktopGroup $compare.InputObject
-                        }
+                
                     }
-            
                 }
-            
-                else {
-                    foreach ($dg in $appgroup.DGNAMES)
-                    {
-                        Add-BrokerApplicationGroup -InputObject $appgroupmatch -DesktopGroup $dg
-                    }
+
+            }
+            else {
+                foreach ($dg in $appgroup.DGNAMES)
+                {
+                    Add-BrokerApplicationGroup -InputObject $appgroupmatch -DesktopGroup $dg
                 }
             }
         }
-        }
-    
+        
     }
+ end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}   
 }

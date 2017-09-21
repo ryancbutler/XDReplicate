@@ -19,6 +19,9 @@ Param(
 [Parameter(Mandatory=$true)][string]$xdhost 
 )
 
+begin{
+Write-Verbose "$($MyInvocation.MyCommand): Enter"
+}
 process{
 
     $temp = @{}
@@ -50,4 +53,5 @@ process{
         }
     }
     }
+    end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
 }

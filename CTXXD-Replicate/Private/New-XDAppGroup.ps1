@@ -18,6 +18,7 @@ Param(
 [Parameter(Mandatory=$true)][string]$xdhost 
 )
 
+Write-Verbose "$($MyInvocation.MyCommand): Enter"
 $temp = @{}
 foreach($t in $appgroup.PSObject.Properties)
     {       
@@ -48,4 +49,5 @@ if ($PSCmdlet.ShouldProcess("Creating Application Group")) {
     }
 }
 return $tempvar
+Write-Verbose "$($MyInvocation.MyCommand): Exit"
 }

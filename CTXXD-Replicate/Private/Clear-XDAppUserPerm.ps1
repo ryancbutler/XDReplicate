@@ -16,6 +16,7 @@ Param (
     [Parameter(Mandatory=$true)][string]$xdhost
     )
     
+    Write-Verbose "$($MyInvocation.MyCommand): Enter"
     if ($app.UserFilterEnabled)
         {
              foreach($user in $app.AssociatedUserNames)
@@ -24,4 +25,5 @@ Param (
                 Remove-BrokerUser -AdminAddress $xdhost -inputobject $user -Application $app.Name|Out-Null
              }
         }
+    Write-Verbose "$($MyInvocation.MyCommand): Exit"
 }

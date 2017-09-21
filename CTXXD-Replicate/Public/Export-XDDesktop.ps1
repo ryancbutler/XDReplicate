@@ -18,7 +18,10 @@ Param(
 [Parameter(Mandatory=$true)]$dg,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
-    
+begin {
+    Write-Verbose "$($MyInvocation.MyCommand): Enter" 
+}
+  
     process{
         if($desktop -is [object])
         {
@@ -28,5 +31,5 @@ Param(
         return $desktop
         }
     }
-    
+    end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}    
 }

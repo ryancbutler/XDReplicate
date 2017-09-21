@@ -17,6 +17,8 @@ Param(
 [Parameter(Mandatory=$true)]$app,
 [Parameter(Mandatory=$true)]$appmatch, 
 [Parameter(Mandatory=$true)][string]$xdhost)
+
+Write-Verbose "$($MyInvocation.MyCommand): Enter"
 $temp = @{}
 foreach($t in $app.PSObject.Properties)
     {       
@@ -55,4 +57,5 @@ foreach($t in $app.PSObject.Properties)
         }
     }
     return $tempvar
+    Write-Verbose "$($MyInvocation.MyCommand): Exit"
 }

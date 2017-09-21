@@ -18,7 +18,8 @@ Param (
     [Parameter(Mandatory=$true)][Object[]]$appgroupmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
-
+    
+    Write-Verbose "$($MyInvocation.MyCommand): Enter"
     if ($PSCmdlet.ShouldProcess("App Group Permissions")) {  
     
         if ($appgroup.UserFilterEnabled)
@@ -35,10 +36,10 @@ Param (
                             {
                                 switch ($compare.SideIndicator)
                                 {
-                                    "=>" {
+                                    "<=" {
                                         Remove-BrokerUser -AdminAddress $xdhost -applicationgroup $appgroupmatch.name -name $compare.InputObject
                                     }
-                                    "<=" {
+                                    "=>" {
                                         Add-BrokerUser -AdminAddress $xdhost -applicationgroup $appgroupmatch.name  -name $compare.InputObject
                                     }
                                 }
@@ -55,6 +56,5 @@ Param (
                 
              }
         }
+    Write-Verbose "$($MyInvocation.MyCommand): Exit"
     }
-
-

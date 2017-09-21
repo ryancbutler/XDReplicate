@@ -15,7 +15,9 @@ Param(
 [Parameter(Mandatory=$true,ValueFromPipeline=$true)]$appgroupobject,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
-    
+begin{
+Write-Verbose "$($MyInvocation.MyCommand): Enter"  
+}
     process{
         $found = @()
         foreach($ag in $appgroupobject.AssociatedDesktopGroupUids)
@@ -25,5 +27,5 @@ Param(
         $appgroupobject|Add-Member -NotePropertyName "DGNAMES" -NotePropertyValue $found
         return $appgroupobject
     }
-    
+end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}   
 }

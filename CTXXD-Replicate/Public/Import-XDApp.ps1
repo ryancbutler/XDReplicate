@@ -14,13 +14,14 @@ function import-xdapp
 #>
 [cmdletbinding()]
 Param(
-[Parameter(Mandatory=$true,ValueFromPipeline=$true)]$app,
+[Parameter(Mandatory=$true,ValueFromPipeline=$true)][object]$app,
 [Parameter(Mandatory=$true)][string]$xdhost, 
 [Parameter(Mandatory=$false)][string]$dgmatch,
 [Parameter(Mandatory=$false)][string]$agmatch
 )
-
-
+begin{
+Write-Verbose "$($MyInvocation.MyCommand): Enter"
+}
     Process
     {
     write-verbose "Proccessing App $($app.browsername)"
@@ -144,6 +145,6 @@ Param(
     
     return $appmatch
     }
-
+end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
 }
 

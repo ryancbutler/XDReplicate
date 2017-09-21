@@ -18,6 +18,10 @@ Param(
 [Parameter(Mandatory=$true)][string]$xdhost 
 )
 
+    begin{
+    Write-Verbose "$($MyInvocation.MyCommand): Enter"
+    }
+
     process
     {
     Write-Verbose "Setting $($app.name)"
@@ -41,10 +45,10 @@ Param(
             {
                 switch ($compare.SideIndicator)
                 {
-                    "<=" {
+                    "=>" {
                         Remove-BrokerApplication -InputObject $appmatch -DesktopGroup $compare.InputObject
                     }
-                    "=>" {
+                    "<=" {
                         ADD-BrokerApplication -InputObject $appmatch -DesktopGroup $compare.InputObject
                     }
                 }
@@ -54,33 +58,43 @@ Param(
     
     if(($app.AssociatedApplicationGroupUids).count -gt 0)
     {
-        $agtemp = @()
         Write-Verbose "Setting Application Group(s) for $($app.name)"
-        foreach ($ag in $appmatch.AssociatedApplicationGroupUids)
+        if(($appmatch.AssociatedApplicationGroupUids).count -gt 0)
         {
-            $ag = Get-BrokerApplicationGroup -uid $ag
-            $agtemp += $ag.name
-        }
-        $present = $agtemp|Sort-Object
-        $needed = $app.agname|Sort-Object
-
-        $compares = Compare-Object -ReferenceObject $present -DifferenceObject $needed
-        if ($PSCmdlet.ShouldProcess("Setting Application Groups for $($app.name)")) {
-            foreach ($compare in $compares)
+            $agtemp = @()
+            foreach ($ag in $appmatch.AssociatedApplicationGroupUids)
             {
-                switch ($compare.SideIndicator)
+                $ag = Get-BrokerApplicationGroup -uid $ag
+                $agtemp += $ag.name
+            }
+            $present = $agtemp|Sort-Object
+            $needed = $app.agname|Sort-Object
+
+            $compares = Compare-Object -ReferenceObject $present -DifferenceObject $needed
+            if ($PSCmdlet.ShouldProcess("Setting Application Groups for $($app.name)")) {
+                foreach ($compare in $compares)
                 {
-                    "=>" {$ag = Get-BrokerApplicationGroup -name $compare.InputObject
-                        Remove-BrokerApplication -InputObject $appmatch -ApplicatonGroup $ag|Out-Null
-                    }
-                    "<=" {$ag = Get-BrokerApplicationGroup -name $compare.InputObject
-                        ADD-BrokerApplication -InputObject $appmatch -ApplicatonGroup $ag|Out-Null
+                    switch ($compare.SideIndicator)
+                    {
+                        "<=" {
+                            Remove-BrokerApplication -InputObject $appmatch -ApplicationGroup $compare.InputObject|Out-Null
+                        }
+                        "=>" {
+                            ADD-BrokerApplication -InputObject $appmatch -ApplicationGroup $compare.InputObject|Out-Null
+                        }
                     }
                 }
+            }
+        }
+        else {
+            foreach ($ag in $app.agname)
+            {
+                ADD-BrokerApplication -InputObject $appmatch -ApplicationGroup $ag|Out-Null  
             }
         }
 
     }
 }
+end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
 
 }

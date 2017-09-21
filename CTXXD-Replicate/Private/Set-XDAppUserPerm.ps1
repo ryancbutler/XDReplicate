@@ -18,7 +18,8 @@ Param (
     [Parameter(Mandatory=$true)]$appmatch, 
     [Parameter(Mandatory=$true)][string]$xdhost
     )
-
+    
+    Write-Verbose "$($MyInvocation.MyCommand): Enter"
     if ($PSCmdlet.ShouldProcess("App Permissions")) {  
     
         if ($app.UserFilterEnabled)
@@ -31,5 +32,5 @@ Param (
              }
         }
     }
-
+    Write-Verbose "$($MyInvocation.MyCommand): Exit"
 }

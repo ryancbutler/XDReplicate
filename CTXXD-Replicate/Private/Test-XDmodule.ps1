@@ -8,7 +8,8 @@ function Test-XDmodule
 #>
     [CmdletBinding()]
     Param ()
-    Write-Verbose "Checking for Citrix Snapins"
+
+Write-Verbose "Checking for Citrix Snapins"
      if ((Get-PSSnapin Citrix*))
      {
         Write-Verbose "Found snapins"
@@ -17,5 +18,5 @@ function Test-XDmodule
      {
         throw "Please load Citrix Snapins Before running. Run add-pssnapin citrix*"
      }
-    
+Write-Verbose "$($MyInvocation.MyCommand): Exit"   
 }

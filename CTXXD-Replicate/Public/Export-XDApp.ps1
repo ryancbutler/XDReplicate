@@ -15,6 +15,9 @@ Param(
 [Parameter(Mandatory=$true,ValueFromPipeline=$true)]$app,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
+begin{
+Write-Verbose "$($MyInvocation.MyCommand): Enter"
+}
  process {
         
     if($app)
@@ -27,7 +30,7 @@ Param(
          $BrokerEnCodedIconData = (Get-BrokerIcon -AdminAddress $xdhost -Uid ($app.IconUid)).EncodedIconData
          $app|add-member -NotePropertyName 'EncodedIconData' -NotePropertyValue $BrokerEnCodedIconData
          #Adds delivery group name to object
-         if(($app.AssociatedDesktopGroupUids).count -gt 1)
+         if(($app.AssociatedDesktopGroupUids).count -gt 0)
          {
              $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue ($app|export-xdappdg -xdhost $xdhost)
              $multi = $true
@@ -64,5 +67,5 @@ Param(
         return $app
         }
      }    
- 
+end{Write-Verbose "$($MyInvocation.MyCommand): Exit"}
 }
