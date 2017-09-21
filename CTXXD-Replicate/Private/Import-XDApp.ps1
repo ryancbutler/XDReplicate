@@ -63,7 +63,7 @@ Param(
             $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
         }
         clear-XDAppUserPerm $appmatch $xdhost
-        set-XDNewAppUserPerm $app $appmatch $xdhost
+        set-XDAppUserPerm $app $appmatch $xdhost
         }
         else
         {
@@ -77,7 +77,29 @@ Param(
             new-xdadminfolder $folder $xdhost
             }
         }
-        $appmatch = new-xdappobject -app $app -xdhost $xdhost -dgmatch $dgmatch.Name
+
+        if($app.multi -eq $false)
+        {
+            #$dgmatch = get-brokerapplicationgroup -adminaddress $xdhost -name $app.dgname
+            $appmatch = new-xdappobject -app $app -xdhost $xdhost -dgmatch $app.dgname
+        }
+        elseif($app.multi -eq $true -and -not [string]::IsNullOrWhiteSpace($app.dgname))
+        {
+            Write-Verbose "Multiple DG"
+            #$dgmatch = get-brokerapplicationgroup -adminaddress $xdhost -name ($app.dgname|select-object -First 1)
+            $appmatch = new-xdappobject -app $app -xdhost $xdhost -dgmatch ($app.dgname|select-object -First 1)
+        }
+        elseif($app.multi -eq $true -and -not [string]::IsNullOrWhiteSpace($app.agname))
+        {
+            Write-Verbose "NO DG BUT AG"
+            #$agmatch = get-brokerapplicationgroup -adminaddress $xdhost -name ($app.agname|select-object -First 1)
+            $appmatch = new-xdappobject -app $app -xdhost $xdhost -agmatch ($app.agname|select-object -First 1)
+        }
+        else
+        {
+            throw "Check application export.  No delivery group or application group found"
+        }
+    }
         
         if($appmatch -is [Object])
         {
@@ -87,7 +109,7 @@ Param(
         
             $icon = New-BrokerIcon -AdminAddress $xdhost -EncodedIconData $app.EncodedIconData
             $appmatch|Set-BrokerApplication -AdminAddress $xdhost -IconUid $icon.Uid
-            set-XDNewAppUserPerm $app $appmatch $xdhost
+            set-XDAppUserPerm $app $appmatch $xdhost
             
             if($app|Select-Object -ExpandProperty FTA -ErrorAction SilentlyContinue)
             {
@@ -98,13 +120,13 @@ Param(
             }
         
         if(-not([string]::IsNullOrWhiteSpace($app.tags)))
-            {
+        {
             foreach ($tag in $app.tags)
             {
-            write-verbose "Adding TAG $tag"
-            add-brokertag -Name $tag -AdminAddress $xdhost -Application $appmatch.name
+                write-verbose "Adding TAG $tag"
+                add-brokertag -Name $tag -AdminAddress $xdhost -Application $appmatch.name
             }
-            }
+        }
         
         }
         else
@@ -113,8 +135,15 @@ Param(
 
         }
     
+    if($app.multi -eq $true)
+    {
+        Write-Verbose "Configuring App for multiple DG and AG"
+        $app|Set-XDmultiApp -xdhost $xdhost
+    }
+
+    
     return $appmatch
     }
 
 }
-}
+

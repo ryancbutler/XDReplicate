@@ -19,33 +19,35 @@ Param(
 [Parameter(Mandatory=$true)][string]$xdhost 
 )
 
-$temp = @{}
-foreach($t in $appgroup.PSObject.Properties)
-    {       
-        if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
-        {
+process{
 
-            switch ($t.name)
+    $temp = @{}
+    foreach($t in $appgroup.PSObject.Properties)
+        {       
+            if(-not ([string]::IsNullOrWhiteSpace($t.Value)))
             {
-                "Description" {$temp.Add("Description",$t.value)}
-                "Enabled" {$temp.Add("Enabled",$t.value)}
-                "RestrictToTag" {$temp.Add("RestrictToTag",$t.value)}
-                #"Scopes" {$temp.Add("Scope",$t.value)}
-                "SessionSharingEnabled"{$temp.Add("SessionSharingEnabled",$t.value)}
-                "UserFilterEnabled" {$temp.Add("UserFilterEnabled",$t.value)}
-           
+
+                switch ($t.name)
+                {
+                    "Description" {$temp.Add("Description",$t.value)}
+                    "Enabled" {$temp.Add("Enabled",$t.value)}
+                    "RestrictToTag" {$temp.Add("RestrictToTag",$t.value)}
+                    #"Scopes" {$temp.Add("Scope",$t.value)}
+                    "SessionSharingEnabled"{$temp.Add("SessionSharingEnabled",$t.value)}
+                    "UserFilterEnabled" {$temp.Add("UserFilterEnabled",$t.value)}
+            
+                }
+
             }
+        }
 
-         }
+    if ($PSCmdlet.ShouldProcess("Setting Application Group $($appgroupmatch.name)")) {    
+        try {
+        Set-BrokerApplicationGroup @temp -adminaddress $xdhost -Verbose:$VerbosePreference -name $appgroupmatch.name|out-null
+        }
+        catch {
+            throw $_
+        }
     }
-
-if ($PSCmdlet.ShouldProcess("Creating Application Group")) {    
-    try {
-    $tempvar = Set-BrokerApplicationGroup @temp -adminaddress $xdhost -Verbose:$VerbosePreference -name $appgroupmatch.name
     }
-    catch {
-        throw $_
-    }
-}
-#return $tempvar
 }

@@ -48,7 +48,7 @@ foreach($t in $app.PSObject.Properties)
     }
     if ($PSCmdlet.ShouldProcess("Setting Existing App")) {    
         try {
-        $tempvar = Set-BrokerApplication @temp -adminaddress $xdhost -Verbose:$VerbosePreference
+        $tempvar = Set-BrokerApplication @temp -adminaddress $xdhost -Verbose:$VerbosePreference|Out-Null
         }
         catch {
             throw $_

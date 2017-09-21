@@ -12,7 +12,7 @@ function Set-XDMultiApp
 
 
 #>
-[cmdletbinding()]
+[cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact='Low')]
 Param(
 [Parameter(Mandatory=$true,ValueFromPipeline=$true)]$app,
 [Parameter(Mandatory=$true)][string]$xdhost 
@@ -29,23 +29,24 @@ Param(
 
         foreach ($dg in $appmatch.AssociatedDesktopGroupUids)
         {
-            $dg = Get-BrokerDesktopGroup -uid $dg
+            $dg = Get-BrokerDesktopGroup -uid $dg -adminaddress $xdhost
             $dgtemp += $dg.name
         }
         $present = $dgtemp|Sort-Object
         $needed = $app.dgname|Sort-Object
 
         $compares = Compare-Object -ReferenceObject $present -DifferenceObject $needed
-
-        foreach ($compare in $compares)
-        {
-            switch ($compare.SideIndicator)
+        if ($PSCmdlet.ShouldProcess("Setting Delivery Groups for $($app.name)")) {
+            foreach ($compare in $compares)
             {
-                "=>" {$dg = Get-BrokerDesktopGroup -name $compare.InputObject
-                    Remove-BrokerApplication -InputObject $appmatch -DesktopGroup $dg
-                }
-                "<=" {$dg = Get-BrokerDesktopGroup -name $compare.InputObject
-                    ADD-BrokerApplication -InputObject $appmatch -DesktopGroup $dg
+                switch ($compare.SideIndicator)
+                {
+                    "<=" {
+                        Remove-BrokerApplication -InputObject $appmatch -DesktopGroup $compare.InputObject
+                    }
+                    "=>" {
+                        ADD-BrokerApplication -InputObject $appmatch -DesktopGroup $compare.InputObject
+                    }
                 }
             }
         }
@@ -64,16 +65,17 @@ Param(
         $needed = $app.agname|Sort-Object
 
         $compares = Compare-Object -ReferenceObject $present -DifferenceObject $needed
-
-        foreach ($compare in $compares)
-        {
-            switch ($compare.SideIndicator)
+        if ($PSCmdlet.ShouldProcess("Setting Application Groups for $($app.name)")) {
+            foreach ($compare in $compares)
             {
-                "=>" {$ag = Get-BrokerApplicationGroup -name $compare.InputObject
-                    Remove-BrokerApplication -InputObject $appmatch -ApplicatonGroup $ag
-                }
-                "<=" {$ag = Get-BrokerApplicationGroup -name $compare.InputObject
-                    ADD-BrokerApplication -InputObject $appmatch -DeliveryGroup $ag
+                switch ($compare.SideIndicator)
+                {
+                    "=>" {$ag = Get-BrokerApplicationGroup -name $compare.InputObject
+                        Remove-BrokerApplication -InputObject $appmatch -ApplicatonGroup $ag|Out-Null
+                    }
+                    "<=" {$ag = Get-BrokerApplicationGroup -name $compare.InputObject
+                        ADD-BrokerApplication -InputObject $appmatch -ApplicatonGroup $ag|Out-Null
+                    }
                 }
             }
         }

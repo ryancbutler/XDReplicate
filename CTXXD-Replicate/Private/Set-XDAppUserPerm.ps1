@@ -1,4 +1,4 @@
-function Set-XDNewAppUserPerm
+function Set-XDAppUserPerm
 {
 <#
 .SYNOPSIS
