@@ -6,9 +6,6 @@ skip_commits:
   message: /updated readme.*|update readme.*s|update docs.*|PSGallery Version.*|update appveyor.*/
 pull_requests:
   do_not_increment_build_number: true
-only_commits:
-  files:
-    - XDReplicate.ps1
 build_script:
 - ps: |
     Install-PackageProvider -Name NuGet -Force | Out-Null

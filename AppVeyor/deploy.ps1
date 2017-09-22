@@ -6,7 +6,7 @@ param(
 Write-Host -Object ''
 Import-Module posh-git -Force
 
-if ($env:APPVEYOR_REPO_BRANCH -ne 'master') 
+if ($env:APPVEYOR_REPO_BRANCH -ne 'tofunction') 
 {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
@@ -17,7 +17,7 @@ elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0)
 else
 {
     Try {
-        $updates = Get-ChildItem $env:APPVEYOR_BUILD_FOLDER -Filter "*.ps1"
+        $updates = Get-ChildItem $env:APPVEYOR_BUILD_FOLDER -Filter "*.psd1" -Recurse
         
         $pubme = $false
         if($updates.count -gt 0)
@@ -25,15 +25,16 @@ else
         Write-Verbose $updates
             foreach ($update in $updates)
             {
-                $localver = Test-ScriptFileInfo $update.name
-                $psgallerver = Find-Script $localver.name -Repository PSgallery
+                $localver = Test-ModuleManifest $update.fullname
+                $psgallerver = Find-Module $localver.name -Repository PSgallery
                 if ($psgallerver.version -le $localver.version)
                 {
                     Write-Verbose "Updating version and publishing to PSgallery"
                     $fileVersion = $localver.Version
                     $newVersion = "{0}.{1}.{2}" -f $fileVersion.Major, $fileVersion.Minor, ($fileVersion.Build + 1)
-                    Update-ScriptFileInfo -Path $update -Version $newVersion
-                    Publish-Script -Path $update -NuGetApiKey $env:PSGKey
+                    $funcs = Get-ChildItem -path .\Public|select-object basename|sort-object basename
+                    Update-ModuleManifest -Path $update.fullname -Version $newVersion -FunctionsToExport $funcs.basename
+                    Publish-Module -Path $update.fullname -NuGetApiKey $env:PSGKey
                     $pubme = $true
                 }
                 else
@@ -55,10 +56,10 @@ else
     {
         if($pubme)
         {
-        git checkout master
+        git checkout tofunction
         git add --all
         git commit -m "PSGallery Version Update to $newVersion"
-        git push origin master
+        git push origin tofunction
         Write-Verbose "Repo has been pushed to github"
         }
         else {

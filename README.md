@@ -1,5 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/00p66jdhcj8nib0c/branch/master?retina=true)](https://ci.appveyor.com/project/ryancbutler/xdreplicate/branch/master)
-## XenDesktop 7 Site Export and Import Script
+[![Build status](https://ci.appveyor.com/api/projects/status/00p66jdhcj8nib0c/branch/tofunction?retina=true)](https://ci.appveyor.com/project/ryancbutler/xdreplicate/branch/tofunction)
+## XenDesktop 7 Site Export and Import Module (BETA)
 
 Exports XenDesktop 7.x site information and imports to another 'Site' via remote command or XML file.
 
@@ -18,15 +18,15 @@ If running PowerShell version 5 or above you can install via [Microsoft PowerShe
 
 #### Install
 ```
-Install-Script -Name XDReplicate -Scope currentuser
+Install-Module -Name CTXXD-Replicate -Scope currentuser
 ```
 ### Inspect
 ```
-Save-Script -Name XDReplicate -Path <path>
+Save-Module -Name CTXXD-Replicate -Path <path>
 ```
 #### Update
 ```
-Update-Script XDReplicate
+Update-Module CTXXD-Replicate 
 ```
 
 ### Changelog
@@ -51,6 +51,8 @@ Update-Script XDReplicate
 - 08-28-17: Updated for PS gallery
 - 09-12-17: Fix for desktop permissions
 - 09-13-17: Fix for admin permsissions
+- 09-15-17: Move to module
+- 09-20-17: Application Groups and multiple Delivery group functionality
 
 ### XenDesktop Versions Tested
 
@@ -99,37 +101,45 @@ Update-Script XDReplicate
 
 ### Usage
 
-Exports data from localhost and exports to C:\temp\my.xml
+**Exports data from localhost and exports to C:\temp\my.xml**
 
-`.\XDReplicate.ps1 -mode export -XMLPATH "C:\temp\my.xml"`
+`Export-XDSite -xdhost localhost -XMLPATH "C:\temp\my.xml"`
 
-Exports data from localhost with delivery groups tagged with "replicate" and imports on DDC02.DOMAIN.COM
+**Exports data from localhost with delivery groups tagged with "replicate" and imports on DDC02.DOMAIN.COM**
 
-`\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -dgtag "replicate"`
+`Export-XDSite -xdhost localhost -dgtag "replicate"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
    
-Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM
+**Exports data from localhost while skipping delivery groups tagged with "skip" and imports on DDC02.DOMAIN.COM**
 
-`.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoredgtag "skip"`
+`Export-XDSite -xdhost localhost -ignoredgtag "skip"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Exports data from localhost delivery groups while only including apps tagged with "replicate" and imports on DDC02.DOMAIN.COM   
+**Exports data from localhost delivery groups while only including apps tagged with "replicate" and imports on DDC02.DOMAIN.COM**
 
-`.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -apptag "replicate"`
+`Export-XDSite -xdhost localhost -apptag "replicate"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Exports data from localhost delivery groups while ignoring apps tagged with "skip" and imports on DDC02.DOMAIN.COM
+**Exports data from localhost delivery groups while ignoring apps tagged with "skip" and imports on DDC02.DOMAIN.COM**
 
-`.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM -ignoreapptag "skip"`
+`Export-XDSite -xdhost localhost -ignoreapptag "skip"|Import-XDSite -xdhost DDC02.DOMAIN.COM`
 
-Imports data from C:\temp\my.xml and imports to localhost
+**Imports data from C:\temp\my.xml and imports to localhost**
 
-`.\XDReplicate.ps1 -mode import -XMLPATH "C:\temp\my.xml"`
+`Import-XDSite -xdhost localhost -xmlpath "C:\temp\mypath.xml"`
 
-Exports data from localhost and imports on DDC02.DOMAIN.COM
+**Imports data from C:\temp\my.xml and imports to localhost with no confirmation**
 
-`.\XDReplicate.ps1 -mode both -destination DDC02.DOMAIN.COM`
+`Import-XDSite -xdhost localhost -xmlpath "C:\temp\mypath.xml" -confirm:$false`
 
-Exports data from DDC01.DOMAIN.COM and imports on DDC02.DOMAIN.COM
+**Exports data from localhost and imports on DDC02.DOMAIN.COM**
 
-`.\XDReplicate.ps1 -mode both -source DDC01.DOMAIN.COM -destination DDC02.DOMAIN.COM`
+`Export-XDSite -xdhost localhost|Import-XDSite -xdhost DDC02.DOMAIN.COM`
+
+**Exports data from DDC01.DOMAIN.COM and imports on DDC02.DOMAIN.COM**
+
+`Export-XDSite -xdhost DDC01.DOMAIN.COM|Import-XDSite -xdhost DDC02.DOMAIN.COM`
+
+**Exports data from localhost and imports on DDC02.DOMAIN.COM outputs verbose**
+
+`Export-XDSite -xdhost localhost -verbose|Import-XDSite -xdhost DDC02.DOMAIN.COM -verbose`
 
 ## Provisioning Services 7.x vDisk version Export and Import Script
 
