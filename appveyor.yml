@@ -4,6 +4,9 @@ skip_commits:
   files:
     - README.md
   message: /updated readme.*|update readme.*s|update docs.*|PSGallery Version.*|update appveyor.*/
+only_commits:
+  files:
+    - CTXXD-Replicate/
 pull_requests:
   do_not_increment_build_number: true
 build_script:

@@ -45,10 +45,12 @@ Param(
             {
                 switch ($compare.SideIndicator)
                 {
-                    "=>" {
+                    "<=" {
+                        write-verbose "REMOVE DG $($compare.InputObject)"
                         Remove-BrokerApplication -InputObject $appmatch -DesktopGroup $compare.InputObject
                     }
-                    "<=" {
+                    "=>" {
+                        write-verbose "ADD DG $($compare.InputObject)"
                         ADD-BrokerApplication -InputObject $appmatch -DesktopGroup $compare.InputObject
                     }
                 }
@@ -77,9 +79,11 @@ Param(
                     switch ($compare.SideIndicator)
                     {
                         "<=" {
+                            write-verbose "REMOVE AG $($compare.InputObject)"
                             Remove-BrokerApplication -InputObject $appmatch -ApplicationGroup $compare.InputObject|Out-Null
                         }
                         "=>" {
+                            write-verbose "REMOVE AG $($compare.InputObject)"
                             ADD-BrokerApplication -InputObject $appmatch -ApplicationGroup $compare.InputObject|Out-Null
                         }
                     }
@@ -93,6 +97,15 @@ Param(
             }
         }
 
+    }
+    elseif (!($app.AssociatedApplicationGroupUids) -and ($appmatch.AssociatedApplicationGroupUids)) {
+        $agtemp = @()
+        foreach ($ag in $appmatch.AssociatedApplicationGroupUids)
+        {
+            $ag = Get-BrokerApplicationGroup -uid $ag
+            Remove-BrokerApplication -InputObject $appmatch -ApplicationGroup $ag.name|Out-Null
+        }
+        
     }
 }
 end{Write-Verbose "END: $($MyInvocation.MyCommand)"}
