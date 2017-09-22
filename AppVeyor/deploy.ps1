@@ -6,7 +6,7 @@ param(
 Write-Host -Object ''
 Import-Module posh-git -Force
 
-if ($env:APPVEYOR_REPO_BRANCH -ne 'master') 
+if ($env:APPVEYOR_REPO_BRANCH -ne 'tofunction') 
 {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
@@ -32,7 +32,8 @@ else
                     Write-Verbose "Updating version and publishing to PSgallery"
                     $fileVersion = $localver.Version
                     $newVersion = "{0}.{1}.{2}" -f $fileVersion.Major, $fileVersion.Minor, ($fileVersion.Build + 1)
-                    Update-ModuleManifest -Path $update -Version $newVersion
+                    $funcs = Get-ChildItem -path .\Public|select-object basename|sort-object basename
+                    Update-ModuleManifest -Path $update -Version $newVersion -FunctionsToExport $funcs.basename
                     Publish-Module -Path $update -NuGetApiKey $env:PSGKey
                     $pubme = $true
                 }
@@ -55,10 +56,10 @@ else
     {
         if($pubme)
         {
-        git checkout master
+        git checkout tofunction
         git add --all
         git commit -m "PSGallery Version Update to $newVersion"
-        git push origin master
+        git push origin tofunction
         Write-Verbose "Repo has been pushed to github"
         }
         else {
