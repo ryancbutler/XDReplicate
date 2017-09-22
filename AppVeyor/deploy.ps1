@@ -33,7 +33,7 @@ else
                     $fileVersion = $localver.Version
                     $newVersion = "{0}.{1}.{2}" -f $fileVersion.Major, $fileVersion.Minor, ($fileVersion.Build + 1)
                     $funcs = Get-ChildItem -path $env:APPVEYOR_BUILD_FOLDER\CTXXD-Replicate\Public|select-object basename|sort-object basename
-                    Update-ModuleManifest -Path $update.fullname -Version $newVersion -FunctionsToExport $funcs.basename
+                    Update-ModuleManifest -Path $update.fullname -ModuleVersion $newVersion -FunctionsToExport $funcs.basename
                     Publish-Module -Path $update.fullname -NuGetApiKey $env:PSGKey
                     $pubme = $true
                 }
