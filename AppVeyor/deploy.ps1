@@ -25,7 +25,7 @@ else
         Write-Verbose $updates
             foreach ($update in $updates)
             {
-                $localver = Test-ModuleManifest $update.name
+                $localver = Test-ModuleManifest $update.fullname
                 $psgallerver = Find-Module $localver.name -Repository PSgallery
                 if ($psgallerver.version -le $localver.version)
                 {
@@ -33,8 +33,8 @@ else
                     $fileVersion = $localver.Version
                     $newVersion = "{0}.{1}.{2}" -f $fileVersion.Major, $fileVersion.Minor, ($fileVersion.Build + 1)
                     $funcs = Get-ChildItem -path .\Public|select-object basename|sort-object basename
-                    Update-ModuleManifest -Path $update -Version $newVersion -FunctionsToExport $funcs.basename
-                    Publish-Module -Path $update -NuGetApiKey $env:PSGKey
+                    Update-ModuleManifest -Path $update.fullname -Version $newVersion -FunctionsToExport $funcs.basename
+                    Publish-Module -Path $update.fullname -NuGetApiKey $env:PSGKey
                     $pubme = $true
                 }
                 else
