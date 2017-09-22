@@ -54,26 +54,47 @@ process
         if ($PSCmdlet.ShouldProcess("Import Site")) 
         { 
         
+        if($XDEXPORT.tags)
+        {
         write-verbose "Proccessing Tags"
         $XDEXPORT.tags|import-xdtag -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
+        }
        
+        if($XDEXPORT.dgs)
+        {
         write-verbose "Proccessing Delivery Groups"
         $XDEXPORT.dgs|import-xddeliverygroup -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null      
-            
+        }
+        
+        if($XDEXPORT.desktops)
+        {
         Write-Verbose "Processing Desktops"
         $XDEXPORT.desktops|import-xddesktop -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
-        
+        }
+
+        if($XDEXPORT.appgroups)
+        {
         Write-Verbose "Processing App Groups"
         $XDEXPORT.appgroups|import-xdapplicationgroup -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
+        }
 
+        if($XDEXPORT.apps)
+        {
         Write-Verbose "Processing Apps"
         $XDEXPORT.apps|import-xdapp -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
+        }
         
+        if($XDEXPORT.adminroles)
+        {
         write-verbose "Processing Admin Roles"
         $XDEXPORT.adminroles|import-xdadminrole -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
+        }
 
+        if($XDEXPORT.admins)
+        {
         write-verbose "Processing admins"
         $XDEXPORT.admins|import-xdadmin -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
+        }
 
     }
 }
