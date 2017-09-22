@@ -86,6 +86,15 @@ Update-Script XDReplicate
   - File Type Association
   - Admin folders
   - Tags
+  - Multiple Delivery Groups
+ 
+ - Application Groups
+ 
+   - Users
+   - Applications
+   - Settings
+   - Delivery Groups
+ 
 
 ### What this doesn't process?
 
