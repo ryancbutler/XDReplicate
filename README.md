@@ -1,5 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/00p66jdhcj8nib0c/branch/tofunction?retina=true)](https://ci.appveyor.com/project/ryancbutler/xdreplicate/branch/tofunction)
-## XenDesktop 7 Site Export and Import Module
+## XenDesktop 7 Site Export and Import Module (BETA)
 
 Exports XenDesktop 7.x site information and imports to another 'Site' via remote command or XML file.
 
