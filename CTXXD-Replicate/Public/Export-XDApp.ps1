@@ -56,6 +56,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
          $ftatemp = @()
          Get-BrokerConfiguredFTA -AdminAddress $xdhost -ApplicationUid $app.Uid | ForEach-Object -Process {
          $ftatemp += $_
+         $ftatemp|Out-Null #workaround for script analyzer
          }
      
          if($ftatemp.count -gt 0)
