@@ -2,13 +2,16 @@ function import-xdadmin
 {
 <#
 .SYNOPSIS
-    Creates admin user from exported object
+    Creates admin user from imported object
 .DESCRIPTION
-    Creates admin user from exported object
+    Creates admin user from imported object
 .PARAMETER admin
-    admin user to create
+    Admin user to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+    $XDEXPORT.admins|import-xdadmin
+    Creates admin users from imported admin user object
 #>
 [cmdletbinding()]
 Param(

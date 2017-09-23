@@ -2,22 +2,21 @@ function import-xdapp
 {
 <#
 .SYNOPSIS
-    Creates broker application from exported object
+    Creates broker application from imported object
 .DESCRIPTION
-    Creates broker application from exported object
+    Creates broker application from imported object
 .PARAMETER APP
     Broker Application to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
-.PARAMETER DGMATCH
-    Delivery group to create application
+.EXAMPLE
+    $XDEXPORT.apps|import-xdapp
+    Creates applications from imported app object
 #>
 [cmdletbinding()]
 Param(
 [Parameter(Mandatory=$true,ValueFromPipeline=$true)][object]$app,
-[Parameter(Mandatory=$true)][string]$xdhost, 
-[Parameter(Mandatory=$false)][string]$dgmatch,
-[Parameter(Mandatory=$false)][string]$agmatch
+[Parameter(Mandatory=$true)][string]$xdhost
 )
 begin{
 Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"

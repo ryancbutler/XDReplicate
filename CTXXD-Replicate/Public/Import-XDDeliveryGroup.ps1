@@ -1,4 +1,4 @@
-function import-xddeliverygroup
+function Import-XDDeliveryGroup
 {
 <#
 .SYNOPSIS
@@ -9,6 +9,9 @@ function import-xddeliverygroup
     Delivery Group to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+    $XDEXPORT.dgs|import-xddeliverygroup
+    Creates delivery groups from imported delivery group object
 #>
 [cmdletbinding()]
 Param(
@@ -42,14 +45,16 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
                     write-verbose "Creating Delivery Group"
                         try
                         {
-                        write-verbose $dg.Name
-                        $dgmatch = New-XDDeliveryGroupObject $dg $xdhost
+                            write-verbose $dg.Name
+                            $dgmatch = New-XDDeliveryGroupObject $dg $xdhost
                         }
                         Catch
                         {
-                        throw "Delivery group failed. $($_.Exception.Message)"
+                            throw "Delivery group failed. $($_.Exception.Message)"
                         }
-                    $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
+                        
+                        $dg.AccessPolicyRule|New-BrokerAccessPolicyRule -AdminAddress $xdhost -DesktopGroupUid $dgmatch.Uid|Out-Null
+                        
                         if($dg.powertime -is [object])
                         {        
                             ($dg.PowerTime)|ForEach-Object{

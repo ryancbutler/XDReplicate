@@ -1,14 +1,17 @@
-function import-xdtag
+function Import-XDTag
 {
 <#
 .SYNOPSIS
-    Creates desktops from exported object
+    Creates desktops from imported object
 .DESCRIPTION
-    Creates desktops from exported object
-.PARAMETER DESKTOP
-    Desktop to create
+    Creates desktops from imported object
+.PARAMETER TAG
+    TAG to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+    $XDEXPORT.tags|import-xdtag
+    Creates tags from imported tag object
 #>
 [cmdletbinding()]
 Param(

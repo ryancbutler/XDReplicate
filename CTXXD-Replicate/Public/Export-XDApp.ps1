@@ -2,17 +2,20 @@
  {
 <#
 .SYNOPSIS
-    Adds Application settings to app object
+    Adds required import values to existing exported app object
 .DESCRIPTION
-    Adds Application settings to app object
+    Adds required import values to existing exported app object
 .PARAMETER app
     Application Object
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+   $apps = Get-BrokerApplication -AdminAddress $xdhost|export-xdapp
+   Grabs all applications and adds required values to object
 #>
 [cmdletbinding()]
 Param(
-[Parameter(Mandatory=$true,ValueFromPipeline=$true)]$app,
+[Parameter(Mandatory=$true,ValueFromPipeline=$true)][object]$app,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
 begin{

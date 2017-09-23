@@ -9,8 +9,9 @@ function import-xdadminrole
     Role to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
-.PARAMETER DGMATCH
-    Delivery group to create application
+.EXAMPLE
+    $XDEXPORT.adminroles|import-xdadminrole
+    Creates admin roles from imported admin role object
 #>
 [cmdletbinding()]
 Param(

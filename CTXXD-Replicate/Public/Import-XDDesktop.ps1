@@ -1,4 +1,4 @@
-function import-xddesktop
+function Import-XDDesktop
 {
 <#
 .SYNOPSIS
@@ -9,6 +9,9 @@ function import-xddesktop
     Desktop to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+    $XDEXPORT.desktops|import-xddesktop
+    Creates desktops from imported desktop object
 #>
 [cmdletbinding()]
 Param(

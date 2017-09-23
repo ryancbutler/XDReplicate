@@ -1,14 +1,17 @@
-function import-xdApplicationGroup
+function import-XDApplicationGroup
 {
 <#
 .SYNOPSIS
-    Creates application group from exported object
+    Creates application group from imported object
 .DESCRIPTION
-    Creates application group from exported object
+    Creates application group from imported object
 .PARAMETER AG
     Application Group to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+    $XDEXPORT.appgroups|import-xdapplicationgroup
+    Creates application groups from imported application group object
 #>
 [cmdletbinding()]
 Param(

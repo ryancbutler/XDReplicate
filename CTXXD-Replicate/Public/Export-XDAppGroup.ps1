@@ -2,21 +2,24 @@ function Export-XDappgroup
 {
 <#
 .SYNOPSIS
-    Adds delivery group names to Application Group Object
+    Adds delivery group names to Application Group Object required for import process
 .DESCRIPTION
-    Adds delivery group names to Application Group Object
+    Adds delivery group names to Application Group Object required for import process
 .PARAMETER appgroupobject
-    Application Group
+    Application Group object
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+    $appgroups = Get-BrokerApplicationGroup|export-xdappgroup -xdhost $xdhost
+    Grabs all application groups and adds required values to object
 #>
 [cmdletbinding()]
 Param(
-[Parameter(Mandatory=$true,ValueFromPipeline=$true)]$appgroupobject,
+[Parameter(Mandatory=$true,ValueFromPipeline=$true)][object]$appgroupobject,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
 begin{
-Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"  
+Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
 }
     process{
         $found = @()

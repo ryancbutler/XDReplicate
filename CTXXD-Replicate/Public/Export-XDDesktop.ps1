@@ -6,16 +6,20 @@ function Export-XDdesktop
 .DESCRIPTION
     Adds Delivery group names to Desktop Object
 .PARAMETER desktop
-    desktop
+    Exported desktop object
 .PARAMETER DG
     Delivery group where desktop resides
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.EXAMPLE
+    $dg = get-brokerdesktopgroup -name "My Delivery Group"
+    $desktops = Get-BrokerEntitlementPolicyRule|Export-XDdesktop -xdhost $xdhost -dg $dg
+    Grabs all desktops and adds required values to object
 #>
 [cmdletbinding()]
 Param(
-[Parameter(Mandatory=$true,ValueFromPipeline=$true)]$desktop,
-[Parameter(Mandatory=$true)]$dg,
+[Parameter(Mandatory=$true,ValueFromPipeline=$true)][object]$desktop,
+[Parameter(Mandatory=$true)][object]$dg,
 [Parameter(Mandatory=$false)][string]$xdhost="localhost"
 )
 begin {
