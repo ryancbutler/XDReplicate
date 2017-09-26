@@ -9,6 +9,7 @@ A set of community function that exports XenDesktop 7.x site information and imp
    :caption: Getting Started
 
    install
+   changelog
 
 .. toctree::
    :maxdepth: 2

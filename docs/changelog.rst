@@ -1,0 +1,27 @@
+Changelog
+=========================
+- 01-16-17: Initial release
+- 05-11-17: Added check for LTSR and fixed ICON creation on new app creation
+- 05-12-17: bug fixes
+- 05-22-17: browsername in apps and permission fixes
+- 06-01-17: Fixes for BrokerPowerTimeScheme on desktop groups
+- 06-23-17: Fixes for folder creation and BrokerPowerTimeScheme
+- 07-12-17: Fixes for app creation and user permissions (issue #10)
+- 07-13-17: Fixes for app creation on command line argument (issue #9)
+- 07-23-17: Added arguments to include\exclude apps and delivery groups based on tags
+- 07-23-17: Edits to tag import based on XD site version
+- 07-23-17: Better handling of app renames
+- 07-26-17: Converted to strict-mode and documented functions
+- 07-26-17: Added check for name conflict on app creation and warns user of possible name conflict
+- 07-26-17: Added some color to output
+- 08-04-17: LTSR doesn't like APP tags for get-brokerapplication. Removed strict-mode for now.
+- 08-09-17: Changes to DDCVERSION check
+- 08-21-17: App Entitlement fixes for DG groups without desktops
+- 08-28-17: Updated for PS gallery
+- 09-12-17: Fix for desktop permissions
+- 09-13-17: Fix for admin permsissions
+- 09-15-17: Move to module
+- 09-20-17: Application Groups and multiple Delivery group functionality
+- 09-16-17: Folder function changes
+- 09-20-17: Application Groups and multiple Delivery group functionality
+- 09-26-17: Initial module release
