@@ -6,7 +6,7 @@ param(
 Write-Host -Object ''
 Import-Module posh-git -Force
 
-if ($env:APPVEYOR_REPO_BRANCH -ne 'tofunction') 
+if ($env:APPVEYOR_REPO_BRANCH -ne 'master') 
 {
     Write-Warning -Message "Skipping version increment and publish for branch $env:APPVEYOR_REPO_BRANCH"
 }
@@ -56,10 +56,10 @@ else
     {
         if($pubme)
         {
-        git checkout tofunction
+        git checkout master
         git add --all
         git commit -m "PSGallery Version Update to $newVersion"
-        git push origin tofunction
+        git push origin master
         Write-Verbose "Repo has been pushed to github"
         }
         else {

@@ -39,6 +39,8 @@ deploy_script:
   - git config --global core.autocrlf false
   - git config --global core.safecrlf false
   - ps: |
+      write-verbose "Building Docs..."
+      . .\AppVeyor\builddocs.ps1 -verbose
       Write-Verbose "Deploying..."
       . .\AppVeyor\deploy.ps1 -verbose
 environment:
