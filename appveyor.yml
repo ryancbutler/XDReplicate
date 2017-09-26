@@ -4,11 +4,11 @@ skip_commits:
   files:
     - README.md
   message: /updated readme.*|update readme.*s|update docs.*|PSGallery Version.*|update appveyor.*/
-pull_requests:
-  do_not_increment_build_number: true
 only_commits:
   files:
-    - XDReplicate.ps1
+    - CTXXD-Replicate/
+pull_requests:
+  do_not_increment_build_number: true
 build_script:
 - ps: |
     Install-PackageProvider -Name NuGet -Force | Out-Null
@@ -39,6 +39,8 @@ deploy_script:
   - git config --global core.autocrlf false
   - git config --global core.safecrlf false
   - ps: |
+      write-verbose "Building Docs..."
+      . .\AppVeyor\builddocs.ps1 -verbose
       Write-Verbose "Deploying..."
       . .\AppVeyor\deploy.ps1 -verbose
 environment:

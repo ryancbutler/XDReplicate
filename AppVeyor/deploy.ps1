@@ -17,7 +17,7 @@ elseif ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0)
 else
 {
     Try {
-        $updates = Get-ChildItem $env:APPVEYOR_BUILD_FOLDER -Filter "*.ps1"
+        $updates = Get-ChildItem $env:APPVEYOR_BUILD_FOLDER -Filter "*.psd1" -Recurse
         
         $pubme = $false
         if($updates.count -gt 0)
@@ -25,15 +25,16 @@ else
         Write-Verbose $updates
             foreach ($update in $updates)
             {
-                $localver = Test-ScriptFileInfo $update.name
-                $psgallerver = Find-Script $localver.name -Repository PSgallery
+                $localver = Test-ModuleManifest $update.fullname
+                $psgallerver = Find-Module $localver.name -Repository PSgallery
                 if ($psgallerver.version -le $localver.version)
                 {
                     Write-Verbose "Updating version and publishing to PSgallery"
                     $fileVersion = $localver.Version
                     $newVersion = "{0}.{1}.{2}" -f $fileVersion.Major, $fileVersion.Minor, ($fileVersion.Build + 1)
-                    Update-ScriptFileInfo -Path $update -Version $newVersion
-                    Publish-Script -Path $update -NuGetApiKey $env:PSGKey
+                    $funcs = Get-ChildItem -path $env:APPVEYOR_BUILD_FOLDER\CTXXD-Replicate\Public|select-object basename|sort-object basename
+                    Update-ModuleManifest -Path $update.fullname -ModuleVersion $newVersion -FunctionsToExport $funcs.basename
+                    Publish-Module -Path $update.Directoryname -NuGetApiKey $env:PSGKey
                     $pubme = $true
                 }
                 else
