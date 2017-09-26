@@ -12,7 +12,7 @@
 RootModule = 'CTXXD-Replicate.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.10'
+ModuleVersion = '0.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -133,6 +133,7 @@ PrivateData = @{
 09-15-17: Convert to function
 09-16-17: Folder function changes
 09-20-17: Application Groups and multiple Delivery group functionality
+09-26-17: Initial module release
 '
 
         # External dependent modules of this module

@@ -1,5 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/00p66jdhcj8nib0c/branch/tofunction?retina=true)](https://ci.appveyor.com/project/ryancbutler/xdreplicate/branch/tofunction)
-## XenDesktop 7 Site Export and Import Module (BETA)
+[![Build status](https://ci.appveyor.com/api/projects/status/00p66jdhcj8nib0c/branch/master?retina=true)](https://ci.appveyor.com/project/ryancbutler/xdreplicate/branch/master)
+## XenDesktop 7 Site Export and Import Module
 
 Exports XenDesktop 7.x site information and imports to another 'Site' via remote command or XML file.
 
@@ -53,6 +53,9 @@ Update-Module CTXXD-Replicate
 - 09-13-17: Fix for admin permsissions
 - 09-15-17: Move to module
 - 09-20-17: Application Groups and multiple Delivery group functionality
+- 09-16-17: Folder function changes
+- 09-20-17: Application Groups and multiple Delivery group functionality
+- 09-26-17: Initial module release
 
 ### XenDesktop Versions Tested
 
