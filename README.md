@@ -3,8 +3,6 @@
 
 Exports XenDesktop 7.x site information and imports to another 'Site' via remote command or XML file.
 
-**XDReplicate.ps1**
-
 **PLEASE USE WITH CAUTION. THIS WILL OVERWRITE SETTINGS ON IMPORT**
 
 ### Requirements
