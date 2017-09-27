@@ -1,4 +1,4 @@
-function import-xdapp
+function Import-XDApp
 {
 <#
 .SYNOPSIS

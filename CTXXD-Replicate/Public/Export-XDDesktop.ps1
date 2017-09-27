@@ -1,4 +1,4 @@
-function Export-XDdesktop
+function Export-XDDesktop
 {
 <#
 .SYNOPSIS

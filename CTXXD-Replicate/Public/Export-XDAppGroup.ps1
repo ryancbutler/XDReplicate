@@ -1,4 +1,4 @@
-function Export-XDappgroup
+function Export-XDAppGroup
 {
 <#
 .SYNOPSIS

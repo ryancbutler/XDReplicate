@@ -1,4 +1,4 @@
-function import-XDApplicationGroup
+function Import-XDApplicationGroup
 {
 <#
 .SYNOPSIS

@@ -1,4 +1,4 @@
- function export-xdapp
+ function Export-XDApp
  {
 <#
 .SYNOPSIS

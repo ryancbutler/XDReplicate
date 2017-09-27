@@ -12,7 +12,7 @@ http://xdreplicate.readthedocs.io
 - Admin access to XenDesktop site
 - PowerShell v3 or greater
 
-### PS Gallery
+### Quick Start
 If running PowerShell version 5 or above you can install via [Microsoft PowerShell Gallery](https://www.powershellgallery.com/)
 
 #### Install
@@ -27,6 +27,11 @@ Save-Module -Name CTXXD-Replicate -Path <path>
 ```
 Update-Module CTXXD-Replicate 
 ```
+#### Export and Import Citrix XD\XA Site
+```
+Export-XDSite|Import-XDSite -xdhost DDC02.DOMAIN.COM
+```
+Exports from localhost and imports on DDC02.DOMAIN.COM
 
 ## Provisioning Services 7.x vDisk version Export and Import Script
 

@@ -1,4 +1,4 @@
-function import-xdadminrole
+function Import-XDAdminRole
 {
 <#
 .SYNOPSIS

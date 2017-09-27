@@ -1,4 +1,4 @@
-function import-xdadmin
+function Import-XDAdmin
 {
 <#
 .SYNOPSIS

@@ -1,4 +1,4 @@
-function Import-XDsite
+function Import-XDSite
 {
 <#
 .SYNOPSIS
