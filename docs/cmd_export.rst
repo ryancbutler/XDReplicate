@@ -3,19 +3,19 @@
 
 This page contains details on **Export** commands.
 
-export-xdapp
+Export-XDApp
 -------------------------
 
 
 NAME
-    export-xdapp
+    Export-XDApp
     
 SYNOPSIS
     Adds required import values to existing exported app object
     
     
 SYNTAX
-    export-xdapp [-app] <Object> [[-xdhost] <String>] [<CommonParameters>]
+    Export-XDApp [-app] <Object> [[-xdhost] <String>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -45,23 +45,23 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help export-xdapp -examples".
-    For more information, type: "get-help export-xdapp -detailed".
-    For technical information, type: "get-help export-xdapp -full".
+    To see the examples, type: "get-help Export-XDApp -examples".
+    For more information, type: "get-help Export-XDApp -detailed".
+    For technical information, type: "get-help Export-XDApp -full".
 
 
-Export-XDappgroup
+Export-XDAppGroup
 -------------------------
 
 NAME
-    Export-XDappgroup
+    Export-XDAppGroup
     
 SYNOPSIS
     Adds delivery group names to Application Group Object required for import process
     
     
 SYNTAX
-    Export-XDappgroup [-appgroupobject] <Object> [[-xdhost] <String>] [<CommonParameters>]
+    Export-XDAppGroup [-appgroupobject] <Object> [[-xdhost] <String>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -91,23 +91,23 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help Export-XDappgroup -examples".
-    For more information, type: "get-help Export-XDappgroup -detailed".
-    For technical information, type: "get-help Export-XDappgroup -full".
+    To see the examples, type: "get-help Export-XDAppGroup -examples".
+    For more information, type: "get-help Export-XDAppGroup -detailed".
+    For technical information, type: "get-help Export-XDAppGroup -full".
 
 
-Export-XDdesktop
+Export-XDDesktop
 -------------------------
 
 NAME
-    Export-XDdesktop
+    Export-XDDesktop
     
 SYNOPSIS
     Adds Delivery group names to Desktop Object
     
     
 SYNTAX
-    Export-XDdesktop [-desktop] <Object> [-dg] <Object> [[-xdhost] <String>] [<CommonParameters>]
+    Export-XDDesktop [-desktop] <Object> [-dg] <Object> [[-xdhost] <String>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -141,23 +141,23 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help Export-XDdesktop -examples".
-    For more information, type: "get-help Export-XDdesktop -detailed".
-    For technical information, type: "get-help Export-XDdesktop -full".
+    To see the examples, type: "get-help Export-XDDesktop -examples".
+    For more information, type: "get-help Export-XDDesktop -detailed".
+    For technical information, type: "get-help Export-XDDesktop -full".
 
 
-Export-XDsite
+Export-XDSite
 -------------------------
 
 NAME
-    Export-XDsite
+    Export-XDSite
     
 SYNOPSIS
     Exports XD site information to variable or XML file
     
     
 SYNTAX
-    Export-XDsite [[-xdhost] <String>] [[-xmlpath] <String>] [[-dgtag] <String>] [[-ignoredgtag] <String>] [[-apptag] <String>] [[-ignoreapptag] <String>] [<CommonParameters>]
+    Export-XDSite [[-xdhost] <String>] [[-xmlpath] <String>] [[-dgtag] <String>] [[-ignoredgtag] <String>] [[-apptag] <String>] [[-ignoreapptag] <String>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -244,9 +244,9 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help Export-XDsite -examples".
-    For more information, type: "get-help Export-XDsite -detailed".
-    For technical information, type: "get-help Export-XDsite -full".
+    To see the examples, type: "get-help Export-XDSite -examples".
+    For more information, type: "get-help Export-XDSite -detailed".
+    For technical information, type: "get-help Export-XDSite -full".
 
 
 

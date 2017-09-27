@@ -3,19 +3,19 @@
 
 This page contains details on **Import** commands.
 
-import-xdadmin
+Import-XDAdmin
 -------------------------
 
 
 NAME
-    import-xdadmin
+    Import-XDAdmin
     
 SYNOPSIS
     Creates admin user from imported object
     
     
 SYNTAX
-    import-xdadmin [-admin] <Object> [-xdhost] <String> [<CommonParameters>]
+    Import-XDAdmin [-admin] <Object> [-xdhost] <String> [<CommonParameters>]
     
     
 DESCRIPTION
@@ -45,23 +45,23 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help import-xdadmin -examples".
-    For more information, type: "get-help import-xdadmin -detailed".
-    For technical information, type: "get-help import-xdadmin -full".
+    To see the examples, type: "get-help Import-XDAdmin -examples".
+    For more information, type: "get-help Import-XDAdmin -detailed".
+    For technical information, type: "get-help Import-XDAdmin -full".
 
 
-import-xdadminrole
+Import-XDAdminRole
 -------------------------
 
 NAME
-    import-xdadminrole
+    Import-XDAdminRole
     
 SYNOPSIS
     Creates admin role exported object
     
     
 SYNTAX
-    import-xdadminrole [-role] <Object> [-xdhost] <String> [<CommonParameters>]
+    Import-XDAdminRole [-role] <Object> [-xdhost] <String> [<CommonParameters>]
     
     
 DESCRIPTION
@@ -91,23 +91,23 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help import-xdadminrole -examples".
-    For more information, type: "get-help import-xdadminrole -detailed".
-    For technical information, type: "get-help import-xdadminrole -full".
+    To see the examples, type: "get-help Import-XDAdminRole -examples".
+    For more information, type: "get-help Import-XDAdminRole -detailed".
+    For technical information, type: "get-help Import-XDAdminRole -full".
 
 
-import-xdapp
+Import-XDApp
 -------------------------
 
 NAME
-    import-xdapp
+    Import-XDApp
     
 SYNOPSIS
     Creates broker application from imported object
     
     
 SYNTAX
-    import-xdapp [-app] <Object> [-xdhost] <String> [<CommonParameters>]
+    Import-XDApp [-app] <Object> [-xdhost] <String> [<CommonParameters>]
     
     
 DESCRIPTION
@@ -137,23 +137,23 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help import-xdapp -examples".
-    For more information, type: "get-help import-xdapp -detailed".
-    For technical information, type: "get-help import-xdapp -full".
+    To see the examples, type: "get-help Import-XDApp -examples".
+    For more information, type: "get-help Import-XDApp -detailed".
+    For technical information, type: "get-help Import-XDApp -full".
 
 
-import-XDApplicationGroup
+Import-XDApplicationGroup
 -------------------------
 
 NAME
-    import-XDApplicationGroup
+    Import-XDApplicationGroup
     
 SYNOPSIS
     Creates application group from imported object
     
     
 SYNTAX
-    import-XDApplicationGroup [-ag] <Object> [-xdhost] <String> [<CommonParameters>]
+    Import-XDApplicationGroup [-ag] <Object> [-xdhost] <String> [<CommonParameters>]
     
     
 DESCRIPTION
@@ -183,9 +183,9 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help import-XDApplicationGroup -examples".
-    For more information, type: "get-help import-XDApplicationGroup -detailed".
-    For technical information, type: "get-help import-XDApplicationGroup -full".
+    To see the examples, type: "get-help Import-XDApplicationGroup -examples".
+    For more information, type: "get-help Import-XDApplicationGroup -detailed".
+    For technical information, type: "get-help Import-XDApplicationGroup -full".
 
 
 Import-XDDeliveryGroup
@@ -280,18 +280,18 @@ REMARKS
     For technical information, type: "get-help Import-XDDesktop -full".
 
 
-Import-XDsite
+Import-XDSite
 -------------------------
 
 NAME
-    Import-XDsite
+    Import-XDSite
     
 SYNOPSIS
     Imports XD site information from object
     
     
 SYNTAX
-    Import-XDsite [[-xdhost] <String>] [[-xmlpath] <String>] [[-xdexport] <Object>] [-WhatIf] [-Confirm] [<CommonParameters>]
+    Import-XDSite [[-xdhost] <String>] [[-xmlpath] <String>] [[-xdexport] <Object>] [-WhatIf] [-Confirm] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -346,9 +346,9 @@ PARAMETERS
     
     
 REMARKS
-    To see the examples, type: "get-help Import-XDsite -examples".
-    For more information, type: "get-help Import-XDsite -detailed".
-    For technical information, type: "get-help Import-XDsite -full".
+    To see the examples, type: "get-help Import-XDSite -examples".
+    For more information, type: "get-help Import-XDSite -detailed".
+    For technical information, type: "get-help Import-XDSite -full".
 
 
 Import-XDTag

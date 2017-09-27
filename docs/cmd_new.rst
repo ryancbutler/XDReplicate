@@ -3,19 +3,19 @@
 
 This page contains details on **New** commands.
 
-New-XDadminfolder
+New-XDAdminFolder
 -------------------------
 
 
 NAME
-    New-XDadminfolder
+    New-XDAdminFolder
     
 SYNOPSIS
     Checks for and creates administrative folder if not found
     
     
 SYNTAX
-    New-XDadminfolder [-folder] <String> [[-xdhost] <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
+    New-XDAdminFolder [-folder] <String> [[-xdhost] <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -51,17 +51,17 @@ PARAMETERS
     
     -------------------------- EXAMPLE 2 --------------------------
     
-    PS C:\>New-XDadminfolder -folder "TestA\TestB\TestC"
+    PS C:\>New-XDadminfolder -folder "TestA\\TestB\\TestC" (USE SINGLE SLASH)
     
-    Tests and creates folders as \TestA\TestB\TestC
+    Tests and creates folders as \\TestA\\TestB\\TestC
     
     
     
     
 REMARKS
-    To see the examples, type: "get-help New-XDadminfolder -examples".
-    For more information, type: "get-help New-XDadminfolder -detailed".
-    For technical information, type: "get-help New-XDadminfolder -full".
+    To see the examples, type: "get-help New-XDAdminFolder -examples".
+    For more information, type: "get-help New-XDAdminFolder -detailed".
+    For technical information, type: "get-help New-XDAdminFolder -full".
 
 
 
