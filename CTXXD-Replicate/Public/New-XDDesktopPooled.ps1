@@ -23,8 +23,8 @@ param(
 test-xdvariable -dgroup $dgroup -machinecat $machinecat -xdhost $xdhost
 
 if ($PSCmdlet.ShouldProcess("Deploying desktop(s) to machine catalog and delivery group")) {
-    new-xdaccount $Howmany $machinecat $xdhost
-    new-xddesktop $Howmany $machinecat $dgroup $xdhost
+    new-xdaccount -howmany $Howmany -machinecat $machinecat -xdhost $xdhost
+    new-xddesktop -howmany $Howmany -machinecat $machinecat -dgroup $dgroup -xdhost $xdhost
 }
 
 }
