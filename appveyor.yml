@@ -13,8 +13,7 @@ build_script:
 - ps: |
     Install-PackageProvider -Name NuGet -Force | Out-Null
     find-module -Repository PSGallery -Name PowerShellGet | Out-Null
-    save-module -name PowerShellGet -path "C:\Program Files\WindowsPowerShell\Modules" | out-null
-    Import-Module -Name "C:\Program Files\WindowsPowerShell\Modules\PowerShellGet\1.1.3.2\PSModule.psm1" -force | out-null
+    Install-Module -Name PowerShellGet -Force -Repository PSGallery | Out-Null
     find-module -Repository PSGallery -Name PSScriptAnalyzer | Out-Null
     Install-Module -Name PSScriptAnalyzer -Force -Repository PSGallery | Out-Null
     find-module -Repository PSGallery -Name Pester | Out-Null
