@@ -36,7 +36,7 @@ Export-XDSite|Import-XDSite -xdhost DDC02.DOMAIN.COM
 ```
 Exports from localhost and imports on DDC02.DOMAIN.COM
 
-## VDA Provisioning\Deprovisioning (MCS)
+## VDA Provisioning\Deprovisioning BETA (MCS ONLY)
 What it does.
 - AD Computer Account Provisioning
 - VM Provisioning
@@ -45,19 +45,19 @@ What it does.
 
 ### Deploy Additional Pooled Desktops
 ```
-New-XDDesktopPooled -machinecat "Windows 10 x64 Random" -dgroup "Windows 10 Desktop" -howmany 5
+New-XDDesktopPooled -machinecat "Windows 10 x64 Random" -dgroup "Windows 10 Desktop" -howmany 5 -verbose
 ```
 ### Remove Pooled Desktops
 ```
-Remove-XDDesktopPooled -dgroup "Windows 10 Desktop" -howmany 10
+Remove-XDDesktopPooled -dgroup "Windows 10 Desktop" -howmany 10 -verbose
 ```
 ### Deploy an Additional Dedicated Desktop
 ```
-New-XDDesktopDed -machinecat "Windows 10 x64 Random" -dgroup "Windows 10 Desktop" -user "lab\joeshmith"
+New-XDDesktopDed -machinecat "Windows 10 x64 Random" -dgroup "Windows 10 Desktop" -user "lab\joeshmith" -verbose
 ```
 ### Remove a Dedicated Desktop
 ```
-Remove-XDDesktopDed -desktop "MYDOMAIN\MYVDI01"
+Remove-XDDesktopDed -desktop "MYDOMAIN\MYVDI01" -verbose
 ```
 
 ## Provisioning Services 7.x vDisk version Export and Import Script
