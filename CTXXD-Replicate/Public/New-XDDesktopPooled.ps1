@@ -17,13 +17,14 @@ function new-xddesktoppooled {
 param(
 [Parameter(Mandatory=$true)][string]$machinecat,
 [Parameter(Mandatory=$true)][string]$dgroup,
-[Parameter(Mandatory=$true)][int]$Howmany)
+[Parameter(Mandatory=$true)][int]$Howmany,
+[Parameter(Mandatory=$false)][string]$xdhost="localhost")
 
-test-xdvariable -dgroup $dgroup -machinecat $machinecat
+test-xdvariable -dgroup $dgroup -machinecat $machinecat -xdhost $xdhost
 
 if ($PSCmdlet.ShouldProcess("Deploying desktop(s) to machine catalog and delivery group")) {
-    new-xdaccount $Howmany $machinecat
-    new-xddesktop $Howmany $machinecat $dgroup
+    new-xdaccount $Howmany $machinecat $xdhost
+    new-xddesktop $Howmany $machinecat $dgroup $xdhost
 }
 
 }
