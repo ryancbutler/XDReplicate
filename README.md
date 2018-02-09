@@ -37,8 +37,8 @@ Export-XDSite|Import-XDSite -xdhost DDC02.DOMAIN.COM
 Exports from localhost and imports on DDC02.DOMAIN.COM
 
 ## VDA Provisioning\Deprovisioning (MCS)
-Functions Handle
-- Machine Account Provisioning
+What it does.
+- AD Computer Account Provisioning
 - VM Provisioning
 - Delivery Group Assignment
 - User Association (if Dedicated) 
