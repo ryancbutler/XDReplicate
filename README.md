@@ -60,7 +60,7 @@ New-XDMCSDesktop -machinecat "Windows 10 x64 Dedicated" -dgroup "Windows 10 Desk
 ```
 Remove-XDMCSdesktop -desktop "MYDOMAIN\MYVDI01" -mctype "Dedicated" -verbose
 ```
-##
+## Send a basic Slack Message
 Send a Slack message to [Incoming Webhook](https://api.slack.com/incoming-webhooks)
 ```
 send-xdslackmsg -slackurl "https://myslackwebhook.slack.com" -msg "Send this" -emoji ":joy:"
