@@ -36,28 +36,34 @@ Export-XDSite|Import-XDSite -xdhost DDC02.DOMAIN.COM
 ```
 Exports from localhost and imports on DDC02.DOMAIN.COM
 
-## VDA Provisioning\Deprovisioning BETA (MCS ONLY)
+## VDA Provisioning\Deprovisioning (MCS ONLY)
 What it does.
-- AD Computer Account Provisioning
-- VM Provisioning
-- Delivery Group Assignment
-- User Association (if Dedicated) 
+- AD Computer Account Provisioning\Deprovisioning
+- VM Provisioning\Deprovisioning
+- Machine to Delivery Group Assignment
+- User Association (if Dedicated)
+- Manages machine name count reset (if pooled)
 
 ### Deploy Additional Pooled Desktops
 ```
-New-XDDesktopPooled -machinecat "Windows 10 x64 Random" -dgroup "Windows 10 Desktop" -howmany 5 -verbose
+New-XDMCSDesktop -machinecat "Windows 10 x64 Dedicated" -dgroup "Windows 10 Desktop" -mctype "Pooled" -howmany "10" -verbose
 ```
 ### Remove Pooled Desktops
 ```
-Remove-XDDesktopPooled -dgroup "Windows 10 Desktop" -howmany 10 -verbose
+Remove-XDMCSdesktop -howmany 5 -dgroup "Windows 7 Pooled Test" -mctype "Pooled"
 ```
 ### Deploy an Additional Dedicated Desktop
 ```
-New-XDDesktopDed -machinecat "Windows 10 x64 Random" -dgroup "Windows 10 Desktop" -user "lab\joeshmith" -verbose
+New-XDMCSDesktop -machinecat "Windows 10 x64 Dedicated" -dgroup "Windows 10 Desktop" -mctype "Dedicated" -user "lab\joeshmith" -verbose
 ```
 ### Remove a Dedicated Desktop
 ```
-Remove-XDDesktopDed -desktop "MYDOMAIN\MYVDI01" -verbose
+Remove-XDMCSdesktop -desktop "MYDOMAIN\MYVDI01" -mctype "Dedicated" -verbose
+```
+##
+Send a Slack message to [Incoming Webhook](https://api.slack.com/incoming-webhooks)
+```
+send-xdslackmsg -slackurl "https://myslackwebhook.slack.com" -msg "Send this" -emoji ":joy:"
 ```
 
 ## Provisioning Services 7.x vDisk version Export and Import Script

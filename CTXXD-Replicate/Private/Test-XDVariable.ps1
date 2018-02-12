@@ -14,16 +14,17 @@ function test-xdvariable
 param(
     [Parameter(Mandatory=$false)][string]$dgroup,
     [Parameter(Mandatory=$false)][string]$machinecat,
-    [Parameter(Mandatory=$false)][string]$xdhost="localhost"
+    [Parameter(Mandatory=$true)][string]$xdhost
     
 )
     if(-not ([string]::IsNullOrWhiteSpace($dgroup)))
     {
         try{
-            Get-BrokerDesktopGroup -name $dgroup -adminaddress $xdhost -ErrorAction Stop|Out-Null
+            Write-Verbose "Checking for Desktop Group $dgroup"
+            Get-BrokerDesktopGroup -name $dgroup -adminaddress $xdhost -ErrorAction stop|out-null
         }
         catch{
-            throw "Problem locating delivery group $dgroup. Please check name and try again"
+            throw "Problem locating delivery group $($dgroup). Please check name and try again"
         }
 
     }
@@ -31,12 +32,13 @@ param(
     if(-not ([string]::IsNullOrWhiteSpace($machinecat)))
     {
         try{
-            Get-BrokerCatalog -name $machinecat -adminaddress $xdhost -ErrorAction Stop|Out-Null
+            Write-Verbose "Checking for Machine Catalog $machinecat"
+            Get-BrokerCatalog -name $machinecat -adminaddress $xdhost -ErrorAction stop|Out-null
         }
         Catch{
             throw "Problem locating machine catalog $machinecat. Please check name and try again"
         }
     }
 
-return $true
+#return $true
 }
