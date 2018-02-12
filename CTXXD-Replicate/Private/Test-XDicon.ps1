@@ -30,7 +30,7 @@ Param (
     }
     else
     {
-        Write-Verbose "Icons do not match -ForegroundColor Yellow"
+        Write-Verbose "Icons do not match"
         $match = $false
     }
 return $match
