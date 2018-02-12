@@ -36,7 +36,7 @@ param(
             Get-BrokerCatalog -name $machinecat -adminaddress $xdhost -ErrorAction stop|Out-null
         }
         Catch{
-            throw "Problem locating machine catalog $machinecat. Please check name and try again"
+            throw "Problem locating machine catalog $($machinecat). Please check name and try again"
         }
     }
 
