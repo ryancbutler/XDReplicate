@@ -1,4 +1,4 @@
-Import-Module -Name "$env:APPVEYOR_BUILD_FOLDER\CTXXD-Replicate" -Force
+Import-Module -Name "$env:APPVEYOR_BUILD_FOLDER\CTXXD-Replicate" -Force -Verbose
 $verbs = (Get-Command -Module CTXXD-Replicate).Verb | Select-Object -Unique
  
 foreach ($verb in $verbs)
