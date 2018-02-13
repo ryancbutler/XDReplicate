@@ -25,3 +25,4 @@ Changelog
 - 09-16-17: Folder function changes
 - 09-20-17: Application Groups and multiple Delivery group functionality
 - 09-26-17: Initial module release
+- 02-12-18: Additions for MCS provsioning
