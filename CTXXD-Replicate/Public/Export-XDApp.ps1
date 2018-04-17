@@ -38,8 +38,12 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
              $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue ($app|export-xdappdg -xdhost $xdhost)
              $multi = $true
          }
-         else {
+         elseif (($app.AssociatedDesktopGroupUids).count -eq 1) {
+             
             $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue (get-brokerdesktopgroup -adminaddress $xdhost -Uid $app.AssociatedDesktopGroupUids[0]).name 
+         }
+         else{
+            $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $null
          }
          
 
