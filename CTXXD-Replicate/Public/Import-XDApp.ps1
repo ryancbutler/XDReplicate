@@ -24,7 +24,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
     Process
     {
     write-verbose "Proccessing App $($app.browsername)"
-    Set-XDAppEntitlement $app.dgname $xdhost
+    Set-XDAppEntitlement (get-brokerdesktopgroup $app.dgname) $xdhost
     $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername -ErrorAction SilentlyContinue
         if($appmatch -is [Object])
         {
