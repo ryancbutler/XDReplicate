@@ -1,5 +1,6 @@
 function Get-FileEncoding
 {
+#FROM https://gist.github.com/jpoehls/2406504
   [CmdletBinding()] 
   Param (
     [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $True)] 
