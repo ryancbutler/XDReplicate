@@ -24,7 +24,12 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
     Process
     {
     write-verbose "Proccessing App $($app.browsername)"
+    
+    if(-not [string]::IsNullOrWhiteSpace($app.dgname))
+    {
     Set-XDAppEntitlement (get-brokerdesktopgroup -AdminAddress $xdhost $app.dgname) $xdhost
+    }
+
     $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername -ErrorAction SilentlyContinue
         if($appmatch -is [Object])
         {
