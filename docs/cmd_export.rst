@@ -33,7 +33,7 @@ PARAMETERS
         This cmdlet supports the common parameters: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer, PipelineVariable, and OutVariable. For more information, see 
-        about_CommonParameters (https:/go.microsoft.com/fwlink/?LinkID=113216). 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
     
     -------------------------- EXAMPLE 1 --------------------------
     
@@ -79,7 +79,7 @@ PARAMETERS
         This cmdlet supports the common parameters: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer, PipelineVariable, and OutVariable. For more information, see 
-        about_CommonParameters (https:/go.microsoft.com/fwlink/?LinkID=113216). 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
     
     -------------------------- EXAMPLE 1 --------------------------
     
@@ -128,7 +128,7 @@ PARAMETERS
         This cmdlet supports the common parameters: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer, PipelineVariable, and OutVariable. For more information, see 
-        about_CommonParameters (https:/go.microsoft.com/fwlink/?LinkID=113216). 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
     
     -------------------------- EXAMPLE 1 --------------------------
     
@@ -157,8 +157,7 @@ SYNOPSIS
     
     
 SYNTAX
-    Export-XDSite [[-xdhost] <String>] [[-xmlpath] <String>] [[-dgtag] <String>] [[-ignoredgtag] <String>] [[-apptag] <String>] [[-ignoreapptag] 
-    <String>] [<CommonParameters>]
+    Export-XDSite [[-xdhost] <String>] [[-xmlpath] <String>] [[-dgtag] <String>] [[-ignoredgtag] <String>] [[-apptag] <String>] [[-ignoreapptag] <String>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -188,7 +187,7 @@ PARAMETERS
         This cmdlet supports the common parameters: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer, PipelineVariable, and OutVariable. For more information, see 
-        about_CommonParameters (https:/go.microsoft.com/fwlink/?LinkID=113216). 
+        about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216). 
     
     -------------------------- EXAMPLE 1 --------------------------
     
