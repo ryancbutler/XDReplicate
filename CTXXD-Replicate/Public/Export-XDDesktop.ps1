@@ -29,7 +29,7 @@ begin {
     process{
         if($desktop -is [object])
         {
-        Write-Verbose "Processing $($desktop.Name)"
+        Write-Verbose "Processing $($desktop.Name) Desktop"
         #Adds delivery group name to object
         $desktop|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $dg.Name
         return $desktop
