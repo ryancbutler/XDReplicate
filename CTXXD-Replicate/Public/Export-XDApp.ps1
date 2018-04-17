@@ -44,6 +44,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
          }
          else{
             $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue $null
+            $multi = $true  
          }
          
 
