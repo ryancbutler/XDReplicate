@@ -33,7 +33,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
          $BrokerEnCodedIconData = (Get-BrokerIcon -AdminAddress $xdhost -Uid ($app.IconUid)).EncodedIconData
          $app|add-member -NotePropertyName 'EncodedIconData' -NotePropertyValue $BrokerEnCodedIconData
          #Adds delivery group name to object
-         if(($app.AssociatedDesktopGroupUids).count -gt 0)
+         if(($app.AssociatedDesktopGroupUids).count -gt 1)
          {
              $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue ($app|export-xdappdg -xdhost $xdhost)
              $multi = $true
