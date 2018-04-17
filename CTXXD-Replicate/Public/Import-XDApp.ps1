@@ -80,6 +80,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
 
         if($app.multi -eq $false)
         {
+            Write-Verbose "Single DG"
             #$dgmatch = get-brokerapplicationgroup -adminaddress $xdhost -name $app.dgname
             $appmatch = new-xdappobject -app $app -xdhost $xdhost -dgmatch $app.dgname
         }
