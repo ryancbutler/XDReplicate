@@ -25,7 +25,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
     Process
     {
         $dgmatch = Get-BrokerDesktopGroup -name $desktop.dgname -AdminAddress $xdhost
-        Write-host "Setting Entitlements"
+        Write-verbose "Setting Entitlements"
         Set-XDAppEntitlement $dgmatch $xdhost
     
                 if($desktop)

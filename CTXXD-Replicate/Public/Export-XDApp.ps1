@@ -39,7 +39,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
              $multi = $true
          }
          else {
-            $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue (get-brokerdesktopgroup -adminaddress $xdhost -Uid $app.AssociatedDesktopGroupUids).name 
+            $app|add-member -NotePropertyName 'DGNAME' -NotePropertyValue (get-brokerdesktopgroup -adminaddress $xdhost -Uid $app.AssociatedDesktopGroupUids[0]).name 
          }
          
 
