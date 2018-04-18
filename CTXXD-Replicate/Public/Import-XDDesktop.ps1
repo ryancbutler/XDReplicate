@@ -9,6 +9,8 @@ function Import-XDDesktop
     Desktop to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.PARAMETER IGNOREENABLE
+    Ignores setting the Enable flag
 .EXAMPLE
     $XDEXPORT.desktops|import-xddesktop
     Creates desktops from imported desktop object
@@ -16,7 +18,8 @@ function Import-XDDesktop
 [cmdletbinding()]
 Param(
 [Parameter(Mandatory=$true,ValueFromPipeline=$true)][object]$desktop,
-[Parameter(Mandatory=$true)][string]$xdhost
+[Parameter(Mandatory=$true)][string]$xdhost,
+[Parameter(Mandatory=$false)][switch]$ignoreenable
 )
 begin{
 Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
@@ -36,7 +39,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
                         if($desktopmatch)
                         {
                         write-verbose "Setting desktop"
-                        Set-XDDesktopobject $desktop $xdhost
+                        Set-XDDesktopobject -desktop $desktop -xdhost $xdhost -ignoreenable:$ignoreenable
                         clear-XDDesktopUserPerm $desktopmatch $xdhost
                         set-XDUserPerm $desktop $xdhost
                         }

@@ -11,6 +11,8 @@ function Import-XDSite
    Path used for XML file location on import and export operations
 .PARAMETER XDEXPORT
     XD site object to import
+.PARAMETER IGNOREENABLE
+    Ignores setting the Enable flag on apps and desktops
 .EXAMPLE
    $exportedobject|Import-XDSite -xdhost DDC02.DOMAIN.COM
    Imports data to DDC02.DOMAIN.COM and returns as object
@@ -20,12 +22,16 @@ function Import-XDSite
 .EXAMPLE
    Import-XDSite -xdhost DDC02.DOMAIN.COM -xdexport $myexport
    Imports data to DDC02.DOMAIN.COM from variable $myexport
+.EXAMPLE
+   Import-XDSite -xdhost DDC02.DOMAIN.COM -xdexport $myexport -ignoreenable
+   Imports data to DDC02.DOMAIN.COM from variable $myexport and does not change any existing disable\enable settings for applications and desktops
 #>
 [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact='High')]
 Param (
     [Parameter(Mandatory=$false)][string]$xdhost="localhost",
     [Parameter(Mandatory=$false)][String]$xmlpath,
-    [Parameter(ValueFromPipeline=$true)]$xdexport)
+    [Parameter(ValueFromPipeline=$true)]$xdexport,
+    [Parameter(Mandatory=$false)][switch]$ignoreenable)
   
 begin{
     Write-Verbose "BEGIN: $($MyInvocation.MyCommand)" 
@@ -69,7 +75,7 @@ process
         if($XDEXPORT.desktops)
         {
         Write-Verbose "Processing Desktops"
-        $XDEXPORT.desktops|import-xddesktop -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
+        $XDEXPORT.desktops|import-xddesktop -xdhost $xdhost -ignoreenable:$ignoreenable -Verbose:$VerbosePreference|Out-Null
         }
 
         if($XDEXPORT.appgroups)
@@ -81,7 +87,7 @@ process
         if($XDEXPORT.apps)
         {
         Write-Verbose "Processing Apps"
-        $XDEXPORT.apps|import-xdapp -xdhost $xdhost -Verbose:$VerbosePreference|Out-Null
+        $XDEXPORT.apps|import-xdapp -xdhost $xdhost -ignoreenable:$ignoreenable -Verbose:$VerbosePreference|Out-Null
         }
         
         if($XDEXPORT.adminroles)
