@@ -107,7 +107,7 @@ SYNOPSIS
     
     
 SYNTAX
-    Import-XDApp [-app] <Object> [-xdhost] <String> [<CommonParameters>]
+    Import-XDApp [-app] <Object> [-xdhost] <String> [-ignoreenable] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -120,6 +120,9 @@ PARAMETERS
         
     -xdhost <String>
         XenDesktop DDC hostname to connect to
+        
+    -ignoreenable [<SwitchParameter>]
+        Ignores setting the Enable flag
         
     <CommonParameters>
         This cmdlet supports the common parameters: Verbose, Debug,
@@ -245,7 +248,7 @@ SYNOPSIS
     
     
 SYNTAX
-    Import-XDDesktop [-desktop] <Object> [-xdhost] <String> [<CommonParameters>]
+    Import-XDDesktop [-desktop] <Object> [-xdhost] <String> [-ignoreenable] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -258,6 +261,9 @@ PARAMETERS
         
     -xdhost <String>
         XenDesktop DDC hostname to connect to
+        
+    -ignoreenable [<SwitchParameter>]
+        Ignores setting the Enable flag
         
     <CommonParameters>
         This cmdlet supports the common parameters: Verbose, Debug,
@@ -291,7 +297,7 @@ SYNOPSIS
     
     
 SYNTAX
-    Import-XDSite [[-xdhost] <String>] [[-xmlpath] <String>] [[-xdexport] <Object>] [-WhatIf] [-Confirm] [<CommonParameters>]
+    Import-XDSite [[-xdhost] <String>] [[-xmlpath] <String>] [[-xdexport] <Object>] [-ignoreenable] [-WhatIf] [-Confirm] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -307,6 +313,9 @@ PARAMETERS
         
     -xdexport <Object>
         XD site object to import
+        
+    -ignoreenable [<SwitchParameter>]
+        Ignores setting the Enable flag on apps and desktops
         
     -WhatIf [<SwitchParameter>]
         
@@ -341,6 +350,15 @@ PARAMETERS
     PS C:\>Import-XDSite -xdhost DDC02.DOMAIN.COM -xdexport $myexport
     
     Imports data to DDC02.DOMAIN.COM from variable $myexport
+    
+    
+    
+    
+    -------------------------- EXAMPLE 4 --------------------------
+    
+    PS C:\>Import-XDSite -xdhost DDC02.DOMAIN.COM -xdexport $myexport -ignoreenable
+    
+    Imports data to DDC02.DOMAIN.COM from variable $myexport and does not change any existing disable\enable settings for applications and desktops
     
     
     
