@@ -9,6 +9,8 @@ function Import-XDApp
     Broker Application to create
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.PARAMETER IGNOREENABLE
+    Ignores setting the Enable flag
 .EXAMPLE
     $XDEXPORT.apps|import-xdapp
     Creates applications from imported app object
@@ -16,7 +18,8 @@ function Import-XDApp
 [cmdletbinding()]
 Param(
 [Parameter(Mandatory=$true,ValueFromPipeline=$true)][object]$app,
-[Parameter(Mandatory=$true)][string]$xdhost
+[Parameter(Mandatory=$true)][string]$xdhost,
+[Parameter(Mandatory=$false)][switch]$ignoreenable
 )
 begin{
 Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
@@ -53,7 +56,7 @@ Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
             $appmatch = Get-BrokerApplication -AdminAddress $xdhost -browsername $app.browsername -ErrorAction SilentlyContinue
             }
         }
-        set-xdexistingappobject $app $appmatch $xdhost
+        set-xdexistingappobject -app $app -appmatch $appmatch -xdhost $xdhost -ignoreenable:$ignoreenable
 
         #makes sure to rename app to match
         if($appmatch.ApplicationName -notlike $app.ApplicationName)

@@ -11,12 +11,15 @@ function Set-XDexistingappobject
     Existing application
 .PARAMETER XDHOST
     XenDesktop DDC hostname to connect to
+.PARAMETER IGNOREENABLE
+    Ignores setting the Enable flag
 #>
 [cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact='Low')]
 Param(
 [Parameter(Mandatory=$true)]$app,
 [Parameter(Mandatory=$true)]$appmatch, 
-[Parameter(Mandatory=$true)][string]$xdhost)
+[Parameter(Mandatory=$true)][string]$xdhost,
+[Parameter(Mandatory=$false)][switch]$ignoreenable)
 
 Write-Verbose "BEGIN: $($MyInvocation.MyCommand)"
 $temp = @{}
@@ -31,7 +34,15 @@ foreach($t in $app.PSObject.Properties)
                 "CommandLineExecutable" {$temp.Add("CommandLineExecutable",$t.value)}
                 "CpuPriorityLevel" {$temp.Add("CpuPriorityLevel",$t.value)}
                 "Description" {$temp.Add("Description",$t.value)}
-                "Enabled" {$temp.Add("Enabled",$t.value)}
+                "Enabled" {
+                    if(!$ignoreenable)
+                    {
+                    $temp.Add("Enabled",$t.value)
+                    }
+                    else {
+                        Write-Verbose "Skipping Enable"
+                    }
+                }
                 "MaxPerUserInstances" {$temp.Add("MaxPerUserInstances",$t.value)}
                 "MaxTotalInstances" {$temp.Add("MaxTotalInstances",$t.value)}
                 "Name" {$temp.Add("name",$appmatch.Name)}

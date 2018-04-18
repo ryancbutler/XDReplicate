@@ -36,6 +36,11 @@ Export-XDSite|Import-XDSite -xdhost DDC02.DOMAIN.COM
 ```
 Exports from localhost and imports on DDC02.DOMAIN.COM
 
+```
+Export-XDSite|Import-XDSite -xdhost DDC02.DOMAIN.COM -ignoreenable
+```
+Exports from localhost and imports on DDC02.DOMAIN.COM but ignores setting any "ENABLE" states of existing desktops and apps
+
 ## VDA Provisioning\Deprovisioning (MCS ONLY)
 What it does.
 - AD Computer Account Provisioning\Deprovisioning
