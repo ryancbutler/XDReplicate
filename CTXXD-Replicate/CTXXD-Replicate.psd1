@@ -137,6 +137,7 @@ PrivateData = @{
 09-26-17: Initial module release
 02-12-18: Addition of functions around MCS VDA deployments
 04-17-18: Fixes for application imports and exports
+04-18-18: Addition of ignoreenable switch to bypass setting enable property on desktops and apps
 '
 
         # External dependent modules of this module
