@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Export Commands &#8212; XDReplicate  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Import Commands" href="cmd_import.html" />
+    <link rel="prev" title="Changelog" href="changelog.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="export-commands">
+<h1>Export Commands<a class="headerlink" href="#export-commands" title="Permalink to this headline">¶</a></h1>
+<p>This page contains details on <strong>Export</strong> commands.</p>
+<div class="section" id="export-xdapp">
+<h2>Export-XDApp<a class="headerlink" href="#export-xdapp" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Export-XDApp</dd>
+<dt>SYNOPSIS</dt>
+<dd>Adds required import values to existing exported app object</dd>
+<dt>SYNTAX</dt>
+<dd>Export-XDApp [-app] &lt;Object&gt; [[-xdhost] &lt;String&gt;] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Adds required import values to existing exported app object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-app &lt;Object&gt;</dt>
+<dd>Application Object</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$apps = Get-BrokerApplication -AdminAddress $xdhost|export-xdapp</p>
+<p class="last">Grabs all applications and adds required values to object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Export-XDApp -examples”.
+For more information, type: “get-help Export-XDApp -detailed”.
+For technical information, type: “get-help Export-XDApp -full”.</dd>
+</dl>
+</div>
+<div class="section" id="export-xdappgroup">
+<h2>Export-XDAppGroup<a class="headerlink" href="#export-xdappgroup" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Export-XDAppGroup</dd>
+<dt>SYNOPSIS</dt>
+<dd>Adds delivery group names to Application Group Object required for import process</dd>
+<dt>SYNTAX</dt>
+<dd>Export-XDAppGroup [-appgroupobject] &lt;Object&gt; [[-xdhost] &lt;String&gt;] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Adds delivery group names to Application Group Object required for import process</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-appgroupobject &lt;Object&gt;</dt>
+<dd>Application Group object</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$appgroups = Get-BrokerApplicationGroup|export-xdappgroup -xdhost $xdhost</p>
+<p class="last">Grabs all application groups and adds required values to object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Export-XDAppGroup -examples”.
+For more information, type: “get-help Export-XDAppGroup -detailed”.
+For technical information, type: “get-help Export-XDAppGroup -full”.</dd>
+</dl>
+</div>
+<div class="section" id="export-xddesktop">
+<h2>Export-XDDesktop<a class="headerlink" href="#export-xddesktop" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Export-XDDesktop</dd>
+<dt>SYNOPSIS</dt>
+<dd>Adds Delivery group names to Desktop Object</dd>
+<dt>SYNTAX</dt>
+<dd>Export-XDDesktop [-desktop] &lt;Object&gt; [-dg] &lt;Object&gt; [[-xdhost] &lt;String&gt;] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Adds Delivery group names to Desktop Object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-desktop &lt;Object&gt;</dt>
+<dd>Exported desktop object</dd>
+<dt>-dg &lt;Object&gt;</dt>
+<dd>Delivery group where desktop resides</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$dg = get-brokerdesktopgroup -name “My Delivery Group”</p>
+<p class="last">$desktops = Get-BrokerEntitlementPolicyRule|Export-XDdesktop -xdhost $xdhost -dg $dg
+Grabs all desktops and adds required values to object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Export-XDDesktop -examples”.
+For more information, type: “get-help Export-XDDesktop -detailed”.
+For technical information, type: “get-help Export-XDDesktop -full”.</dd>
+</dl>
+</div>
+<div class="section" id="export-xdsite">
+<h2>Export-XDSite<a class="headerlink" href="#export-xdsite" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Export-XDSite</dd>
+<dt>SYNOPSIS</dt>
+<dd>Exports XD site information to variable or XML file</dd>
+<dt>SYNTAX</dt>
+<dd>Export-XDSite [[-xdhost] &lt;String&gt;] [[-xmlpath] &lt;String&gt;] [[-dgtag] &lt;String&gt;] [[-ignoredgtag] &lt;String&gt;] [[-apptag] &lt;String&gt;] [[-ignoreapptag] &lt;String&gt;] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Exports XD site information to variable or XML file</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>-xmlpath &lt;String&gt;</dt>
+<dd>Path used for XML file location on import and export operations</dd>
+<dt>-dgtag &lt;String&gt;</dt>
+<dd>Only export delivery groups with specified tag</dd>
+<dt>-ignoredgtag &lt;String&gt;</dt>
+<dd>Skips export of delivery groups with specified tag</dd>
+<dt>-apptag &lt;String&gt;</dt>
+<dd>Export delivery group applications with specific tag</dd>
+<dt>-ignoreapptag &lt;String&gt;</dt>
+<dd>Exports all delivery group applications except ones with specific tag</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;Export-XDSite -xdhost DDC02.DOMAIN.COM</p>
+<p>Exports data from DDC02.DOMAIN.COM and returns as object</p>
+<p>————————– EXAMPLE 2 ————————–</p>
+<p>PS C:&gt;Export-XDSite -xdhost DDC02.DOMAIN.COM -dgtag “replicate”</p>
+<p>Exports data from DDC02.DOMAIN.COM with delivery groups tagged with “replicate” and returns as object.</p>
+<p>————————– EXAMPLE 3 ————————–</p>
+<p>PS C:&gt;Export-XDSite -xdhost DDC02.DOMAIN.COM -ignoredgtag “skip”</p>
+<p>Exports data from DDC02.DOMAIN.COM while skipping delivery groups tagged with “skip” and returns as object.</p>
+<p>————————– EXAMPLE 4 ————————–</p>
+<p>PS C:&gt;Export-XDSite -xdhost DDC02.DOMAIN.COM -apptag “replicate”</p>
+<p>Exports data from DDC02.DOMAIN.COM delivery groups while only including apps tagged with “replicate” and returns as object.</p>
+<p>————————– EXAMPLE 5 ————————–</p>
+<p>PS C:&gt;Export-XDSite -xdhost DDC02.DOMAIN.COM -ignoreapptag “skip”</p>
+<p>Exports data from DDC02.DOMAIN.COM delivery groups while ignoring apps tagged with “skip” and returns as object.</p>
+<p>————————– EXAMPLE 6 ————————–</p>
+<p>PS C:&gt;.XDReplicate.ps1 -xdhost DDC02.DOMAIN.COM -XMLPATH “C:tempmy.xml”</p>
+<p class="last">Exports data from DDC02.DOMAIN.COM and exports to C:tempmy.xml</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Export-XDSite -examples”.
+For more information, type: “get-help Export-XDSite -detailed”.
+For technical information, type: “get-help Export-XDSite -full”.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">XDReplicate</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command Help</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Export Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#export-xdapp">Export-XDApp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#export-xdappgroup">Export-XDAppGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#export-xddesktop">Export-XDDesktop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#export-xdsite">Export-XDSite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_import.html">Import Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_new.html">New Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_remove.html">Remove Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_send.html">Send Commands</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_export.html">Export Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_import.html">Import Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="changelog.html" title="previous chapter">Changelog</a></li>
+      <li>Next: <a href="cmd_import.html" title="next chapter">Import Commands</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Ryan Butler.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/cmd_export.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,422 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Import Commands &#8212; XDReplicate  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="New Commands" href="cmd_new.html" />
+    <link rel="prev" title="Export Commands" href="cmd_export.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="import-commands">
+<h1>Import Commands<a class="headerlink" href="#import-commands" title="Permalink to this headline">¶</a></h1>
+<p>This page contains details on <strong>Import</strong> commands.</p>
+<div class="section" id="import-xdadmin">
+<h2>Import-XDAdmin<a class="headerlink" href="#import-xdadmin" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDAdmin</dd>
+<dt>SYNOPSIS</dt>
+<dd>Creates admin user from imported object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDAdmin [-admin] &lt;Object&gt; [-xdhost] &lt;String&gt; [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Creates admin user from imported object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-admin &lt;Object&gt;</dt>
+<dd>Admin user to create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$XDEXPORT.admins|import-xdadmin</p>
+<p class="last">Creates admin users from imported admin user object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDAdmin -examples”.
+For more information, type: “get-help Import-XDAdmin -detailed”.
+For technical information, type: “get-help Import-XDAdmin -full”.</dd>
+</dl>
+</div>
+<div class="section" id="import-xdadminrole">
+<h2>Import-XDAdminRole<a class="headerlink" href="#import-xdadminrole" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDAdminRole</dd>
+<dt>SYNOPSIS</dt>
+<dd>Creates admin role exported object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDAdminRole [-role] &lt;Object&gt; [-xdhost] &lt;String&gt; [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Creates admin role exported object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-role &lt;Object&gt;</dt>
+<dd>Role to create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$XDEXPORT.adminroles|import-xdadminrole</p>
+<p class="last">Creates admin roles from imported admin role object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDAdminRole -examples”.
+For more information, type: “get-help Import-XDAdminRole -detailed”.
+For technical information, type: “get-help Import-XDAdminRole -full”.</dd>
+</dl>
+</div>
+<div class="section" id="import-xdapp">
+<h2>Import-XDApp<a class="headerlink" href="#import-xdapp" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDApp</dd>
+<dt>SYNOPSIS</dt>
+<dd>Creates broker application from imported object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDApp [-app] &lt;Object&gt; [-xdhost] &lt;String&gt; [-ignoreenable] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Creates broker application from imported object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-app &lt;Object&gt;</dt>
+<dd>Broker Application to create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>-ignoreenable [&lt;SwitchParameter&gt;]</dt>
+<dd>Ignores setting the Enable flag</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$XDEXPORT.apps|import-xdapp</p>
+<p class="last">Creates applications from imported app object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDApp -examples”.
+For more information, type: “get-help Import-XDApp -detailed”.
+For technical information, type: “get-help Import-XDApp -full”.</dd>
+</dl>
+</div>
+<div class="section" id="import-xdapplicationgroup">
+<h2>Import-XDApplicationGroup<a class="headerlink" href="#import-xdapplicationgroup" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDApplicationGroup</dd>
+<dt>SYNOPSIS</dt>
+<dd>Creates application group from imported object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDApplicationGroup [-ag] &lt;Object&gt; [-xdhost] &lt;String&gt; [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Creates application group from imported object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-ag &lt;Object&gt;</dt>
+<dd>Application Group to create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$XDEXPORT.appgroups|import-xdapplicationgroup</p>
+<p class="last">Creates application groups from imported application group object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDApplicationGroup -examples”.
+For more information, type: “get-help Import-XDApplicationGroup -detailed”.
+For technical information, type: “get-help Import-XDApplicationGroup -full”.</dd>
+</dl>
+</div>
+<div class="section" id="import-xddeliverygroup">
+<h2>Import-XDDeliveryGroup<a class="headerlink" href="#import-xddeliverygroup" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDDeliveryGroup</dd>
+<dt>SYNOPSIS</dt>
+<dd>Creates delivery groups from exported object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDDeliveryGroup [-dg] &lt;Object&gt; [-xdhost] &lt;String&gt; [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Creates delivery groups from exported object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-dg &lt;Object&gt;</dt>
+<dd>Delivery Group to create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$XDEXPORT.dgs|import-xddeliverygroup</p>
+<p class="last">Creates delivery groups from imported delivery group object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDDeliveryGroup -examples”.
+For more information, type: “get-help Import-XDDeliveryGroup -detailed”.
+For technical information, type: “get-help Import-XDDeliveryGroup -full”.</dd>
+</dl>
+</div>
+<div class="section" id="import-xddesktop">
+<h2>Import-XDDesktop<a class="headerlink" href="#import-xddesktop" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDDesktop</dd>
+<dt>SYNOPSIS</dt>
+<dd>Creates desktops from exported object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDDesktop [-desktop] &lt;Object&gt; [-xdhost] &lt;String&gt; [-ignoreenable] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Creates desktops from exported object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-desktop &lt;Object&gt;</dt>
+<dd>Desktop to create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>-ignoreenable [&lt;SwitchParameter&gt;]</dt>
+<dd>Ignores setting the Enable flag</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$XDEXPORT.desktops|import-xddesktop</p>
+<p class="last">Creates desktops from imported desktop object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDDesktop -examples”.
+For more information, type: “get-help Import-XDDesktop -detailed”.
+For technical information, type: “get-help Import-XDDesktop -full”.</dd>
+</dl>
+</div>
+<div class="section" id="import-xdsite">
+<h2>Import-XDSite<a class="headerlink" href="#import-xdsite" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDSite</dd>
+<dt>SYNOPSIS</dt>
+<dd>Imports XD site information from object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDSite [[-xdhost] &lt;String&gt;] [[-xmlpath] &lt;String&gt;] [[-xdexport] &lt;Object&gt;] [-ignoreenable] [-WhatIf] [-Confirm] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Imports XD site information from object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>-xmlpath &lt;String&gt;</dt>
+<dd>Path used for XML file location on import and export operations</dd>
+<dt>-xdexport &lt;Object&gt;</dt>
+<dd>XD site object to import</dd>
+<dt>-ignoreenable [&lt;SwitchParameter&gt;]</dt>
+<dd>Ignores setting the Enable flag on apps and desktops</dd>
+</dl>
+<p>-WhatIf [&lt;SwitchParameter&gt;]</p>
+<p>-Confirm [&lt;SwitchParameter&gt;]</p>
+<dl class="docutils">
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$exportedobject|Import-XDSite -xdhost DDC02.DOMAIN.COM</p>
+<p>Imports data to DDC02.DOMAIN.COM and returns as object</p>
+<p>————————– EXAMPLE 2 ————————–</p>
+<p>PS C:&gt;Import-XDSite -xdhost DDC02.DOMAIN.COM -xmlpath “C:tempmypath.xml”</p>
+<p>Imports data to DDC02.DOMAIN.COM from XML file C:tempmypath.xml</p>
+<p>————————– EXAMPLE 3 ————————–</p>
+<p>PS C:&gt;Import-XDSite -xdhost DDC02.DOMAIN.COM -xdexport $myexport</p>
+<p>Imports data to DDC02.DOMAIN.COM from variable $myexport</p>
+<p>————————– EXAMPLE 4 ————————–</p>
+<p>PS C:&gt;Import-XDSite -xdhost DDC02.DOMAIN.COM -xdexport $myexport -ignoreenable</p>
+<p class="last">Imports data to DDC02.DOMAIN.COM from variable $myexport and does not change any existing disableenable settings for applications and desktops</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDSite -examples”.
+For more information, type: “get-help Import-XDSite -detailed”.
+For technical information, type: “get-help Import-XDSite -full”.</dd>
+</dl>
+</div>
+<div class="section" id="import-xdtag">
+<h2>Import-XDTag<a class="headerlink" href="#import-xdtag" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>Import-XDTag</dd>
+<dt>SYNOPSIS</dt>
+<dd>Creates desktops from imported object</dd>
+<dt>SYNTAX</dt>
+<dd>Import-XDTag [-tag] &lt;Object&gt; [-xdhost] &lt;String&gt; [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Creates desktops from imported object</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-tag &lt;Object&gt;</dt>
+<dd>TAG to create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$XDEXPORT.tags|import-xdtag</p>
+<p class="last">Creates tags from imported tag object</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help Import-XDTag -examples”.
+For more information, type: “get-help Import-XDTag -detailed”.
+For technical information, type: “get-help Import-XDTag -full”.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">XDReplicate</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command Help</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cmd_export.html">Export Commands</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Import Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#import-xdadmin">Import-XDAdmin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-xdadminrole">Import-XDAdminRole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-xdapp">Import-XDApp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-xdapplicationgroup">Import-XDApplicationGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-xddeliverygroup">Import-XDDeliveryGroup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-xddesktop">Import-XDDesktop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-xdsite">Import-XDSite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-xdtag">Import-XDTag</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_new.html">New Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_remove.html">Remove Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_send.html">Send Commands</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_export.html">Export Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_import.html">Import Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="cmd_export.html" title="previous chapter">Export Commands</a></li>
+      <li>Next: <a href="cmd_new.html" title="next chapter">New Commands</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Ryan Butler.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/cmd_import.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

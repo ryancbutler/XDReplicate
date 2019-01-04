@@ -1,0 +1,218 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>New Commands &#8212; XDReplicate  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Remove Commands" href="cmd_remove.html" />
+    <link rel="prev" title="Import Commands" href="cmd_import.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="new-commands">
+<h1>New Commands<a class="headerlink" href="#new-commands" title="Permalink to this headline">¶</a></h1>
+<p>This page contains details on <strong>New</strong> commands.</p>
+<div class="section" id="new-xdadminfolder">
+<h2>New-XDAdminFolder<a class="headerlink" href="#new-xdadminfolder" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>New-XDAdminFolder</dd>
+<dt>SYNOPSIS</dt>
+<dd>Checks for and creates administrative folder if not found</dd>
+<dt>SYNTAX</dt>
+<dd>New-XDAdminFolder [-folder] &lt;String&gt; [[-xdhost] &lt;String&gt;] [-WhatIf] [-Confirm] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Checks for and creates administrative folder if not found</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-folder &lt;String&gt;</dt>
+<dd>Folder to validate and create</dd>
+<dt>-xdhost &lt;String&gt;</dt>
+<dd>XenDesktop DDC hostname to connect to</dd>
+</dl>
+<p>-WhatIf [&lt;SwitchParameter&gt;]</p>
+<p>-Confirm [&lt;SwitchParameter&gt;]</p>
+<dl class="docutils">
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;$folders = &#64;(“MyFolder1”,”MyFolder2”,”MyFolder3”)</p>
+<p>$folders|New-XDadminfolder
+Tests and creates MyFolder1, MyFolder2 and MyFolder3 admin folders</p>
+<p>————————– EXAMPLE 2 ————————–</p>
+<p>PS C:&gt;New-XDadminfolder -folder “TestA\TestB\TestC” (USE SINGLE SLASH)</p>
+<p class="last">Tests and creates folders as \TestA\TestB\TestC</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help New-XDAdminFolder -examples”.
+For more information, type: “get-help New-XDAdminFolder -detailed”.
+For technical information, type: “get-help New-XDAdminFolder -full”.</dd>
+</dl>
+</div>
+<div class="section" id="new-xdmcsdesktop">
+<h2>New-XDMCSDesktop<a class="headerlink" href="#new-xdmcsdesktop" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>NAME</dt>
+<dd>New-XDMCSDesktop</dd>
+<dt>SYNOPSIS</dt>
+<dd>Adds machines to XenDesktop Machine Catalog and Delivery Group via MCS</dd>
+<dt>SYNTAX</dt>
+<dd>New-XDMCSDesktop [-machinecat] &lt;String&gt; [-dgroup] &lt;String&gt; [-mctype] &lt;String&gt; [[-howmany] &lt;Int32&gt;] [[-user] &lt;String&gt;] [[-xdhost] &lt;String&gt;] [-WhatIf] [-Confirm] [&lt;CommonParameters&gt;]</dd>
+<dt>DESCRIPTION</dt>
+<dd>Adds machines to XenDesktop Machine Catalog and Delivery Group via MCS</dd>
+<dt>PARAMETERS</dt>
+<dd><dl class="first docutils">
+<dt>-machinecat &lt;String&gt;</dt>
+<dd>Machine Catalog to add to</dd>
+<dt>-dgroup &lt;String&gt;</dt>
+<dd>Delivery group to add newly created machines to</dd>
+</dl>
+<p>-mctype &lt;String&gt;</p>
+<dl class="docutils">
+<dt>-howmany &lt;Int32&gt;</dt>
+<dd>Count of machines to add to the site (pooled)</dd>
+<dt>-user &lt;String&gt;</dt>
+<dd>AD user to add to dedicated desktop (domainusername)</dd>
+</dl>
+<p>-xdhost &lt;String&gt;</p>
+<p>-WhatIf [&lt;SwitchParameter&gt;]</p>
+<p>-Confirm [&lt;SwitchParameter&gt;]</p>
+<dl class="docutils">
+<dt>&lt;CommonParameters&gt;</dt>
+<dd>This cmdlet supports the common parameters: Verbose, Debug,
+ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+OutBuffer, PipelineVariable, and OutVariable. For more information, see
+about_CommonParameters (<a class="reference external" href="http://go.microsoft.com/fwlink/?LinkID=113216">http://go.microsoft.com/fwlink/?LinkID=113216</a>).</dd>
+</dl>
+<p>————————– EXAMPLE 1 ————————–</p>
+<p>PS C:&gt;New-XDMCSDesktop -machinecat “Windows 10 x64 Random” -dgroup “Windows 10 Desktop” -mctype “Dedicated” -user “labjoeshmith”</p>
+<p>————————– EXAMPLE 2 ————————–</p>
+<p class="last">PS C:&gt;New-XDMCSDesktop -machinecat “Windows 10 x64 Dedicated” -dgroup “Windows 10 Desktop” -mctype “Pooled” -howmany “10”</p>
+</dd>
+<dt>REMARKS</dt>
+<dd>To see the examples, type: “get-help New-XDMCSDesktop -examples”.
+For more information, type: “get-help New-XDMCSDesktop -detailed”.
+For technical information, type: “get-help New-XDMCSDesktop -full”.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">XDReplicate</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Command Help</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cmd_export.html">Export Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_import.html">Import Commands</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">New Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#new-xdadminfolder">New-XDAdminFolder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#new-xdmcsdesktop">New-XDMCSDesktop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_remove.html">Remove Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd_send.html">Send Commands</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_export.html">Export Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_import.html">Import Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="cmd_import.html" title="previous chapter">Import Commands</a></li>
+      <li>Next: <a href="cmd_remove.html" title="next chapter">Remove Commands</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Ryan Butler.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/cmd_new.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
