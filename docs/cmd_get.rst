@@ -1,4 +1,4 @@
-﻿get Commands
+﻿Get Commands
 =========================
 
 This page contains details on **get** commands.
