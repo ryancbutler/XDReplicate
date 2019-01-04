@@ -1,20 +1,31 @@
-.. XDReplicate documentation master file, created by
-   sphinx-quickstart on Fri Jan  4 16:27:41 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+XenDesktop 7.x Site Import\Export Module
+=================
 
-Welcome to XDReplicate's documentation!
-=======================================
+A set of community function that exports XenDesktop 7.x site information and imports to another 'Site' via remote command or XML file.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :caption: Getting Started
 
+   install
+   changelog
 
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Command Help
 
-Indices and tables
-==================
+   cmd_export
+   cmd_import
+   cmd_new
+   cmd_remove
+   cmd_send
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Examples
+
+   example_export
+   example_import
