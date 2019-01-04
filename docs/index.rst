@@ -21,6 +21,7 @@ A set of community function that exports XenDesktop 7.x site information and imp
    cmd_new
    cmd_remove
    cmd_send
+   cmd_get
 
 .. toctree::
    :maxdepth: 2
