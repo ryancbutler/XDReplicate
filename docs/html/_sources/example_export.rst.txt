@@ -1,5 +1,5 @@
 Export Examples
-*****
+***************
 
 **Exports data from localhost and exports to C:\temp\my.xml**
 ``Export-XDSite -xdhost localhost -XMLPATH "C:\temp\my.xml"``

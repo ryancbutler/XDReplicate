@@ -1,5 +1,5 @@
 Import Examples
-*****
+***************
 
 **Imports data from C:\temp\my.xml and imports to localhost**
 ``Import-XDSite -xdhost localhost -xmlpath "C:\temp\mypath.xml"``
