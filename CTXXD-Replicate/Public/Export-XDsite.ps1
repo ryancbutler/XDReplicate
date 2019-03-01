@@ -91,10 +91,10 @@ process {
                 if ([version]$ddcver -lt "7.11")
                 {
                     write-warning "Ignoring APP TAG ARGUMENTS."
-                    $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|export-xdapp
+                    $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|export-xdapp -xdhost $xdhost
                 }
                 else {
-                    $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{($_.Tags -notcontains $ignoreapptag) -and (($_.AssociatedDesktopGroupUIDS).count -eq 1) -and (($_.AssociatedApplicationGroupUIDS).count -le 0)}|export-xdapp 
+                    $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -Tag $apptag -MaxRecordCount 2000|Where-Object{($_.Tags -notcontains $ignoreapptag) -and (($_.AssociatedDesktopGroupUIDS).count -eq 1) -and (($_.AssociatedApplicationGroupUIDS).count -le 0)}|export-xdapp -xdhost $xdhost 
                 }
             
             }
@@ -102,11 +102,11 @@ process {
             {
                 if ([version]$ddcver -lt "7.11")
                 {
-                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|export-xdapp
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|export-xdapp -xdhost $xdhost
                 
                 }
                 else {
-                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{($_.Tags -notcontains $ignoreapptag) -and (($_.AssociatedDesktopGroupUIDS).count -eq 1) -and (($_.AssociatedApplicationGroupUIDS).count -le 0)}|export-xdapp
+                $apps = Get-BrokerApplication -AdminAddress $xdhost -AssociatedDesktopGroupUUID $dg.UUID -MaxRecordCount 2000|Where-Object{($_.Tags -notcontains $ignoreapptag) -and (($_.AssociatedDesktopGroupUIDS).count -eq 1) -and (($_.AssociatedApplicationGroupUIDS).count -le 0)}|export-xdapp -xdhost $xdhost
                 }
             }
             
@@ -127,7 +127,7 @@ process {
             write-warning "Ignoring Applicaton Groups and Multi Delivery Groups due to DDC version"
         }
         else {
-            $apps = Get-BrokerApplication -AdminAddress $xdhost -Tag $apptag -MaxRecordCount 2000|Where-Object{($_.Tags -notcontains $ignoreapptag) -and (($_.AssociatedDesktopGroupUIDS).count -gt 1) -or (($_.AssociatedApplicationGroupUIDS).count -gt 0)}|export-xdapp
+            $apps = Get-BrokerApplication -AdminAddress $xdhost -Tag $apptag -MaxRecordCount 2000|Where-Object{($_.Tags -notcontains $ignoreapptag) -and (($_.AssociatedDesktopGroupUIDS).count -gt 1) -or (($_.AssociatedApplicationGroupUIDS).count -gt 0)}|export-xdapp -xdhost $xdhost
         }
         $appobject += $apps
     }
